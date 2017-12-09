@@ -1,0 +1,180 @@
+.tree {
+    margin: auto;
+    padding: 0 0 0 9px;
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative;
+    &:before {
+        display: inline-block;
+        content: "";
+        position: absolute;
+        top: -20px;
+        bottom: 16px;
+        left: 0;
+        z-index: 1;
+        border: 1px dotted #67b2dd;
+        border-width: 0 0 0 1px;
+    }
+    .tree-branch {
+        width: auto;
+        min-height: 20px;
+        cursor: pointer;
+        .tree-branch-header {
+            position: relative;
+            height: 20px;
+            line-height: 20px;
+            white-space:nowrap;
+            &:hover {
+                background-color: #F0F7FC;
+            }
+            >.tree-branch-name>.tree-label {
+                margin-left: 2px;
+            }
+        }
+    }
+    .tree-branch-name,
+    .tree-item-name {
+        cursor: pointer;
+        white-space:nowrap;
+    }
+}
+
+
+.tree .tree-branch .tree-branch-header .tree-branch-name,
+.tree .tree-item .tree-item-name {
+    display: inline;
+    z-index: 2
+}
+
+.tree .tree-branch .tree-branch-header>.bcj-icon:first-child,
+.tree .tree-item>.tree-item-name>.bcj-icon:first-child {
+    margin: 3px 0 0 -2px;
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    top: -1px
+}
+
+
+
+.tree .tree-branch:last-child:after {
+    display: inline-block;
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 15px;
+    bottom: 0;
+    left: -15px;
+    border-left: 1px solid #FFF
+}
+
+.tree .tree-branch .tree-branch-children {
+    margin: 0 0 0 23px;
+    padding: 0;
+    position: relative
+}
+
+.tree .tree-branch .tree-branch-children:before {
+    display: inline-block;
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: -14px;
+    bottom: 16px;
+    left: -14px;
+    border: 1px dotted #67b2dd;
+    border-width: 0 0 0 1px
+}
+
+.tree .tree-item {
+    position: relative;
+    height: 20px;
+    line-height: 20px;
+    cursor: pointer
+}
+
+.tree .tree-item:hover {
+    background-color: #F0F7FC
+}
+
+.tree .tree-item>.tree-item-name>.bcj-icon:first-child {
+    margin-right: 3px
+}
+
+.tree .tree-item>.tree-item-name>.tree-label>.bcj-icon:first-child {
+    margin-left: 3px;
+    margin-right: 3px
+}
+
+.tree .tree-item>.bcj-icon:first-child {
+    margin-top: -1px
+}
+
+.tree .tree-branch,
+.tree .tree-item {
+    position: relative;
+    list-style: none
+}
+
+.tree .tree-branch:before,
+.tree .tree-item:before {
+    display: inline-block;
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: -13px;
+    width: 18px;
+    height: 0;
+    border-top: 1px dotted #67b2dd;
+    z-index: 1
+}
+
+.tree .tree-selected.tree-item,
+.tree .tree-selected>.tree-branch-header:first-child {
+    background-color: rgba(98, 168, 209, .1);
+    color: #6398B0;
+    &:hover {
+        background-color: rgba(98, 168, 209, .1);
+    }
+}
+
+.tree .tree-item,
+.tree .tree-branch {
+    border: 1px solid #FFF
+}
+
+.tree .tree-branch .tree-branch-header {
+    border-radius: 0
+}
+
+.tree .tree-item,
+.tree .tree-branch .tree-branch-header {
+    margin: 0;
+    padding: 5px;
+    color: #4D6878;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box
+}
+
+.tree .tree-item>.tree-item-name>.ace-icon:first-child {
+    color: #F9E8CE;
+    width: 13px;
+    height: 13px;
+    line-height: 13px;
+    font-size: 11px;
+    text-align: center;
+    border-radius: 3px;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    background-color: #FAFAFA;
+    border: 1px solid #CCC;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05)
+}
+
+.tree .tree-selected>.tree-item-name>.ace-icon:first-child {
+    background-color: #F9A021;
+    border-color: #F9A021;
+    color: #FFF
+}

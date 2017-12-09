@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+validator.Checked=WebRoot/js/vender,WebRoot/plugins/jQuery,WebRoot/js/vendor
+validator.Unchecked=

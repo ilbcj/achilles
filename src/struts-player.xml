@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="playerInfo" extends="json-default" namespace="/player">
+		
+		<global-results>
+ 			<result name="sqlException">/jsp/exception.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.sql.SQLException" result="sqlException" />
+			<exception-mapping exception="java.lang.Exception" result="sqlException" />	
+		</global-exception-mappings>
+	
+	<!-- 
+		//设备信息				method="queryDeviceInfo"
+		
+	 -->
+		<action name="queryPlayers" class="com.achilles.controller.PlayerInfoAction" method="QueryPlayers" >
+ 			<result name="success" type="json" />
+		</action>
+<!-- 		<action name="auditY" class="com.achilles.controller.PlayerInfoAction" method="AuditYes" > -->
+<!--  			<result name="success" type="json" /> -->
+<!-- 		</action> -->
+<!-- 		<action name="auditN" class="com.achilles.controller.PlayerInfoAction" method="AuditNo" > -->
+<!--  			<result name="success" type="json" /> -->
+<!-- 		</action> -->
+	</package>	
+</struts>    
