@@ -12,7 +12,7 @@
 		</id>
 		<!-- property元素定义常规属性 -->
 		<property name="loginId" column="login_id" type="java.lang.String" length="64" unique="true"/>
-		<property name="pwd" type="java.lang.String" length="64" unique="true"/>
+		<property name="pwd" type="java.lang.String" length="64"/>
 		<property name="name" type="java.lang.String" length="64"/>
 		<property name="race" type="java.lang.String" length="8"/>
 		<property name="tel" type="java.lang.String" length="64"/>

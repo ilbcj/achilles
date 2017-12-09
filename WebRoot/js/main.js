@@ -139,8 +139,6 @@ $(function () {
 	//Active the main menu and custom menu
 	$.ACHILLES.menu.activate();
 
-
-	
 });
 
 function _refreshTime() {
@@ -296,8 +294,8 @@ function _initACHILLES(o) {
 				ajax:{
 					url: o.basePath + '/player/queryPlayers.action',
 					data: function(d) {
-						var loginid = $('#player_query_type').val();
-				    	var name = $('#player_query_sn').val();
+						var loginid = $('#player_query_id').val();
+				    	var name = $('#player_query_name').val();
 				    	return $.extend( {}, d, {
 				    			loginId: loginid,
 				    			name: name
@@ -320,19 +318,34 @@ function _initACHILLES(o) {
 					{
 						render: function ( data, type, row ) {
 							return '<input type="checkbox" data-id="' + row.id + '" />';
-		
 						},
 						targets: 0
 					},
 					{
 						render: function ( data, type, row ) {
+							var text = '';
+							if(data === 'T') {
+								text = '人类';
+							}
+							else if(data === 'P') {
+								text = '星灵';
+							}
+							else if(data === 'Z') {
+								text = '异虫';
+							}
+							return text;
+						},
+						targets: 3
+					},
+					{
+						render: function ( data, type, row ) {
 							var html = '<div class="btn-group">';
-							html += '<button class="player_info btn btn-xs btn-success" data-id="' + row.id + '" disabled="disabled"><i class="fa fa-check"></i>详情</button>';
+							html += '<button class="player_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>详情</button>';
 							html += '<button class="player_del btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>删除</button>';
 							html += '</div>';
 							return html;
 						},
-						targets: 4
+						targets: 5
 					}
 				],
 				createdRow: function ( row, data, index ) {
@@ -344,66 +357,148 @@ function _initACHILLES(o) {
 			$('#query_player').on('click.ACHILLES.player.query', $.ACHILLES.player.queryPlayers);
 			$('#query_player_reset').on('click.ACHILLES.player.queryreset', $.ACHILLES.player.clearQueryPlayerCondition);
 			$('#add_player').on('click.ACHILLES.player.add', $.ACHILLES.player.openAddWindow);
-			$('#devicereg_main_table').on( 'draw.dt', function () {
+			$('#add_player_confirm').on('click.ACHILLES.player.addconfirm', $.ACHILLES.player.addConfirm);
+			$('#del_players').on('click.ACHILLES.player.delete.batch', $.ACHILLES.player.delBatch);
+			$('#player_main_table').on( 'draw.dt', function () {
 				$('.player_info').on('click.ACHILLES.player.detail', $.ACHILLES.player.detail);
-				$('.player_del').on('click.ACHILLES.player.delete', $.ACHILLES.player.del);
+				$('.player_del').on('click.ACHILLES.player.delete.single', $.ACHILLES.player.del);
 			});
+			$('#del_players_confirm').on('click.ACHILLES.player.delconfirm', $.ACHILLES.player.delConfirm);
 			
+			$('#batch_create_players').on('click.ACHILLES.player.batchcreate', $.ACHILLES.player.testBatchCreatePlayers);
 		},
 		queryPlayers: function () {
 			o.basePath && $('#player_main_table').DataTable().ajax.reload();
 		},
 		clearQueryPlayerCondition: function () {
-			$('#player_query_type').val('');
-			$('#player_query_sn').val('');
+			$('#player_query_id').val('');
+			$('#player_query_name').val('');
 		},
 		openAddWindow: function () {
+			$('#pwd').val('');
+		    $('#name').val('');
+		    $('#race').val('');
+		    $('#telephone').val('');
+		    $('#email').val('');
+		    $('#qq').val('');
+		    $('#wechat').val('');
+
 			$("#add_Modal").modal('show');
+		},
+		addConfirm: function () {
+			var loginId = $("#loginid").val();
+			var postData = "loginId=" + loginId;
+			
+			o.basePath && $.post(o.basePath + '/player/queryPlayers.action', postData, function(retObj){
+		        if(retObj.items.length == 0){ 
+		        	postData = 'player.loginId=' + loginId;
+		        	var pwd = $('#pwd').val();
+		        	postData += '&player.pwd=' + pwd;
+					var name = $('#name').val();
+					postData += '&player.name=' + name;
+					var race = $('#race').val();
+					postData += '&player.race=' + race;
+					var telephone = $('#telephone').val();
+					postData += '&player.tel=' + telephone;
+					var email = $('#email').val();
+					postData += '&player.email=' + email;
+					var qq = $('#qq').val();
+					postData += '&player.qq=' + qq;
+			    	var wechat = $('#wechat').val();
+					postData += '&player.wechat=' + wechat;
+					
+			    	$.post(o.basePath + '/player/savePlayer.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
+			    		if(retObj.result == true)
+						{
+							$.ACHILLES.player.queryPlayers();
+							var message = '保存选手信息成功!';
+							$.ACHILLES.tipMessage(message);
+						} else {
+							var message = '保存选手信息失败![' + retObj.message + ']';
+							$.ACHILLES.tipMessage(message, false);
+						}
+					}, 'json');
+		        } else { 
+					var message = '该账号已被占用!';
+					$.ACHILLES.tipMessage(message, false);
+		            return false;
+		        } 
+		        
+		    }, "json");
 		},
 		detail: function () {
 			
 			var rowId = $(this).data("id");
-			//var rowData = $('#devicereg_main_table').DataTable().row( '#' + rowId ).data();
-			
-			//console.log( rowData );
-//			$('#attestation_aid').html(rowData.attestationId);
-//			var message = '您选取了' + $("#enterpriseUserMainTable :checkbox:checked[data-id]").length + '条记录。确认要删除所选行业用户？';
-//	    	$("#del_enterpriseUser_message").empty().append(message);
-//			$("#del_enterpriseUser_Modal").modal('show');
-			
-			var poststr = "";
-			poststr += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/dev/auditY.action", poststr, function(retObj) {
+			var postData = "";
+			postData += "id=" + rowId;
+			o.basePath && $.post(o.basePath + "/player/queryPlayerDetail.action", postData, function(retObj) {
 				if(retObj.result == true) {
-					var message = "审核操作完成，设备注册申请审核通过!";
-					$.ACHILLES.tipMessage(message);
+					//TODO: update detail page info
+					var info = retObj.detail;
+					var message = info.base.loginId + '|' + info.base.name + '|' + info.base.race;
+					$('#detail_message').empty().append(message);
 					
-					o.basePath && $('#devicereg_main_table').DataTable().ajax.reload();
+					$("#detail_Modal").modal('show');
 				} else {
-					var message = "审核设备注册信息操作失败! " + retObj.message;
+					var message = '获取选手详细信息失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, "json");
+			}, 'json');
 			return;
 		},
-		del: function() {
-			var rowId = $(this).data("id");
-			
-			var poststr = "";
-			poststr += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/dev/auditN.action", poststr, function(retObj) {
+		delBatch: function () {
+			if( ($('#player_main_table :checkbox:checked[data-id]').length == 0) ) { 
+				var message = "请选择要删除的选手!";
+				$.ACHILLES.tipMessage(message);
+				return;
+			} else {
+				var delIds = '';
+				$("#player_main_table :checkbox").each(function(index,checkboxItem){
+					if($(checkboxItem).prop('checked') && index != 0){
+						delIds += "delIds=" + $(checkboxItem).attr('data-id') + "&";
+					}
+				});
+				var message = '已经选取了' + $("#player_main_table :checkbox:checked[data-id]").length + '条记录。是否要删除这些选手？';
+				$('#del_message').empty().append(message);
+				$('#del_message').data('delIds', delIds);
+				$("#del_Modal").modal('show');
+			}
+		},
+		del: function () {
+			var rowId = $(this).data('id');
+			var delIds = 'delIds=' + rowId;
+			var message = '是否要删除该选手？';
+			$('#del_message').empty().append(message);
+			$('#del_message').data('delIds', delIds);
+			$("#del_Modal").modal('show');
+		},
+		delConfirm: function () {
+			var postData = '';
+			postData = $('#del_message').data('delIds');
+			o.basePath && $.post(o.basePath + '/player/deletePlayer.action', postData, function(retObj) {
 				if(retObj.result == true) {
-					var message = "审核操作完成，设备注册申请审核被拒绝!";
+					var message = '选手已经被删除';
 					$.ACHILLES.tipMessage(message);
-					
-					o.basePath && $('#devicereg_main_table').DataTable().ajax.reload();
+					$('#player_main_table').DataTable().ajax.reload();
 				} else {
-					var message = "审核设备注册信息操作失败! " + retObj.message;
+					var message = '删除选手操作失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, "json");
+			}, 'json');
+		},
+		testBatchCreatePlayers: function () {
+			o.basePath && $.post(o.basePath + '/player/testInitPlayers.action', {}, function(retObj){
+		        if(retObj.result == true)
+				{
+					$.ACHILLES.player.queryPlayers();
+					var message = '生成测试选手数据成功!';
+					$.ACHILLES.tipMessage(message);
+				} else {
+					var message = '生成测试选手数据失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+		    }, "json");
 		}
-
 	};// end of $.ACHILLES.player
 	
 	/* attestation

@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.achilles.dao.PlayerDAO;
 import com.achilles.model.HibernateUtil;
@@ -86,6 +87,90 @@ public class PlayerDAOImpl implements PlayerDAO {
 				}
 			}
 			rs = ((Long)q.uniqueResult()).intValue();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
+	@Override
+	public void AddPlayer(Player player) throws Exception {
+		//打开线程安全的session对象
+		Session session = HibernateUtil.currentSession();
+		//打开事务
+		Transaction tx = session.beginTransaction();
+		try
+		{
+			session.save(player);
+			tx.commit();
+		}
+		catch(ConstraintViolationException cne){
+			tx.rollback();
+			System.out.println(cne.getSQLException().getMessage());
+			throw new Exception("存在重名选手");
+		}
+		catch(org.hibernate.exception.SQLGrammarException e)
+		{
+			tx.rollback();
+			System.out.println(e.getSQLException().getMessage());
+			throw e.getSQLException();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return;		
+	}
+
+	@Override
+	public void DelPlayer(Player player) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		Player rs = null;
+		String sqlString = "SELECT * FROM Player WHERE id=:id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Player.class);
+			q.setInteger("id", player.getId());
+			rs = (Player)q.uniqueResult();
+			rs.setStatus(Player.STATUS_DEL);
+			session.merge(rs);
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return;
+	}
+
+	@Override
+	public Player GetPlayerById(int id) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		Player rs = null;
+		String sqlString = "SELECT * FROM Player WHERE id=:id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Player.class);
+			q.setInteger("id", id);
+			rs = (Player)q.uniqueResult();
 			tx.commit();
 		} catch (Exception e) {
 			e.printStackTrace();

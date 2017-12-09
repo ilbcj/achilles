@@ -18,11 +18,17 @@
 		<action name="queryPlayers" class="com.achilles.controller.PlayerInfoAction" method="QueryPlayers" >
  			<result name="success" type="json" />
 		</action>
-<!-- 		<action name="auditY" class="com.achilles.controller.PlayerInfoAction" method="AuditYes" > -->
-<!--  			<result name="success" type="json" /> -->
-<!-- 		</action> -->
-<!-- 		<action name="auditN" class="com.achilles.controller.PlayerInfoAction" method="AuditNo" > -->
-<!--  			<result name="success" type="json" /> -->
-<!-- 		</action> -->
+		<action name="savePlayer" class="com.achilles.controller.PlayerInfoAction" method="SavePlayer" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="deletePlayer" class="com.achilles.controller.PlayerInfoAction" method="DeletePlayer" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryPlayerDetail" class="com.achilles.controller.PlayerInfoAction" method="QueryPlayerDetail" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="testInitPlayers" class="com.achilles.controller.PlayerInfoAction" method="TestInitPlayers" >
+ 			<result name="success" type="json" />
+		</action>
 	</package>	
 </struts>    
