@@ -1,5 +1,8 @@
 package com.achilles.model;
 
+import java.util.List;
+import java.util.Map;
+
 public class Player {
 	public final static int STATUS_USING = 1;
 	public final static int STATUS_DEL = 0;
@@ -86,4 +89,35 @@ public class Player {
 		this.email = email;
 	}
 	
+	
+	//non persistence attribute
+	private int remainingChallengeTimes;
+	private List<Integer> adversaryIds;
+	private Map<Integer, Integer> days;
+	private int ranking;
+
+	public int getRanking() {
+		return ranking;
+	}
+	public void setRanking(int ranking) {
+		this.ranking = ranking;
+	}
+	public int getRemainingChallengeTimes() {
+		return remainingChallengeTimes;
+	}
+	public void setRemainingChallengeTimes(int remainingChallengeTimes) {
+		this.remainingChallengeTimes = remainingChallengeTimes;
+	}
+	public Map<Integer, Integer> getDays() {
+		return days;
+	}
+	public void setDays(Map<Integer, Integer> days) {
+		this.days = days;
+	}
+	public List<Integer> getAdversaryIds() {
+		return adversaryIds;
+	}
+	public void setAdversaryIds(List<Integer> adversaryIds) {
+		this.adversaryIds = adversaryIds;
+	}
 }

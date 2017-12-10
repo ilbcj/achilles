@@ -259,7 +259,7 @@ function _initACHILLES(o) {
     		});
     		$('#menu_battle_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/battle/battle_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
-    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.devicereg.activate();});
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.match.activate();});
     		});
     		$('#menu_score_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/score/score_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
@@ -279,14 +279,15 @@ function _initACHILLES(o) {
 	*
 	* @type Object
 	* @usage $.ACHILLES.player.activate()
-	* @usage $.ACHILLES.player.queryAttestation()
-	* @usage $.ACHILLES.player.clearQueryAttestationCondition()
-	* @usage $.ACHILLES.player.openAddAttestationWindow()
-	* @usage $.ACHILLES.player.openModAttestationWindow()
-	* @usage $.ACHILLES.player.openDelAttestationWindow()
-	* @usage $.ACHILLES.player.attestationDel()
-	* @usage $.ACHILLES.player.attestationSave()
-	* @usage $.ACHILLES.player.attestationDetailReturn()
+	* @usage $.ACHILLES.player.queryPlayers()
+	* @usage $.ACHILLES.player.clearQueryPlayerCondition()
+	* @usage $.ACHILLES.player.openAddWindow()
+	* @usage $.ACHILLES.player.addConfirm()
+	* @usage $.ACHILLES.player.detail()
+	* @usage $.ACHILLES.player.delBatch()
+	* @usage $.ACHILLES.player.del()
+	* @usage $.ACHILLES.player.delConfirm()
+	* @usage $.ACHILLES.player.testBatchCreatePlayers()
 	*/
 	$.ACHILLES.player = {
 		activate: function () {
@@ -501,125 +502,98 @@ function _initACHILLES(o) {
 		}
 	};// end of $.ACHILLES.player
 	
-	/* attestation
+	/* match
 	* ======
-	* devicereg maintain page
+	* match info maintain page
 	*
 	* @type Object
-	* @usage $.ACHILLES.devicereg.activate()
-	* @usage $.ACHILLES.devicereg.queryAttestation()
-	* @usage $.ACHILLES.devicereg.clearQueryAttestationCondition()
-	* @usage $.ACHILLES.devicereg.openAddAttestationWindow()
-	* @usage $.ACHILLES.devicereg.openModAttestationWindow()
-	* @usage $.ACHILLES.devicereg.openDelAttestationWindow()
-	* @usage $.ACHILLES.devicereg.attestationDel()
-	* @usage $.ACHILLES.devicereg.attestationSave()
-	* @usage $.ACHILLES.devicereg.attestationDetailReturn()
+	* @usage $.ACHILLES.match.activate()
+	* @usage $.ACHILLES.match.queryAttestation()
+	* @usage $.ACHILLES.match.clearQueryAttestationCondition()
+	* @usage $.ACHILLES.match.openAddAttestationWindow()
+	* @usage $.ACHILLES.match.openModAttestationWindow()
+	* @usage $.ACHILLES.match.openDelAttestationWindow()
+	* @usage $.ACHILLES.match.attestationDel()
+	* @usage $.ACHILLES.match.attestationSave()
+	* @usage $.ACHILLES.match.attestationDetailReturn()
 	*/
-	$.ACHILLES.devicereg = {
+	$.ACHILLES.match = {
 		activate: function () {
-			o.basePath && $('#devicereg_main_table').DataTable( {
+			o.basePath && $('#match_player_registration_info_table').DataTable( {
 				ajax:{
-					url: o.basePath + '/dev/queryDevices.action',
-					data: function(d) {
-						var type = $('#devicereg_query_type').val();
-				    	var sn = $('#devicereg_query_sn').val();
-				    	return $.extend( {}, d, {
-				    			type: type,
-				    			sn: sn
-				    	});
-					},
+					url: o.basePath + '/match/queryActiveMatchRegistrationInfo.action',
 					type: 'POST',
-					dataSrc: 'items'
+					dataSrc: 'activeRegistrationInfo'
 				},
 				processing: true,
 				serverSide: true,
+				dom: 'tr',
 				columns: [
-					{ data: '' },
-					{ data: 'type' },
-					{ data: 'sn' },
-					{ data: 'cipher' },
-					{ data: 'devid' },
-					{ data: 'status' },
-					{ data: 'timestamp' }
+					{ data: 'playerId' },
+					{ data: 'loginid' },
+					{ data: 'name' },
+					{ data: 'race' },
+					{ data: 'adversaries' },
+					{ data: 'days' }
 				],
-				rowId: 'id',
+				rowId: 'playerId',
 				columnDefs: [
 					{
-						render: function ( data, type, row ) {
-							return '<input type="checkbox" data-id="' + row.id + '" />';
-		
-						},
-						targets: 0
-					},
+						visible: false,
+		                targets: 0
+		           },
 					{
 						render: function ( data, type, row ) {
-							var text = "未知状态";
-							if(data === 0) {
-								text = "新申请";
+							var text = '';
+							if(data === 'T') {
+								text = '人类';
 							}
-							else if(data === 1) {
-								text = "已注册";
+							else if(data === 'P') {
+								text = '星灵';
 							}
-							else if(data === 2) {
-								text = "审核拒绝";
-							}
-							else if(data === 99) {
-								text = "错误状态";
+							else if(data === 'Z') {
+								text = '异虫';
 							}
 							return text;
 						},
-						targets: 5
-					},
-					{
-						render: function ( data, type, row ) {
-							return new Date(parseInt(data)).toLocaleString();
-						},
-						targets: 6
+						targets: 3
 					},
 					{
 						render: function ( data, type, row ) {
 							var html = '<div class="btn-group">';
-							if(row.status === 1) {
-								html += '<button class="devicereg_audit_yes btn btn-xs btn-success disabled" data-id="' + row.id + '" disabled="disabled"><i class="fa fa-check"></i>审核通过</button>';
-							}
-							else {
-								html += '<button class="devicereg_audit_yes btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>审核通过</button>';
-							}
-							
-							if(row.status === 2) {
-								html += '<button class="devicereg_audit_no btn btn-xs btn-danger disabled" data-id="' + row.id + '" disabled="disabled"><i class="fa fa-times"></i>审核拒绝</button>';
-							}
-							else {
-								html += '<button class="devicereg_audit_no btn btn-xs btn-danger" data-id="' + row.id + '"><i class="fa fa-times"></i>审核拒绝</button>';
-							}
-							
+							html += '<button class="edit_match_registration btn btn-xs btn-success disabled" data-id="' + row.id + '"><i class="fa fa-check"></i>编辑</button>';
 							html += '</div>';
 							return html;
 						},
-						targets: 7
+						targets: 6
 					}
 				],
 				createdRow: function ( row, data, index ) {
-					$('td', row).eq(0).addClass('text-center');
+					//$('td', row).eq(0).addClass('text-center');
 				}
 			});
 			
 			//listen page items' event
-			$('#query_devicereg').on('click.ACHILLES.devicereg.query', $.ACHILLES.devicereg.queryDevices);
-			$('#query_devicereg_reset').on('click.ACHILLES.devicereg.queryreset', $.ACHILLES.devicereg.clearQueryDeviceCondition);
-			$('#devicereg_main_table').on( 'draw.dt', function () {
-				$('.devicereg_audit_yes').on('click.ACHILLES.devicereg.detail', $.ACHILLES.devicereg.auditRequestYes);
-				$('.devicereg_audit_no').on('click.ACHILLES.devicereg.detail', $.ACHILLES.devicereg.auditRequestNo);
+			$('#batch_create_registration').on('click.ACHILLES.match.batchcreateregistration', $.ACHILLES.match.testBatchCreateRegistration);
+			$('#match_player_registration_info_table').on( 'draw.dt', function () {
+				$('.edit_match_registration').on('click.ACHILLES.match.edit', $.ACHILLES.match.editMatchRegistration);
 			});
-			
+			$('#update_match_info').on('click.ACHILLES.match.updatematchinfo', $.ACHILLES.match.updateMatchInfo);
 		},
-		queryDevices: function () {
-			o.basePath && $('#devicereg_main_table').DataTable().ajax.reload();
-		},
-		clearQueryDeviceCondition: function () {
-			$('#devicereg_query_type').val('');
-			$('#devicereg_query_sn').val('');
+		testBatchCreateRegistration: function () {
+			$("#progress_Modal").modal('show');
+			o.basePath && $.post(o.basePath + "/match/testInitRegistration.action", {}, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = "批量录入模拟挑战申请完成!";
+					$.ACHILLES.tipMessage(message);
+					
+					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
+				} else {
+					var message = "录入模拟挑战申请失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
 		},
 		auditRequestYes: function () {
 			
@@ -647,19 +621,17 @@ function _initACHILLES(o) {
 			}, "json");
 			return;
 		},
-		auditRequestNo: function() {
-			var rowId = $(this).data("id");
-			
-			var poststr = "";
-			poststr += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/dev/auditN.action", poststr, function(retObj) {
+		updateMatchInfo: function() {
+			$("#progress_Modal").modal('show');
+			o.basePath && $.post(o.basePath + "/match/testInitRegistration.action", {}, function(retObj) {
+				$("#progress_Modal").modal('hide');
 				if(retObj.result == true) {
-					var message = "审核操作完成，设备注册申请审核被拒绝!";
+					var message = "批量录入模拟挑战申请完成!";
 					$.ACHILLES.tipMessage(message);
 					
-					o.basePath && $('#devicereg_main_table').DataTable().ajax.reload();
+					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
 				} else {
-					var message = "审核设备注册信息操作失败! " + retObj.message;
+					var message = "录入模拟挑战申请失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");

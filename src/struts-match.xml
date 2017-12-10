@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="matchInfo" extends="json-default" namespace="/match">
+		
+		<global-results>
+ 			<result name="sqlException">/jsp/exception.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.sql.SQLException" result="sqlException" />
+			<exception-mapping exception="java.lang.Exception" result="sqlException" />	
+		</global-exception-mappings>
+	
+	<!-- 
+		//设备信息				method="queryDeviceInfo"
+		
+	 -->
+	 	
+	 	<action name="queryActiveMatchRegistrationInfo" class="com.achilles.controller.MatchInfoAction" method="QueryActiveMatchRegistrationInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="saveMatchDetail" class="com.achilles.controller.MatchInfoAction" method="SaveMatchDetail" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryActiveMatchInfo" class="com.achilles.controller.MatchInfoAction" method="QueryActiveMatchInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="updateMatchInfo" class="com.achilles.controller.MatchInfoAction" method="UpdateMatchInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="testInitRegistration" class="com.achilles.controller.MatchInfoAction" method="TestInitRegistration" >
+ 			<result name="success" type="json" />
+		</action>
+	</package>
+</struts>

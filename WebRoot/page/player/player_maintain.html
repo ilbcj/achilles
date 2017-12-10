@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>device_maintain.html</title>
+  <title>player_maintain.html</title>
 </head>
 
 <body>
@@ -12,9 +12,7 @@
   <div class="content-wrapper-inner">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-		选手信息
-      </h1>
+      <h1>选手信息</h1>
       <ol class="breadcrumb">
         <li><a href="javascript:void(0)"><i class="fa fa-home"></i> 首页</a></li>
         <li class="active">选手管理</li>
@@ -45,24 +43,26 @@
             <!-- /.box-header -->
             <div class="box-body">
            	<div class="btn-group">
-	                <span id="add_player" class="btn btn-sm btn-flat btn-info margin"><i class="fa fa-plus"></i> 添加</span>
-	                <span id="del_players" class="btn btn-sm btn-flat btn-danger margin"><i class="fa fa-trash"></i> 删除</span>
-	                <span id="batch_create_players" class="btn btn-sm btn-flat btn-warning margin"><i class="fa fa-pencil"></i> 批量创建用户</span>
-			</div>
-              	<table id="player_main_table" class="table table-striped table-bordered table-hover">
-					<thead>
-						<tr>
-							<th class="text-center">
-								<input type="checkbox"/>
-							</th>
-							<th>账号</th>
-							<th>姓名</th>
-							<th>种族</th>
-							<th>时间</th>
-							<th>操作</th>
-						</tr>
-					</thead>
-				</table>
+							<span id="add_player" class="btn btn-sm btn-flat btn-info margin"><i class="fa fa-plus"></i> 添加</span>
+							<span id="del_players" class="btn btn-sm btn-flat btn-danger margin"><i class="fa fa-trash"></i> 删除</span>
+						</div>
+						<div class="btn-group pull-right">
+							<span id="batch_create_players" class="btn btn-sm btn-flat btn-warning margin"><i class="fa fa-pencil"></i> 批量创建用户</span>
+						</div>
+						<table id="player_main_table" class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="text-center">
+										<input type="checkbox"/>
+									</th>
+									<th>账号</th>
+									<th>姓名</th>
+									<th>种族</th>
+									<th>时间</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+						</table>
             </div>
             <!-- /.box-body -->
 		</div>

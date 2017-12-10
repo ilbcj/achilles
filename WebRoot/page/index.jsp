@@ -186,7 +186,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   
   <!-- model window -->
   <div class="modal modal-info fade" id="tipModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-   <div class="modal-dialog">
+	<div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -199,6 +199,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div><!-- /.modal-content -->
 	</div><!-- /.modal -->
   </div>
+  
+  <div class="modal fade" id="progress_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body">
+				<div class="progress progress-small progress-striped active">
+					<div class="progress-bar progress-bar-success" style="width: 100%;"></div>
+				</div>
+				<div class="hidden" id="progress_message">
+				</div>
+			</div>
+			<div class="modal-footer hidden" id="progress_btn">
+				<button type="button" class="btn btn-sm btn-default"  data-dismiss="modal">确定</button>
+			</div>
+	  </div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+	</div>
 
 </div>
 <!-- ./wrapper -->

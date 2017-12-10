@@ -132,7 +132,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 		{
 			HibernateUtil.closeSession();
 		}
-		return;		
+		return;
 	}
 
 	@Override

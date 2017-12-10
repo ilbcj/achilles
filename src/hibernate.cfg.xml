@@ -39,6 +39,13 @@
 	<property name="hbm2ddl.auto">update</property>
 	<mapping resource="com/achilles/model/Admin.hbm.xml" />
 	<mapping resource="com/achilles/model/Player.hbm.xml" />
+	<mapping resource="com/achilles/model/MatchPeriod.hbm.xml" />
+	<mapping
+		resource="com/achilles/model/MatchRegistrationAdversary.hbm.xml" />
+	<mapping
+		resource="com/achilles/model/MatchRegistrationDays.hbm.xml" />
+	<mapping resource="com/achilles/model/Ranking.hbm.xml" />
+	<mapping resource="com/achilles/model/MatchInfo.hbm.xml" />
 
 
 </session-factory>

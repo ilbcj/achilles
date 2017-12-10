@@ -9,4 +9,5 @@
 	
  	<include file="struts-login.xml"/>
  	<include file="struts-player.xml"/>
+ 	<include file="struts-match.xml"/>
 </struts>    
