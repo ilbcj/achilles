@@ -154,7 +154,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- 				<p class="lead">您的精彩时刻有我们守护</p> -->
 <!--         </div> -->
 
-		<div class="row text-center" style="line-height:300px">
+		<div class="row text-center" style="line-height:550px">
 <!--       		<img src="../img/shield_genericapp.png" class="user-image" alt="User Image" /> -->
 <!-- 			<img src="../img/Stopwatch-128.png" class="user-image" alt="User Image" /> -->
 			<img src="../img/terran.jpg" class="user-image" alt="User Image" />

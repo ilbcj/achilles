@@ -61,6 +61,29 @@ public class RankingDAOImpl implements RankingDAO {
 		}
 		return rs;
 	}
+
+	@Override
+	public Ranking SaveRanking(Ranking ranking) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		try
+		{
+			ranking = (Ranking)session.merge(ranking);
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return ranking;
+	}
 	
 	
 

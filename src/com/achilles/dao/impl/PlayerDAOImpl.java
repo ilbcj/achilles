@@ -1,5 +1,6 @@
 package com.achilles.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -43,8 +44,8 @@ public class PlayerDAOImpl implements PlayerDAO {
 				}
 			}
 			if( start > 0 || length >0 ) {
-				q.setFirstResult(start);   
-				q.setMaxResults(length);   
+				q.setFirstResult(start);
+				q.setMaxResults(length);
 			}
 			rs = q.list();
 			tx.commit();
@@ -100,14 +101,14 @@ public class PlayerDAOImpl implements PlayerDAO {
 	}
 
 	@Override
-	public void AddPlayer(Player player) throws Exception {
+	public Player AddPlayer(Player player) throws Exception {
 		//打开线程安全的session对象
 		Session session = HibernateUtil.currentSession();
 		//打开事务
 		Transaction tx = session.beginTransaction();
 		try
 		{
-			session.save(player);
+			player = (Player)session.merge(player);
 			tx.commit();
 		}
 		catch(ConstraintViolationException cne){
@@ -132,7 +133,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 		{
 			HibernateUtil.closeSession();
 		}
-		return;
+		return player;
 	}
 
 	@Override
@@ -146,6 +147,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 			Query q = session.createSQLQuery(sqlString).addEntity(Player.class);
 			q.setInteger("id", player.getId());
 			rs = (Player)q.uniqueResult();
+			rs.setLoginId(rs.getLoginId() + ".archive." + new Date().getTime());
 			rs.setStatus(Player.STATUS_DEL);
 			session.merge(rs);
 			tx.commit();

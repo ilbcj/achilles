@@ -206,7 +206,7 @@ function _initACHILLES(o) {
 		  
 			//load main menu
 			var menu = '<li class="header">控制台</li>';
-			menu += '<li class="treeview active">';
+			menu += '<li class="treeview">';
 			menu += '<a href="javascript:void(0)"><i class="fa fa-gears"></i> <span>选手管理</span>';
             menu +=   '<span class="pull-right-container">';
             menu +=     '<i class="fa fa-angle-left pull-right"></i>';
@@ -342,7 +342,7 @@ function _initACHILLES(o) {
 						render: function ( data, type, row ) {
 							var html = '<div class="btn-group">';
 							html += '<button class="player_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>详情</button>';
-							html += '<button class="player_del btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>删除</button>';
+							html += '<button class="player_del btn btn-xs btn-danger" data-id="' + row.id + '"><i class="fa fa-check"></i>删除</button>';
 							html += '</div>';
 							return html;
 						},
@@ -367,6 +367,7 @@ function _initACHILLES(o) {
 			$('#del_players_confirm').on('click.ACHILLES.player.delconfirm', $.ACHILLES.player.delConfirm);
 			
 			$('#batch_create_players').on('click.ACHILLES.player.batchcreate', $.ACHILLES.player.testBatchCreatePlayers);
+			$('#test_init_player_confirm').on('click.ACHILLES.player.batchcreate', $.ACHILLES.player.testBatchCreatePlayersConfirm);
 		},
 		queryPlayers: function () {
 			o.basePath && $('#player_main_table').DataTable().ajax.reload();
@@ -488,7 +489,14 @@ function _initACHILLES(o) {
 			}, 'json');
 		},
 		testBatchCreatePlayers: function () {
+			var message = '该操作会在系统现有用户基础上，批量创建新用户，直到系统中存在50个用户为止。<br/>如果系统中已有50个用户，将不会做任何操作，是否继续？';
+			$('#test_init_player_message').empty().append(message);
+			$("#test_Init_Player_Modal").modal('show');
+		},
+		testBatchCreatePlayersConfirm: function () {
+			$("#progress_Modal").modal('show');
 			o.basePath && $.post(o.basePath + '/player/testInitPlayers.action', {}, function(retObj){
+				$("#progress_Modal").modal('hide');
 		        if(retObj.result == true)
 				{
 					$.ACHILLES.player.queryPlayers();
@@ -504,7 +512,7 @@ function _initACHILLES(o) {
 	
 	/* match
 	* ======
-	* match info maintain page
+	* match info maintain page for battle_maintain.html
 	*
 	* @type Object
 	* @usage $.ACHILLES.match.activate()
@@ -561,7 +569,7 @@ function _initACHILLES(o) {
 					{
 						render: function ( data, type, row ) {
 							var html = '<div class="btn-group">';
-							html += '<button class="edit_match_registration btn btn-xs btn-success disabled" data-id="' + row.id + '"><i class="fa fa-check"></i>编辑</button>';
+							html += '<button class="edit_match_registration btn btn-xs btn-success" data-id="' + row.playerId + '"><i class="fa fa-check"></i>编辑</button>';
 							html += '</div>';
 							return html;
 						},
@@ -573,6 +581,30 @@ function _initACHILLES(o) {
 				}
 			});
 			
+			o.basePath && $('#match_day_info_table').DataTable( {
+				ajax:{
+					url: o.basePath + '/match/queryActiveMatchInfo.action',
+					type: 'POST',
+					dataSrc: 'activeMatchInfo'
+				},
+				processing: true,
+				serverSide: true,
+				dom: 'tr',
+				columns: [
+					{ data: 'dayName' },
+					{ data: 'matchInfo' }
+				],
+				columnDefs: [
+					{
+						width: "50px",
+		                targets: 0
+					}
+				],
+				rowId: 'dayId',
+				createdRow: function ( row, data, index ) {
+					//$('td', row).eq(0).addClass('text-center');
+				}
+			});
 			//listen page items' event
 			$('#batch_create_registration').on('click.ACHILLES.match.batchcreateregistration', $.ACHILLES.match.testBatchCreateRegistration);
 			$('#match_player_registration_info_table').on( 'draw.dt', function () {
@@ -595,9 +627,8 @@ function _initACHILLES(o) {
 				}
 			}, "json");
 		},
-		auditRequestYes: function () {
-			
-			var rowId = $(this).data("id");
+		editMatchRegistration: function () {
+			var playerId = $(this).data("id");
 			//var rowData = $('#devicereg_main_table').DataTable().row( '#' + rowId ).data();
 			
 			//console.log( rowData );
@@ -623,15 +654,15 @@ function _initACHILLES(o) {
 		},
 		updateMatchInfo: function() {
 			$("#progress_Modal").modal('show');
-			o.basePath && $.post(o.basePath + "/match/testInitRegistration.action", {}, function(retObj) {
+			o.basePath && $.post(o.basePath + "/match/updateMatchInfo.action", {}, function(retObj) {
 				$("#progress_Modal").modal('hide');
 				if(retObj.result == true) {
-					var message = "批量录入模拟挑战申请完成!";
+					var message = "根据最新报名结果匹配对战信息完成!";
 					$.ACHILLES.tipMessage(message);
 					
-					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
+					o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
 				} else {
-					var message = "录入模拟挑战申请失败![" + retObj.message + "]";
+					var message = "匹配对战信息失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");

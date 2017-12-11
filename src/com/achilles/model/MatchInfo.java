@@ -1,12 +1,28 @@
 package com.achilles.model;
 
 public class MatchInfo {
+	public final static int RESULT_CHALLENGER_WIN = 1;
+	public final static int RESULT_ADVERSARY_WIN = 2;
 	private int id;
 	private int matchPeriodId;
 	private int dayId;
 	private int challengerId;
 	private int adversaryId;
+	private String score;
+	private int result;
 	
+	public String getScore() {
+		return score;
+	}
+	public void setScore(String score) {
+		this.score = score;
+	}
+	public int getResult() {
+		return result;
+	}
+	public void setResult(int result) {
+		this.result = result;
+	}
 	public int getId() {
 		return id;
 	}

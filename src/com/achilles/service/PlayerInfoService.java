@@ -3,9 +3,13 @@ package com.achilles.service;
 import java.util.List;
 
 import com.achilles.dao.PlayerDAO;
+import com.achilles.dao.RankingDAO;
 import com.achilles.dao.impl.PlayerDAOImpl;
+import com.achilles.dao.impl.RankingDAOImpl;
 import com.achilles.dto.PlayerDetail;
 import com.achilles.model.Player;
+import com.achilles.model.Ranking;
+import com.achilles.util.ConstValue;
 import com.achilles.util.DateTimeUtil;
 
 public class PlayerInfoService {
@@ -25,9 +29,25 @@ public class PlayerInfoService {
 
 	public void SavePlayer(Player player) throws Exception {
 		PlayerDAO dao = new PlayerDAOImpl();
+		Player criteria = new Player();
+		criteria.setStatus(Player.STATUS_USING);
+		long count = 0;
+		count = dao.QueryPlayersCount(criteria);
+		if(count > ConstValue.MaxPlayersCount) {
+			throw new Exception("目前已达到选手数额上限，不能创建选手信息。");
+		}
+		
 		player.setStatus(Player.STATUS_USING);
 		player.setTimestamp(DateTimeUtil.GetCurrentTime());
-		dao.AddPlayer(player);
+		player = dao.AddPlayer(player);
+		
+		// add init match period ranking
+		Ranking ranking = new Ranking();
+		ranking.setMatchPeriodId(ConstValue.InitMatchPeriodId);
+		ranking.setPlayerId(player.getId());
+		ranking.setRanking(player.getId());
+		RankingDAO rDao = new RankingDAOImpl();
+		rDao.SaveRanking(ranking);		
 		return;
 	}
 
@@ -59,17 +79,22 @@ public class PlayerInfoService {
 		criteria.setStatus(Player.STATUS_USING);
 		long count = 0;
 		count = dao.QueryPlayersCount(criteria);
-		int number = 1;
-		while( count < 50 ) {
-			Player tmp = new Player();
-			tmp.setLoginId("tester" + number);
-			tmp.setPwd("" + number);
-			tmp.setName("tester" + number);
-			tmp.setRace(number%3 == 0 ? "T" : (number%3 == 1 ? "P" : "Z"));
-			tmp.setTimestamp(DateTimeUtil.GetCurrentTime());
-			tmp.setStatus(Player.STATUS_USING);
-			dao.AddPlayer(tmp);
-			number++;
+		int index = 0;
+		String[] names = {"李允烈", "廉宝成", "马在允", "安相元", "姜珉", "金泽龙", "朴圣浚", "林耀焕", "宋炳具", "朱指导", "徐志勋", "洪臻浩", "朴粲守", "晋永守", "炮哥", "李永浩", "李济东", "金俊永", "许勇石", "吴泳钟", "金允焕", "尹龙泰", "朴泰民", "崔然星", "朴志浩", "朴正石", "吴中勋", "朴永珉", "申熙升", "郑明勋", "全太阳", "许英茂", "申东元", "申大根", "金正宇", "李在浩", "张允哲", "韩相奉", "金古贤", "金贤宇", "申相文", "朴世程", "孙书兴", "金敏哲", "全相昱", "秦永华", "边衡泰", "朴俊吾", "李升石", "朴成钧"};
+		String[] loginIds = {"Nada", "Sea", "Savior", "Shine", "nal_ra", "Bisu", "July", "Boxer", "Stork", "zhuzhidao", "Xellos", "YellOw", "Luxury", "Hwasin", "sanpao", "Flash", "Jaedong", "GGPlay", "Attack", "Anytime", "Calm", "free", "GoRush", "iloveoov", "Pusan", "Reach", "Shudder", "Much", "UpMagiC", "Fantasy", "TY", "Jangbi", "Hydra", "hyvaa", "effort", "Light", "snow", "Kwanro", "KaL", "Modesty", "leta", "Pure", "Lomo", "SoulKey", "Midas", "Movie", "Iris", "Killer", "s2", "mind"};
+		while( count < ConstValue.MaxPlayersCount && index < names.length && index < loginIds.length ) {
+			try{
+				Player tmp = new Player();
+				tmp.setLoginId( loginIds[index] );
+				tmp.setPwd(tmp.getLoginId());
+				tmp.setName( names[index] );
+				tmp.setRace(index%3 == 0 ? "T" : (index%3 == 1 ? "P" : "Z"));
+				SavePlayer(tmp);
+			}
+			catch(Exception e) {
+				System.out.print(e.getMessage());
+			}
+			index++;
 			count = dao.QueryPlayersCount(criteria);
 		}
 		return;

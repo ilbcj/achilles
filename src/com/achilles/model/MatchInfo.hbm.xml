@@ -15,5 +15,7 @@
 		<property name="dayId" column="day_id" type="java.lang.Integer"/>
 		<property name="challengerId" column="challenger_id" type="java.lang.Integer"/>
 		<property name="adversaryId" column="adversary_id" type="java.lang.Integer"/>
+		<property name="score" type="java.lang.String" length="8"/>
+		<property name="result" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>

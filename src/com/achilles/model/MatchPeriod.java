@@ -4,7 +4,8 @@ public class MatchPeriod {
 	public final static int STATUS_UNKNOW = 0;
 	public final static int STATUS_ACTIVE = 1;
 	public final static int STATUS_LAST_ACTIVE = 2;
-	public final static int STATUS_LAST_HISTORY = 3;
+	public final static int STATUS_HISTORY = 3;
+	public final static int STATUS_INIT = 9;
 	
 	private int id;
 	private String Year;

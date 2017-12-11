@@ -18,7 +18,7 @@ public class RankingService {
 		return result;
 	}
 	
-	public void CalculateActiveScore() {
-		
-	}
+//	public void CalculateActiveScore() {
+//		
+//	}
 }

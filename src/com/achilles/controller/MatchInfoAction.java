@@ -1,5 +1,6 @@
 package com.achilles.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.achilles.dto.MatchDayInfo;
@@ -125,9 +126,8 @@ public class MatchInfoAction extends ActionSupport {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			activeMatchInfo = service.QueryActiveMatchInfo();
-			
-			
 		} catch (Exception e) {
+			activeMatchInfo = new ArrayList<MatchDayInfo>();
 			message = e.getMessage();
 			setResult(false);
 			return SUCCESS;
