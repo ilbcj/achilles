@@ -25,9 +25,9 @@ public class MatchInfoAction extends ActionSupport {
 	private int start;
 	private int length;
 	
-	List<MatchRegistrationInfo> activeRegistrationInfo;
+	private List<MatchRegistrationInfo> activeRegistrationInfo;
 	
-	List<MatchDayInfo> activeMatchInfo;
+	private List<MatchDayInfo> activeMatchInfo;
 	
 	
 	public List<MatchDayInfo> getActiveMatchInfo() {

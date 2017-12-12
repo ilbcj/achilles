@@ -366,6 +366,8 @@ public class MatchInfoService {
 			dayInfo.setDayId(i);
 			dayInfo.setDayName(DateTimeUtil.GetDayDesc(i));
 			dayInfos.add(dayInfo);
+			List<MatchInfo> infosInDayInfo = new ArrayList<MatchInfo>();
+			dayInfo.setMatchInfo(infosInDayInfo);
 			dayInfosMap.put(i, dayInfo);
 		}
 		
@@ -389,9 +391,10 @@ public class MatchInfoService {
 			Player adversary = playerMap.get(info.getAdversaryId());
 			dayInfo = dayInfosMap.get(info.getDayId());
 			
-			String matchInfoDesc = dayInfo.getMatchInfo() == null ? "" : dayInfo.getMatchInfo();
-			matchInfoDesc += "<span class=\"matchInfoItem fa fa-crosshairs\">" + challenger.getName() + "(" + challenger.getLoginId() + ") vs " + adversary.getName() + "(" + adversary.getLoginId() + ")</span>"; 
-			dayInfo.setMatchInfo(matchInfoDesc);
+			info.setChallengerName(challenger.getName()+ "(" + challenger.getLoginId() + ")");
+			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + ")");
+			
+			dayInfo.getMatchInfo().add(info);
 		}
 		
 		return dayInfos;

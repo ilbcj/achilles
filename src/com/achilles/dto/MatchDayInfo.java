@@ -1,9 +1,13 @@
 package com.achilles.dto;
 
+import java.util.List;
+
+import com.achilles.model.MatchInfo;
+
 public class MatchDayInfo {
 	private int dayId;
 	private String dayName;
-	private String matchInfo;
+	private List<MatchInfo> matchInfo;
 	
 	public int getDayId() {
 		return dayId;
@@ -17,10 +21,10 @@ public class MatchDayInfo {
 	public void setDayName(String dayName) {
 		this.dayName = dayName;
 	}
-	public String getMatchInfo() {
+	public List<MatchInfo> getMatchInfo() {
 		return matchInfo;
 	}
-	public void setMatchInfo(String matchInfo) {
+	public void setMatchInfo(List<MatchInfo> matchInfo) {
 		this.matchInfo = matchInfo;
 	}
 }

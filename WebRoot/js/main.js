@@ -581,30 +581,7 @@ function _initACHILLES(o) {
 				}
 			});
 			
-			o.basePath && $('#match_day_info_table').DataTable( {
-				ajax:{
-					url: o.basePath + '/match/queryActiveMatchInfo.action',
-					type: 'POST',
-					dataSrc: 'activeMatchInfo'
-				},
-				processing: true,
-				serverSide: true,
-				dom: 'tr',
-				columns: [
-					{ data: 'dayName' },
-					{ data: 'matchInfo' }
-				],
-				columnDefs: [
-					{
-						width: "50px",
-		                targets: 0
-					}
-				],
-				rowId: 'dayId',
-				createdRow: function ( row, data, index ) {
-					//$('td', row).eq(0).addClass('text-center');
-				}
-			});
+			$.ACHILLES.match.queryActiveMatchInfo();
 			//listen page items' event
 			$('#batch_create_registration').on('click.ACHILLES.match.batchcreateregistration', $.ACHILLES.match.testBatchCreateRegistration);
 			$('#match_player_registration_info_table').on( 'draw.dt', function () {
@@ -652,15 +629,58 @@ function _initACHILLES(o) {
 			}, "json");
 			return;
 		},
-		updateMatchInfo: function() {
+		queryActiveMatchInfo: function () {
+			o.basePath && $.post(o.basePath + "/match/queryActiveMatchInfo.action", {}, function(retObj) {
+				if(retObj.result == true) {
+					$('#match_day_info_table_wapper').html('');
+					var matchInfos = retObj.activeMatchInfo;
+					var index=0, len=matchInfos.length;
+					for (; index<len; index++) {
+						var matchInfo = matchInfos[index];
+						var html = '<div class="box"><div class="box-header"><h3 class="box-title">' + matchInfo.dayName + '</h3></div><div class="box-body no-padding"><table id="active_match_info_day_' 
+								+ index + '" class="table table-striped"></table></div></div>';
+						$('#match_day_info_table_wapper').append(html);
+						
+						$('#active_match_info_day_' + index).DataTable( {
+							paging: false,
+					        data: matchInfo.matchInfo,
+					        rowId: 'id',
+					        columns: [
+					            { title: "挑战者", data: "challengerName", width: "200px" },
+					            { title: "擂主", data: "adversaryName", width: "200px" },
+					            { title: "结果", data: null, defaultContent: "" },
+					            { title: "比分", data: null, defaultContent: "" },
+					            { title: "操作", data: null, defaultContent: "" }
+					        ],
+					        columnDefs: [
+					        	{
+									render: function ( data, type, row ) {
+										var html = '<div class="btn-group">';
+										html += '<button class="edit_match_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>编辑</button>';
+										html += '</div>';
+										return html;
+									},
+									targets: -1
+								}
+							]
+					    } );
+					}
+					
+				} else {
+					var message = "查询对战信息失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+		},
+		updateMatchInfo: function () {
 			$("#progress_Modal").modal('show');
 			o.basePath && $.post(o.basePath + "/match/updateMatchInfo.action", {}, function(retObj) {
 				$("#progress_Modal").modal('hide');
 				if(retObj.result == true) {
 					var message = "根据最新报名结果匹配对战信息完成!";
 					$.ACHILLES.tipMessage(message);
-					
-					o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
+					$.ACHILLES.match.queryActiveMatchInfo();
+					//o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
 				} else {
 					var message = "匹配对战信息失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);

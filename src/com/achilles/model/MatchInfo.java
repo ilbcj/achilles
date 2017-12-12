@@ -53,4 +53,21 @@ public class MatchInfo {
 	public void setAdversaryId(int adversaryId) {
 		this.adversaryId = adversaryId;
 	}
+	
+	//non persistence attribute
+	private String challengerName;
+	private String adversaryName;
+
+	public String getChallengerName() {
+		return challengerName;
+	}
+	public void setChallengerName(String challengerName) {
+		this.challengerName = challengerName;
+	}
+	public String getAdversaryName() {
+		return adversaryName;
+	}
+	public void setAdversaryName(String adversaryName) {
+		this.adversaryName = adversaryName;
+	}
 }
