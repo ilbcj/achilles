@@ -365,7 +365,7 @@ public class MatchDAOImpl implements MatchDAO {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		List<MatchInfo> rs = null;
-		String sqlString = "SELECT info.* FROM match_info info join match_period period where info.match_period_id = period.id and period.status = :status ";
+		String sqlString = "SELECT info.* FROM match_info info join match_period period on info.match_period_id = period.id and period.status = :status ";
 		
 		try {
 			Query q = session.createSQLQuery(sqlString).addEntity(MatchInfo.class);;

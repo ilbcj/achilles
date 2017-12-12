@@ -584,10 +584,13 @@ function _initACHILLES(o) {
 			$.ACHILLES.match.queryActiveMatchInfo();
 			//listen page items' event
 			$('#batch_create_registration').on('click.ACHILLES.match.batchcreateregistration', $.ACHILLES.match.testBatchCreateRegistration);
+			$('#batch_create_match_result').on('click.ACHILLES.match.batchcreatematchresult', $.ACHILLES.match.testBatchCreateMatchResult);
 			$('#match_player_registration_info_table').on( 'draw.dt', function () {
 				$('.edit_match_registration').on('click.ACHILLES.match.edit', $.ACHILLES.match.editMatchRegistration);
 			});
 			$('#update_match_info').on('click.ACHILLES.match.updatematchinfo', $.ACHILLES.match.updateMatchInfo);
+			$('#archive_match_info').on('click.ACHILLES.match.archivematchinfo', $.ACHILLES.match.archiveMatchInfo);
+			$('#archive_match_info_confirm').on('click.ACHILLES.match.archivematchinfoconfirm', $.ACHILLES.match.archiveMatchInfoConfirm);
 		},
 		testBatchCreateRegistration: function () {
 			$("#progress_Modal").modal('show');
@@ -600,6 +603,20 @@ function _initACHILLES(o) {
 					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
 				} else {
 					var message = "录入模拟挑战申请失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+		},
+		testBatchCreateMatchResult: function () {
+			$("#progress_Modal").modal('show');
+			o.basePath && $.post(o.basePath + "/match/testCreateMatchResult.action", {}, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = "批量创建模拟比赛结果完成!";
+					$.ACHILLES.tipMessage(message);
+					$.ACHILLES.match.queryActiveMatchInfo();
+				} else {
+					var message = "创建模拟比赛结果失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");
@@ -648,11 +665,24 @@ function _initACHILLES(o) {
 					        columns: [
 					            { title: "挑战者", data: "challengerName", width: "200px" },
 					            { title: "擂主", data: "adversaryName", width: "200px" },
-					            { title: "结果", data: null, defaultContent: "" },
-					            { title: "比分", data: null, defaultContent: "" },
+					            { title: "结果", data: "result" },
+					            { title: "比分", data: "score" },
 					            { title: "操作", data: null, defaultContent: "" }
 					        ],
 					        columnDefs: [
+					        	{
+									render: function ( data, type, row ) {
+										var html = '';
+										if(data === 1) {
+											html = '<span class="winner fa fa-flag">' + row.challengerName + '</span><span class="looser fa fa-bomb">' + row.adversaryName + '</span>' ;
+										}
+										else if(data === 2) {
+											html = '<span class="looser fa fa-bomb">' + row.challengerName + '</span><span class="winner fa fa-flag">' + row.adversaryName + '</span>' ;
+										}
+										return html;
+									},
+									targets: 2
+								},
 					        	{
 									render: function ( data, type, row ) {
 										var html = '<div class="btn-group">';
@@ -686,8 +716,41 @@ function _initACHILLES(o) {
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");
+		},
+		archiveMatchInfo: function () {
+			$("#progress_Modal").modal('show');
+			o.basePath && $.post(o.basePath + "/match/checkMatchInfoResult.action", {}, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = '执行归档操作后，不可再改变本轮比赛的所有对战结果，是否继续归档？';
+					if(!retObj.allResultSaved) {
+						message = '<span class="fa fa-bomb">仍有比赛结果没有保存</span>' + message;
+					}
+					$('#archive_match_info_message').empty().append(message);
+					$("#archive_Match_Info_Modal").modal('show');
+					//o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
+				} else {
+					var message = "检查对战结果是否已经全部保存操作失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+		},
+		archiveMatchInfoConfirm: function () {
+			$("#progress_Modal").modal('show');
+			o.basePath && $.post(o.basePath + "/match/archiveMatchInfo.action", {}, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = "本轮比赛数据已归档完成!";
+					$.ACHILLES.tipMessage(message);
+					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
+					$.ACHILLES.match.queryActiveMatchInfo();
+					//o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
+				} else {
+					var message = "归档比赛数据操作失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
 		}
-
 	};// end of $.ACHILLES.attestation
   
 	/* TipMessage(message)

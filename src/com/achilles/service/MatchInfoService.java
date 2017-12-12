@@ -66,21 +66,23 @@ public class MatchInfoService {
 			}
 			
 			//3. pick up day from 1 to 6 and update MatchRegistrationDays
-			List<Integer> dateRange = new ArrayList<Integer>();
-			for(int o = 0; o<ConstValue.MaxDateRange; o++) {
-				dateRange.add(o);
-			}
-			List<Integer> days = new RandomUtil().RandomPickUp(dateRange);
-			while(days.size() == 0) {
-				days = new RandomUtil().RandomPickUp(dateRange);
-			}
-			matchDao.ClearDays(active.getId(), iter.getId());
-			for(int k = 0; k<days.size(); k++) {
-				MatchRegistrationDays day = new MatchRegistrationDays();
-				day.setMatchPeriodId(active.getId());
-				day.setPlayerId(iter.getId());
-				day.setFreeDay(days.get(k));
-				matchDao.SaveMatchRegistrationDay(day);
+			if( challenge.size()>0 ) {
+				List<Integer> dateRange = new ArrayList<Integer>();
+				for(int o = 0; o<ConstValue.MaxDateRange; o++) {
+					dateRange.add(o);
+				}
+				List<Integer> days = new RandomUtil().RandomPickUp(dateRange);
+				while(days.size() == 0) {
+					days = new RandomUtil().RandomPickUp(dateRange);
+				}
+				matchDao.ClearDays(active.getId(), iter.getId());
+				for(int k = 0; k<days.size(); k++) {
+					MatchRegistrationDays day = new MatchRegistrationDays();
+					day.setMatchPeriodId(active.getId());
+					day.setPlayerId(iter.getId());
+					day.setFreeDay(days.get(k));
+					matchDao.SaveMatchRegistrationDay(day);
+				}
 			}
 		}
 		
@@ -398,6 +400,45 @@ public class MatchInfoService {
 		}
 		
 		return dayInfos;
+	}
+
+	public void TestCreateMatchResult() throws Exception {
+		MatchDAO matchDao = new MatchDAOImpl();
+		List<MatchInfo> infos = matchDao.GetActiveMatchInfo();
+		int matchResult = 0;
+		MatchInfo info = null;
+		for( int i = 0; i < infos.size(); i++ ) {
+			info = infos.get(i);
+			matchResult = new RandomUtil().ProbabilityGenerator(ConstValue.PercentOfChallengerWin) ?  MatchInfo.RESULT_CHALLENGER_WIN : MatchInfo.RESULT_ADVERSARY_WIN;
+			info.setResult(matchResult);
+			String score = matchResult == MatchInfo.RESULT_CHALLENGER_WIN ? "2:1" : "0:2";
+			info.setScore(score);
+			matchDao.SaveMatchInfo(info);
+		}
+		
+		return;
+	}
+
+	public boolean CheckActiveMatchInfoResult() throws Exception {
+		// if all of result has benn saved ,then return true, otherwise return false
+		boolean result = true;
+		MatchDAO matchDao = new MatchDAOImpl();
+		List<MatchInfo> infos = matchDao.GetActiveMatchInfo();
+		for(int i = 0; i < infos.size(); i++) {
+			if(infos.get(i).getResult() == 0) {
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public void ArchiveActiveMatchInfo() {
+		// 1. caculate ranking of the round
+		
+		// 2. delete init match_period ranking, if exist
+		
+		// 3. change match_period status
 	}
 	
 }

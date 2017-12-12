@@ -15,4 +15,12 @@ public class RandomUtil {
 		}
 		return result;
 	}
+	
+	public boolean ProbabilityGenerator(int percent) {
+		boolean result = false;
+		Random r = new Random();
+		int flag = r.nextInt(100);
+		result = flag < percent ? true : false;
+		return result;
+	}
 }

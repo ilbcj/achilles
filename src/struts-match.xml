@@ -28,7 +28,16 @@
 		<action name="updateMatchInfo" class="com.achilles.controller.MatchInfoAction" method="UpdateMatchInfo" >
  			<result name="success" type="json" />
 		</action>
+		<action name="checkMatchInfoResult" class="com.achilles.controller.MatchInfoAction" method="CheckMatchInfoResult" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="archiveMatchInfo" class="com.achilles.controller.MatchInfoAction" method="ArchiveMatchInfo" >
+ 			<result name="success" type="json" />
+		</action>
 		<action name="testInitRegistration" class="com.achilles.controller.MatchInfoAction" method="TestInitRegistration" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="testCreateMatchResult" class="com.achilles.controller.MatchInfoAction" method="TestCreateMatchResult" >
  			<result name="success" type="json" />
 		</action>
 	</package>

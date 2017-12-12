@@ -29,7 +29,16 @@ public class MatchInfoAction extends ActionSupport {
 	
 	private List<MatchDayInfo> activeMatchInfo;
 	
+	private boolean allResultSaved;
 	
+	public boolean isAllResultSaved() {
+		return allResultSaved;
+	}
+
+	public void setAllResultSaved(boolean allResultSaved) {
+		this.allResultSaved = allResultSaved;
+	}
+
 	public List<MatchDayInfo> getActiveMatchInfo() {
 		return activeMatchInfo;
 	}
@@ -161,5 +170,43 @@ public class MatchInfoAction extends ActionSupport {
 		setResult(true);
 		return SUCCESS;
 	}
-
+	
+	public String TestCreateMatchResult() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			service.TestCreateMatchResult();
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String CheckMatchInfoResult() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			allResultSaved = service.CheckActiveMatchInfoResult();
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String ArchiveMatchInfo() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			service.ArchiveActiveMatchInfo();
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
 }
