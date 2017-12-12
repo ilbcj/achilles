@@ -17,7 +17,6 @@ import com.achilles.model.MatchPeriod;
 import com.achilles.model.MatchRegistrationAdversary;
 import com.achilles.model.MatchRegistrationDays;
 import com.achilles.model.Player;
-import com.achilles.model.Ranking;
 import com.achilles.util.ConstValue;
 import com.achilles.util.DateTimeUtil;
 import com.achilles.util.RandomUtil;
@@ -37,7 +36,7 @@ public class MatchInfoService {
 		MatchDAO matchDao = new MatchDAOImpl();
 		// get matchperiod
 		MatchPeriod active = matchDao.GetActivePeriod();
-		MatchPeriod last = matchDao.GetLastActivePeriod();
+		//MatchPeriod last = matchDao.GetLastActivePeriod();
 		
 		// get all players
 		Player criteria = new Player();
@@ -46,12 +45,14 @@ public class MatchInfoService {
 		
 		// get ranking info
 		RankingService rankingService = new RankingService();
-		Map<Integer, Integer> ranking_playerMap = rankingService.QueryActivePlayerRanking();
+		Map<Integer, Integer> playerRankingMap = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> rankingPlayerMap = new HashMap<Integer, Integer>();
+		rankingService.QueryActivePlayerRanking(playerRankingMap, rankingPlayerMap);
 		Player iter = null;
 		for(int i = 0; i< players.size(); i++) {
 			//1. get adversary
 			iter = players.get(i);
-			List<Integer> adversaries = queryAdversariesByPlayerId(last.getId(), iter.getId());
+			List<Integer> adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
 			
 			//2. pick up from 1 to 5 and update MatchRegistrationAdversary
 			List<Integer> challenge = new RandomUtil().RandomPickUp(adversaries);
@@ -89,27 +90,25 @@ public class MatchInfoService {
 	
 	
 	
-	private List<Integer> queryAdversariesByPlayerId(int matchPeriodId, int playerId) throws Exception {
+	private List<Integer> queryAdversariesByPlayerId(int playerId, Map<Integer, Integer> playerMap, Map<Integer, Integer> rankingMap) throws Exception {
 		//1. get ranking by id
-		RankingService service = new RankingService();
-		Ranking ranking = service.QueryRankingByPlayerid(matchPeriodId, playerId);
+		int ranking = playerMap.get(playerId);
 		
 		List<Integer> result = new ArrayList<Integer>();
 		//2. get adversaries by ranking
-		if(ranking.getRanking() > ConstValue.MaxChallengeTime) {
+		if(ranking > ConstValue.MaxChallengeTime) {
 			for(int i = 0; i < ConstValue.MaxChallengeTime; i++) {
-				Ranking adversaryRanking = service.QuyeryRankingByRanking(matchPeriodId, ranking.getRanking() - i -1);
-				result.add(adversaryRanking.getPlayerId());
+				int adversaryId = rankingMap.get(ranking-i-1);
+				result.add(adversaryId);
 			}
 		}
 		else {
 			// handle the top player of ranking
-			int challengeRanking = ranking.getRanking() - 1;
+			int challengeRanking = ranking - 1;
 			while( challengeRanking > 0) {
-				Ranking adversaryRanking = service.QuyeryRankingByRanking(matchPeriodId, challengeRanking--);
-				result.add(adversaryRanking.getPlayerId());
+				int adversaryId = rankingMap.get(challengeRanking--);
+				result.add(adversaryId);
 			}
-				
 		}
 		
 		return result;
@@ -176,7 +175,6 @@ public class MatchInfoService {
 		// get match period
 		MatchDAO matchDao = new MatchDAOImpl();
 		MatchPeriod active = matchDao.GetActivePeriod();
-		MatchPeriod last = matchDao.GetLastActivePeriod();
 		
 		// get all players
 		PlayerDAO playerDAO = new PlayerDAOImpl();
@@ -187,6 +185,9 @@ public class MatchInfoService {
 		// get registration info of every players
 		Player player = null;
 		RankingService rankingService = new RankingService();
+		Map<Integer, Integer> playerRankingMap = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> rankingPlayerMap = new HashMap<Integer, Integer>();
+		rankingService.QueryActivePlayerRanking(playerRankingMap, rankingPlayerMap);
 		for(int i = 0; i<players.size(); i++) {
 			player = players.get(i);
 			// get player's adversaries
@@ -211,8 +212,8 @@ public class MatchInfoService {
 			player.setDays(dayCounts);
 			
 			// get Player's ranking
-			Ranking ranking = rankingService.QueryRankingByPlayerid(last.getId(), player.getId());
-			player.setRanking(ranking.getRanking());
+			int ranking = playerRankingMap.get(player.getId());
+			player.setRanking(ranking);
 		}
 		
 		// create player map
