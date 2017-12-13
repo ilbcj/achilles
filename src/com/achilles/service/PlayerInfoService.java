@@ -46,6 +46,8 @@ public class PlayerInfoService {
 		ranking.setMatchPeriodId(ConstValue.InitMatchPeriodId);
 		ranking.setPlayerId(player.getId());
 		ranking.setRanking(player.getId());
+		int score = (int)(ConstValue.MaxInitTopOneScore - count * ConstValue.InitScoreDiminishingStep);
+		ranking.setScore(score);
 		RankingDAO rDao = new RankingDAOImpl();
 		rDao.SaveRanking(ranking);		
 		return;

@@ -46,6 +46,7 @@
 		resource="com/achilles/model/MatchRegistrationDays.hbm.xml" />
 	<mapping resource="com/achilles/model/Ranking.hbm.xml" />
 	<mapping resource="com/achilles/model/MatchInfo.hbm.xml" />
+	<mapping resource="com/achilles/model/Score.hbm.xml" />
 
 
 </session-factory>

@@ -14,7 +14,14 @@ public class MatchPeriod {
 	private String name;
 	private String memo;
 	private int status;
+	private int lastPeriodId;
 	
+	public int getLastPeriodId() {
+		return lastPeriodId;
+	}
+	public void setLastPeriodId(int lastPeriodId) {
+		this.lastPeriodId = lastPeriodId;
+	}
 	public int getStatus() {
 		return status;
 	}

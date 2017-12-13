@@ -5,15 +5,22 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.achilles.model">
 	<!-- 每个class元素对应一个持久化对象 -->
-	<class name="Ranking" table="ranking">
+	<class name="Score" table="score">
 		<!-- id元素定义持久化类的标识属性 -->
 		<id name="id" type="java.lang.Integer">
 			<generator class="identity"/>
 		</id>
 		<!-- property元素定义常规属性 -->
 		<property name="matchPeriodId" column="match_period_id" type="java.lang.Integer"/>
-		<property name="ranking" type="java.lang.Integer"/>
 		<property name="playerId" column="player_id" type="java.lang.Integer"/>
+		<property name="lastScore" column="last_score" type="java.lang.Integer"/>
+		<property name="challengerWin" column="challenger_win" type="java.lang.Integer"/>
+		<property name="challengerLose" column="challenger_lose" type="java.lang.Integer"/>
+		<property name="adversaryWin" column="adversary_win" type="java.lang.Integer"/>
+		<property name="adversaryLose" column="adversary_lose" type="java.lang.Integer"/>
+		<property name="attendance" type="java.lang.Integer"/>
+		<property name="reward" type="java.lang.Integer"/>
 		<property name="score" type="java.lang.Integer"/>
+		<property name="memo" type="java.lang.String" length="1024"/>
 	</class>
 </hibernate-mapping>

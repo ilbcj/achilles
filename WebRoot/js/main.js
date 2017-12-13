@@ -267,7 +267,7 @@ function _initACHILLES(o) {
     		});
     		$('#menu_config_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/config/config_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
-    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.devicereg.activate();});
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.config.activate();});
     		});
 		}
 	};// end of $.ACHILLES.menu

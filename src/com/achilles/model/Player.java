@@ -3,7 +3,7 @@ package com.achilles.model;
 import java.util.List;
 import java.util.Map;
 
-public class Player {
+public class Player implements Comparable<Player>{
 	public final static int STATUS_USING = 1;
 	public final static int STATUS_DEL = 0;
 	public final static String RACE_T = "T";
@@ -20,8 +20,16 @@ public class Player {
 	private String qq;
 	private String wechat;
 	private String timestamp;
+	private String scoreReward;
+	private int remainingChallengeTimes;
 	private int status;
 	
+	public String getScoreReward() {
+		return scoreReward;
+	}
+	public void setScoreReward(String scoreReward) {
+		this.scoreReward = scoreReward;
+	}
 	public String getQq() {
 		return qq;
 	}
@@ -88,25 +96,25 @@ public class Player {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	
-	//non persistence attribute
-	private int remainingChallengeTimes;
-	private List<Integer> adversaryIds;
-	private Map<Integer, Integer> days;
-	private int ranking;
-
-	public int getRanking() {
-		return ranking;
-	}
-	public void setRanking(int ranking) {
-		this.ranking = ranking;
-	}
 	public int getRemainingChallengeTimes() {
 		return remainingChallengeTimes;
 	}
 	public void setRemainingChallengeTimes(int remainingChallengeTimes) {
 		this.remainingChallengeTimes = remainingChallengeTimes;
+	}
+	
+	
+	//non persistence attribute
+	
+	private List<Integer> adversaryIds;
+	private Map<Integer, Integer> days;
+	private Integer ranking;
+
+	public Integer getRanking() {
+		return ranking;
+	}
+	public void setRanking(Integer ranking) {
+		this.ranking = ranking;
 	}
 	public Map<Integer, Integer> getDays() {
 		return days;
@@ -119,5 +127,9 @@ public class Player {
 	}
 	public void setAdversaryIds(List<Integer> adversaryIds) {
 		this.adversaryIds = adversaryIds;
+	}
+	@Override
+	public int compareTo(Player o) {
+		return this.getRanking().compareTo(o.getRanking());
 	}
 }

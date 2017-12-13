@@ -3,14 +3,32 @@ package com.achilles.model;
 public class MatchInfo {
 	public final static int RESULT_CHALLENGER_WIN = 1;
 	public final static int RESULT_ADVERSARY_WIN = 2;
+	public final static int RESULT_DRAW = 3;
+	public final static int RESULT_CHALLENGER_ABSENT = 4;
+	public final static int RESULT_ADVERSARY_ABSENT = 5;
+	
 	private int id;
 	private int matchPeriodId;
 	private int dayId;
 	private int challengerId;
+	private int challengerVranking;
 	private int adversaryId;
+	private int adversaryVranking;
 	private String score;
 	private int result;
 	
+	public int getChallengerVranking() {
+		return challengerVranking;
+	}
+	public void setChallengerVranking(int challengerVranking) {
+		this.challengerVranking = challengerVranking;
+	}
+	public int getAdversaryVranking() {
+		return adversaryVranking;
+	}
+	public void setAdversaryVranking(int adversaryVranking) {
+		this.adversaryVranking = adversaryVranking;
+	}
 	public String getScore() {
 		return score;
 	}

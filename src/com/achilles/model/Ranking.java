@@ -5,7 +5,14 @@ public class Ranking {
 	private int matchPeriodId;
 	private int ranking;
 	private int playerId;
+	private int score;
 
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
 	public int getId() {
 		return id;
 	}

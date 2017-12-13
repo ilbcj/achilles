@@ -17,5 +17,6 @@
 		<property name="Week" type="java.lang.String" length="64"/>
 		<property name="memo" type="java.lang.String" length="32"/>
 		<property name="status" type="java.lang.Integer"/>
+		<property name="lastPeriodId" column="last_period_id" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>

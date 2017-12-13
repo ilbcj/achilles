@@ -1,6 +1,7 @@
 package com.achilles.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,7 @@ public class MatchInfoService {
 		MatchDAO matchDao = new MatchDAOImpl();
 		// get matchperiod
 		MatchPeriod active = matchDao.GetActivePeriod();
-		//MatchPeriod last = matchDao.GetLastActivePeriod();
-		
+				
 		// get all players
 		Player criteria = new Player();
 		criteria.setStatus(Player.STATUS_USING);
@@ -55,25 +55,33 @@ public class MatchInfoService {
 			List<Integer> adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
 			
 			//2. pick up from 1 to 5 and update MatchRegistrationAdversary
-			List<Integer> challenge = new RandomUtil().RandomPickUp(adversaries);
+			List<Integer> chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
 			matchDao.ClearAdversaries(active.getId(), iter.getId());
-			for(int j = 0; j<challenge.size(); j++) {
+			for(int j = 0; j<chosenAdversaries.size(); j++) {
 				MatchRegistrationAdversary adversary = new MatchRegistrationAdversary();
 				adversary.setMatchPeriodId(active.getId());
 				adversary.setPlayerId(iter.getId());
-				adversary.setAdversaryId(challenge.get(j));
+				adversary.setAdversaryId(chosenAdversaries.get(j));
 				matchDao.SaveMatchRegistrationAdversary(adversary);
 			}
 			
 			//3. pick up day from 1 to 6 and update MatchRegistrationDays
-			if( challenge.size()>0 ) {
-				List<Integer> dateRange = new ArrayList<Integer>();
-				for(int o = 0; o<ConstValue.MaxDateRange; o++) {
-					dateRange.add(o);
-				}
-				List<Integer> days = new RandomUtil().RandomPickUp(dateRange);
+			if( chosenAdversaries.size()>0 || playerRankingMap.get(iter.getId()) == 1) {
+				List<Integer> days = new ArrayList<Integer>();
 				while(days.size() == 0) {
-					days = new RandomUtil().RandomPickUp(dateRange);
+					for(int o = 0; o<ConstValue.MaxDateRange; o++) {
+						int chosenPercent = 0;
+						if( o < 4 ) {
+							chosenPercent = ConstValue.RateOfChosenMondyToThursday;
+						}
+						else {
+							chosenPercent = ConstValue.RateOfChosenSaturdayToSunday;
+						}
+						RandomUtil r = new RandomUtil();
+						if( r.ProbabilityGenerator(chosenPercent) ) {
+							days.add(o);
+						}
+					}
 				}
 				matchDao.ClearDays(active.getId(), iter.getId());
 				for(int k = 0; k<days.size(); k++) {
@@ -201,7 +209,8 @@ public class MatchInfoService {
 				adversaryIds.add(advIter.getAdversaryId());
 			}
 			player.setAdversaryIds(adversaryIds);
-			player.setRemainingChallengeTimes(adversaryIds.size());
+			//for challenge strategy
+			//player.setRemainingChallengeTimes(adversaryIds.size());
 			
 			// get player's free day
 			List<MatchRegistrationDays> days = matchDao.GetRegistrationDayByPlayer(active.getId(), player.getId());
@@ -218,6 +227,11 @@ public class MatchInfoService {
 			player.setRanking(ranking);
 		}
 		
+		Collections.sort(players);
+		//for challenge strategy
+		if(players.size() > 0 && players.get(0).getRanking() == 1) {
+			players.get(0).setRemainingChallengeTimes(ConstValue.FirstPlayerAcceptChallengeNum);
+		}
 		// create player map
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		for(int x = 0; x<players.size(); x++) {
@@ -263,7 +277,10 @@ public class MatchInfoService {
 				Player compare = playerMap.get(adversaryMatch.getChallengerId());
 				if(compare.getRanking() > challenger.getRanking()) {
 					adversaryMatch.setChallengerId(challenger.getId());
+					adversaryMatch.setChallengerVranking(challenger.getRanking());
 					matchDao.SaveMatchInfo(adversaryMatch);
+					//for challenge strategy
+					challenger.setRemainingChallengeTimes(challenger.getRemainingChallengeTimes() + 1);
 					return;
 				}
 			}
@@ -342,15 +359,19 @@ public class MatchInfoService {
 			MatchInfo info = new MatchInfo();
 			info.setMatchPeriodId(matchPeriodId);
 			info.setChallengerId(challenger.getId());
+			info.setChallengerVranking(challenger.getRanking());
 			info.setAdversaryId(adversary.getId());
+			info.setAdversaryVranking(adversary.getRanking());
 			info.setDayId(choosenDay);
 			
 			matchDao.SaveMatchInfo(info);
 			adversary.setRemainingChallengeTimes(adversary.getRemainingChallengeTimes() - 1);
-			System.out.println(daysOfA.get(choosenDay));
+			//for challenge strategy
+			challenger.setRemainingChallengeTimes(challenger.getRemainingChallengeTimes() + 1);
+			//System.out.println(daysOfA.get(choosenDay));
 			daysOfA.put(choosenDay, daysOfA.get(choosenDay) + 1);
-			System.out.println(daysOfA.get(choosenDay));
-			System.out.println(challenger.getDays().get(choosenDay));
+			//System.out.println(daysOfA.get(choosenDay));
+			//System.out.println(challenger.getDays().get(choosenDay));
 			daysOfB.put(choosenDay, daysOfB.get(choosenDay) + 1);
 		}
 		
@@ -393,8 +414,8 @@ public class MatchInfoService {
 			Player adversary = playerMap.get(info.getAdversaryId());
 			dayInfo = dayInfosMap.get(info.getDayId());
 			
-			info.setChallengerName(challenger.getName()+ "(" + challenger.getLoginId() + ")");
-			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + ")");
+			info.setChallengerName(challenger.getName()+ "(" + challenger.getLoginId() + "-" + info.getChallengerVranking() + ")");
+			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + "-" + info.getAdversaryVranking() + ")");
 			
 			dayInfo.getMatchInfo().add(info);
 		}
@@ -409,7 +430,7 @@ public class MatchInfoService {
 		MatchInfo info = null;
 		for( int i = 0; i < infos.size(); i++ ) {
 			info = infos.get(i);
-			matchResult = new RandomUtil().ProbabilityGenerator(ConstValue.PercentOfChallengerWin) ?  MatchInfo.RESULT_CHALLENGER_WIN : MatchInfo.RESULT_ADVERSARY_WIN;
+			matchResult = new RandomUtil().ProbabilityGenerator(ConstValue.MaxPercentOfChallengerWin - ConstValue.PercentOfChallengerWinDiminishingStep * (info.getChallengerVranking() - info.getAdversaryVranking() - 1)) ?  MatchInfo.RESULT_CHALLENGER_WIN : MatchInfo.RESULT_ADVERSARY_WIN;
 			info.setResult(matchResult);
 			String score = matchResult == MatchInfo.RESULT_CHALLENGER_WIN ? "2:1" : "0:2";
 			info.setScore(score);
