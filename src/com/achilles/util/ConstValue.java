@@ -13,4 +13,5 @@ public class ConstValue {
 	public static final int RateOfChosenMondyToThursday = 30;
 	public static final int RateOfChosenSaturdayToSunday = 80;
 	public static final int FirstPlayerAcceptChallengeNum = 2;
+	public static final int MinAcceptChallengeNum = 1;
 }

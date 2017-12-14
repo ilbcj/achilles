@@ -24,7 +24,7 @@
 
       <!-- Your Page Content Here -->
       <div id="config_maintain_center_main_wapper" class="box box-primary">
-				<div class="box box-info">
+				
 					<div class="box-header with-border">
 						<h3 class="box-title">系统功能参数</h3>
 					</div>
@@ -33,28 +33,59 @@
 					<form class="form-horizontal">
 						<div class="box-body">
 							<div class="form-group">
-								<label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+								<label for="max_challenge_count" class="col-sm-2 control-label">最大挑战次数</label>
 								<div class="col-sm-10">
-									<input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+									<input type="email" class="form-control" id="max_challenge_count" placeholder="最大挑战次数">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+								<label for="max_players_count" class="col-sm-2 control-label">最大选手人数</label>
 								<div class="col-sm-10">
-									<input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+									<input type="email" class="form-control" id="max_players_count" placeholder="最大选手人数">
+								</div>
+							</div>
+<!-- 							<div class="form-group"> -->
+<!-- 								<label for="max_date_range" class="col-sm-2 control-label">每轮比赛日期数</label> -->
+<!-- 								<div class="col-sm-10"> -->
+<!-- 									<input type="email" class="form-control" id="max_date_range" placeholder="每轮比赛日期数"> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+							<div class="form-group">
+								<label for="init_match_period_id" class="col-sm-2 control-label">初始轮赛程编号</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="init_match_period_id" placeholder="初始轮赛程编号">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="max_init_top_one_score" class="col-sm-2 control-label">初始积分</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="max_init_top_one_score" placeholder="初始积分">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="init_score_diminishing_step" class="col-sm-2 control-label">初始积分递减值</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="init_score_diminishing_step" placeholder="初始积分递减值">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="first_player_accept_challenge_count" class="col-sm-2 control-label">第一名每轮接受默认挑战数</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="first_player_accept_challenge_count" placeholder="第一名每轮接受挑战数">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="min_accept_challenge_count" class="col-sm-2 control-label">选手每轮默认接受挑战数</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="min_accept_challenge_count" placeholder="选手每轮默认接受挑战数">
 								</div>
 							</div>
 						</div>
 						<!-- /.box-body -->
-						<div class="box-footer">
-							<button type="submit" class="btn btn-default">Cancel</button>
-							<button type="submit" class="btn btn-info pull-right">Sign in</button>
-						</div>
-						<!-- /.box-footer -->
 					</form>
-			  </div>
 			  
-			  <div class="box box-warning">
+			  
+			  
 					<div class="box-header with-border">
 						<h3 class="box-title">测试功能参数</h3>
 					</div>
@@ -63,26 +94,38 @@
 					<form class="form-horizontal">
 						<div class="box-body">
 							<div class="form-group">
-								<label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+								<label for="max_percent_of_challenger_win" class="col-sm-2 control-label">挑战者最大胜率</label>
 								<div class="col-sm-10">
-									<input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+									<input type="email" class="form-control" id="max_percent_of_challenger_win" placeholder="挑战者最大胜率">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+								<label for="percent_of_challenger_win_diminishing_step" class="col-sm-2 control-label">挑战者胜率递减值</label>
 								<div class="col-sm-10">
-									<input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+									<input type="email" class="form-control" id="percent_of_challenger_win_diminishing_step" placeholder="挑战者胜率递减值">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="rate_of_chosen_mondy_to_thursday" class="col-sm-2 control-label">工作日选取概率</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="rate_of_chosen_mondy_to_thursday" placeholder="工作日选取概率">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="rate_of_chosen_saturday_to_sunday" class="col-sm-2 control-label">周末选取概率</label>
+								<div class="col-sm-10">
+									<input type="email" class="form-control" id="rate_of_chosen_saturday_to_sunday" placeholder="周末选取概率">
 								</div>
 							</div>
 						</div>
 						<!-- /.box-body -->
 						<div class="box-footer">
-							<button type="submit" class="btn btn-default">Cancel</button>
-							<button type="submit" class="btn btn-info pull-right">Sign in</button>
+							<button id="config_reset" type="button" class="btn btn-default">还原</button>
+							<button id="config_save" type="button" class="btn btn-info pull-right">保存</button>
 						</div>
 						<!-- /.box-footer -->
 					</form>
-			  </div>
+			  
 			</div>
 			<!-- /#config_maintain_center_main_wapper -->
 		

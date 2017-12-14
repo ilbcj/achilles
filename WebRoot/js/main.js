@@ -752,6 +752,99 @@ function _initACHILLES(o) {
 			}, "json");
 		}
 	};// end of $.ACHILLES.attestation
+	
+	/* config
+	* ======
+	* config infomation maintain page
+	*
+	* @type Object
+	* @usage $.ACHILLES.config.activate()
+	* @usage $.ACHILLES.config.query()
+	* @usage $.ACHILLES.config.save()
+	* @usage $.ACHILLES.config.reset()
+	*/
+	$.ACHILLES.config = {
+		activate: function () {
+			$.ACHILLES.config.query();
+			
+			//listen page items' event
+			$('#config_reset').on('click.ACHILLES.config.reset', $.ACHILLES.config.reset);
+			$('#config_save').on('click.ACHILLES.config.save', $.ACHILLES.config.save);
+			
+		},
+		query: function () {
+			o.basePath && $.post(o.basePath + '/config/queryConfig.action', {}, function(retObj){
+		        if(retObj.items.length == 0){ 
+		        	
+		        } else { 
+					var message = '加载系统配置失败!';
+					$.ACHILLES.tipMessage(message, false);
+		            return false;
+		        } 
+			});
+		},
+		save: function () {
+			var loginId = $("#loginid").val();
+			var postData = "loginId=" + loginId;
+			
+			o.basePath && $.post(o.basePath + '/player/queryPlayers.action', postData, function(retObj){
+		        if(retObj.items.length == 0){ 
+		        	postData = 'player.loginId=' + loginId;
+		        	var pwd = $('#pwd').val();
+		        	postData += '&player.pwd=' + pwd;
+					var name = $('#name').val();
+					postData += '&player.name=' + name;
+					var race = $('#race').val();
+					postData += '&player.race=' + race;
+					var telephone = $('#telephone').val();
+					postData += '&player.tel=' + telephone;
+					var email = $('#email').val();
+					postData += '&player.email=' + email;
+					var qq = $('#qq').val();
+					postData += '&player.qq=' + qq;
+			    	var wechat = $('#wechat').val();
+					postData += '&player.wechat=' + wechat;
+					
+			    	$.post(o.basePath + '/player/savePlayer.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
+			    		if(retObj.result == true)
+						{
+							$.ACHILLES.player.queryPlayers();
+							var message = '保存选手信息成功!';
+							$.ACHILLES.tipMessage(message);
+						} else {
+							var message = '保存选手信息失败![' + retObj.message + ']';
+							$.ACHILLES.tipMessage(message, false);
+						}
+					}, 'json');
+		        } else { 
+					var message = '该账号已被占用!';
+					$.ACHILLES.tipMessage(message, false);
+		            return false;
+		        } 
+		        
+		    }, "json");
+		},
+		reset: function () {
+			
+			var rowId = $(this).data("id");
+			var postData = "";
+			postData += "id=" + rowId;
+			o.basePath && $.post(o.basePath + "/player/queryPlayerDetail.action", postData, function(retObj) {
+				if(retObj.result == true) {
+					//TODO: update detail page info
+					var info = retObj.detail;
+					var message = info.base.loginId + '|' + info.base.name + '|' + info.base.race;
+					$('#detail_message').empty().append(message);
+					
+					$("#detail_Modal").modal('show');
+				} else {
+					var message = '获取选手详细信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+			return;
+		}
+	};// end of $.ACHILLES.config
   
 	/* TipMessage(message)
 	* ==========

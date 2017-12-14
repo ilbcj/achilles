@@ -210,7 +210,9 @@ public class MatchInfoService {
 			}
 			player.setAdversaryIds(adversaryIds);
 			//for challenge strategy
-			//player.setRemainingChallengeTimes(adversaryIds.size());
+			if(adversaryIds.size() > 0) {
+				player.setRemainingChallengeTimes(ConstValue.MinAcceptChallengeNum);
+			}
 			
 			// get player's free day
 			List<MatchRegistrationDays> days = matchDao.GetRegistrationDayByPlayer(active.getId(), player.getId());
