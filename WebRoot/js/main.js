@@ -759,90 +759,66 @@ function _initACHILLES(o) {
 	*
 	* @type Object
 	* @usage $.ACHILLES.config.activate()
-	* @usage $.ACHILLES.config.query()
 	* @usage $.ACHILLES.config.save()
 	* @usage $.ACHILLES.config.reset()
 	*/
 	$.ACHILLES.config = {
 		activate: function () {
-			$.ACHILLES.config.query();
+			$.ACHILLES.config.reset();
 			
 			//listen page items' event
 			$('#config_reset').on('click.ACHILLES.config.reset', $.ACHILLES.config.reset);
 			$('#config_save').on('click.ACHILLES.config.save', $.ACHILLES.config.save);
 			
 		},
-		query: function () {
-			o.basePath && $.post(o.basePath + '/config/queryConfig.action', {}, function(retObj){
-		        if(retObj.items.length == 0){ 
+		reset: function () {
+			o.basePath && $.post(o.basePath + '/config/query.action', {}, function(retObj){
+		        if(retObj.result == true) {
+		        	var config = retObj.config;
+		        	$('#max_challenge_count').val(config.maxChallengeCount);
+		        	$('#max_players_count').val(config.maxPlayersCount);
+		        	//$('#max_date_range').val(config.maxDateRange);
+		        	$('#init_match_period_id').val(config.initMatchPeriodId);
+		        	$('#max_init_top_one_score').val(config.maxInitTopOneScore);
+		        	$('#init_score_diminishing_step').val(config.initScoreDiminishingStep);
+		        	$('#first_player_accept_challenge_count').val(config.firstPlayerAcceptChallengeCount);
+		        	$('#min_accept_challenge_count').val(config.minAcceptChallengeCount);
 		        	
+		        	$('#max_percent_of_challenger_win').val(config.maxPercentOfChallengerWin);
+		        	$('#percent_of_challenger_win_diminishing_step').val(config.percentOfChallengerWinDiminishingStep);
+		        	$('#rate_of_chosen_mondy_to_thursday').val(config.rateOfChosenMondyToThursday);
+		        	$('#rate_of_chosen_saturday_to_sunday').val(config.rateOfChosenSaturdayToSunday);
 		        } else { 
-					var message = '加载系统配置失败!';
+					var message = '加载系统配置失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 		            return false;
 		        } 
 			});
 		},
 		save: function () {
-			var loginId = $("#loginid").val();
-			var postData = "loginId=" + loginId;
+			var postData = 'config.maxChallengeCount=' + $('#max_challenge_count').val();
+			postData += '&config.maxPlayersCount=' + $('#max_players_count').val();
+			postData += '&config.maxDateRange=6';
+			postData += '&config.initMatchPeriodId=' + $('#init_match_period_id').val();
+		    postData += '&config.maxInitTopOneScore=' + $('#max_init_top_one_score').val();
+		    postData += '&config.initScoreDiminishingStep=' + $('#init_score_diminishing_step').val();
+			postData += '&config.firstPlayerAcceptChallengeCount=' + $('#first_player_accept_challenge_count').val();
+			postData += '&config.minAcceptChallengeCount=' + $('#min_accept_challenge_count').val();
+			postData += '&config.maxPercentOfChallengerWin=' + $('#max_percent_of_challenger_win').val();
+		    postData += '&config.percentOfChallengerWinDiminishingStep=' + $('#percent_of_challenger_win_diminishing_step').val();
+		    postData += '&config.rateOfChosenMondyToThursday=' + $('#rate_of_chosen_mondy_to_thursday').val();
+		    postData += '&config.rateOfChosenSaturdayToSunday=' + $('#rate_of_chosen_saturday_to_sunday').val();
 			
-			o.basePath && $.post(o.basePath + '/player/queryPlayers.action', postData, function(retObj){
-		        if(retObj.items.length == 0){ 
-		        	postData = 'player.loginId=' + loginId;
-		        	var pwd = $('#pwd').val();
-		        	postData += '&player.pwd=' + pwd;
-					var name = $('#name').val();
-					postData += '&player.name=' + name;
-					var race = $('#race').val();
-					postData += '&player.race=' + race;
-					var telephone = $('#telephone').val();
-					postData += '&player.tel=' + telephone;
-					var email = $('#email').val();
-					postData += '&player.email=' + email;
-					var qq = $('#qq').val();
-					postData += '&player.qq=' + qq;
-			    	var wechat = $('#wechat').val();
-					postData += '&player.wechat=' + wechat;
-					
-			    	$.post(o.basePath + '/player/savePlayer.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
-			    		if(retObj.result == true)
-						{
-							$.ACHILLES.player.queryPlayers();
-							var message = '保存选手信息成功!';
-							$.ACHILLES.tipMessage(message);
-						} else {
-							var message = '保存选手信息失败![' + retObj.message + ']';
-							$.ACHILLES.tipMessage(message, false);
-						}
-					}, 'json');
-		        } else { 
-					var message = '该账号已被占用!';
-					$.ACHILLES.tipMessage(message, false);
-		            return false;
-		        } 
-		        
-		    }, "json");
-		},
-		reset: function () {
-			
-			var rowId = $(this).data("id");
-			var postData = "";
-			postData += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/player/queryPlayerDetail.action", postData, function(retObj) {
-				if(retObj.result == true) {
-					//TODO: update detail page info
-					var info = retObj.detail;
-					var message = info.base.loginId + '|' + info.base.name + '|' + info.base.race;
-					$('#detail_message').empty().append(message);
-					
-					$("#detail_Modal").modal('show');
+			o.basePath && $.post(o.basePath + '/config/save.action', postData, function(retObj){
+	    		if(retObj.result == true)
+				{
+					var message = '保存配置信息成功!';
+					$.ACHILLES.tipMessage(message);
 				} else {
-					var message = '获取选手详细信息失败![' + retObj.message + ']';
+					var message = '保存配置信息失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, 'json');
-			return;
+			}, "json");
 		}
 	};// end of $.ACHILLES.config
   

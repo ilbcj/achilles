@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="systemConfig" extends="json-default" namespace="/config">
+		
+		<global-results>
+ 			<result name="sqlException">/jsp/exception.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.sql.SQLException" result="sqlException" />
+			<exception-mapping exception="java.lang.Exception" result="sqlException" />	
+		</global-exception-mappings>
+	
+	<!-- 
+		查询配置信息				method="query"
+		保存配置信息				method="save"
+	 -->
+		<action name="query" class="com.achilles.controller.ConfigInfoAction" method="QuerySystemConfig" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="save" class="com.achilles.controller.ConfigInfoAction" method="SaveSystemConfig" >
+ 			<result name="success" type="json" />
+		</action>
+	</package>	
+</struts>    

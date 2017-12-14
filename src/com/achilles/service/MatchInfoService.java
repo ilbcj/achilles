@@ -18,7 +18,7 @@ import com.achilles.model.MatchPeriod;
 import com.achilles.model.MatchRegistrationAdversary;
 import com.achilles.model.MatchRegistrationDays;
 import com.achilles.model.Player;
-import com.achilles.util.ConstValue;
+import com.achilles.util.ConfigUtil;
 import com.achilles.util.DateTimeUtil;
 import com.achilles.util.RandomUtil;
 
@@ -41,7 +41,7 @@ public class MatchInfoService {
 		// get all players
 		Player criteria = new Player();
 		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDao.GetPlayers(criteria, 0, ConstValue.MaxPlayersCount);
+		List<Player> players = playerDao.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
 		
 		// get ranking info
 		RankingService rankingService = new RankingService();
@@ -53,9 +53,15 @@ public class MatchInfoService {
 			//1. get adversary
 			iter = players.get(i);
 			List<Integer> adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
+			adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
+			
 			
 			//2. pick up from 1 to 5 and update MatchRegistrationAdversary
 			List<Integer> chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
+//			while(playerRankingMap.get(iter.getId())!= 1 && chosenAdversaries.size() == 0) {
+//				chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
+//			}
+			chosenAdversaries = adversaries;
 			matchDao.ClearAdversaries(active.getId(), iter.getId());
 			for(int j = 0; j<chosenAdversaries.size(); j++) {
 				MatchRegistrationAdversary adversary = new MatchRegistrationAdversary();
@@ -68,20 +74,24 @@ public class MatchInfoService {
 			//3. pick up day from 1 to 6 and update MatchRegistrationDays
 			if( chosenAdversaries.size()>0 || playerRankingMap.get(iter.getId()) == 1) {
 				List<Integer> days = new ArrayList<Integer>();
-				while(days.size() == 0) {
-					for(int o = 0; o<ConstValue.MaxDateRange; o++) {
+				while(days.size() <2 ) {
+					days.clear();
+					for(int o = 0; o < ConfigUtil.getInstance().getMaxDateRange(); o++) {
 						int chosenPercent = 0;
 						if( o < 4 ) {
-							chosenPercent = ConstValue.RateOfChosenMondyToThursday;
+							chosenPercent = ConfigUtil.getInstance().getRateOfChosenMondyToThursday();
 						}
 						else {
-							chosenPercent = ConstValue.RateOfChosenSaturdayToSunday;
+							chosenPercent = ConfigUtil.getInstance().getRateOfChosenSaturdayToSunday();
 						}
 						RandomUtil r = new RandomUtil();
 						if( r.ProbabilityGenerator(chosenPercent) ) {
 							days.add(o);
 						}
 					}
+				}
+				if(days.size() < 2){
+					System.out.println("days.size small than 2!!!!");
 				}
 				matchDao.ClearDays(active.getId(), iter.getId());
 				for(int k = 0; k<days.size(); k++) {
@@ -106,8 +116,8 @@ public class MatchInfoService {
 		
 		List<Integer> result = new ArrayList<Integer>();
 		//2. get adversaries by ranking
-		if(ranking > ConstValue.MaxChallengeTime) {
-			for(int i = 0; i < ConstValue.MaxChallengeTime; i++) {
+		if(ranking > ConfigUtil.getInstance().getMaxChallengeCount()) {
+			for(int i = 0; i < ConfigUtil.getInstance().getMaxChallengeCount(); i++) {
 				int adversaryId = rankingMap.get(ranking-i-1);
 				result.add(adversaryId);
 			}
@@ -129,7 +139,7 @@ public class MatchInfoService {
 		PlayerDAO playerDAO = new PlayerDAOImpl();
 		Player criteria = new Player();
 		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConstValue.MaxPlayersCount);
+		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
@@ -190,7 +200,7 @@ public class MatchInfoService {
 		PlayerDAO playerDAO = new PlayerDAOImpl();
 		Player criteria = new Player();
 		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConstValue.MaxPlayersCount);
+		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
 		
 		// get registration info of every players
 		Player player = null;
@@ -211,7 +221,7 @@ public class MatchInfoService {
 			player.setAdversaryIds(adversaryIds);
 			//for challenge strategy
 			if(adversaryIds.size() > 0) {
-				player.setRemainingChallengeTimes(ConstValue.MinAcceptChallengeNum);
+				player.setRemainingChallengeTimes(ConfigUtil.getInstance().getMinAcceptChallengeCount());
 			}
 			
 			// get player's free day
@@ -232,7 +242,7 @@ public class MatchInfoService {
 		Collections.sort(players);
 		//for challenge strategy
 		if(players.size() > 0 && players.get(0).getRanking() == 1) {
-			players.get(0).setRemainingChallengeTimes(ConstValue.FirstPlayerAcceptChallengeNum);
+			players.get(0).setRemainingChallengeTimes(ConfigUtil.getInstance().getFirstPlayerAcceptChallengeCount());
 		}
 		// create player map
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
@@ -386,7 +396,7 @@ public class MatchInfoService {
 		
 		List<MatchDayInfo> dayInfos = new ArrayList<MatchDayInfo>();
 		Map<Integer, MatchDayInfo> dayInfosMap = new HashMap<Integer, MatchDayInfo>();
-		for(int i = 0; i<ConstValue.MaxDateRange; i++) {
+		for(int i = 0; i < ConfigUtil.getInstance().getMaxDateRange(); i++) {
 			MatchDayInfo dayInfo = new MatchDayInfo();
 			dayInfo.setDayId(i);
 			dayInfo.setDayName(DateTimeUtil.GetDayDesc(i));
@@ -400,7 +410,7 @@ public class MatchInfoService {
 		PlayerDAO playerDAO = new PlayerDAOImpl();
 		Player criteria = new Player();
 		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConstValue.MaxPlayersCount);
+		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
@@ -432,7 +442,7 @@ public class MatchInfoService {
 		MatchInfo info = null;
 		for( int i = 0; i < infos.size(); i++ ) {
 			info = infos.get(i);
-			matchResult = new RandomUtil().ProbabilityGenerator(ConstValue.MaxPercentOfChallengerWin - ConstValue.PercentOfChallengerWinDiminishingStep * (info.getChallengerVranking() - info.getAdversaryVranking() - 1)) ?  MatchInfo.RESULT_CHALLENGER_WIN : MatchInfo.RESULT_ADVERSARY_WIN;
+			matchResult = new RandomUtil().ProbabilityGenerator(ConfigUtil.getInstance().getMaxPercentOfChallengerWin() - ConfigUtil.getInstance().getPercentOfChallengerWinDiminishingStep() * (info.getChallengerVranking() - info.getAdversaryVranking() - 1)) ?  MatchInfo.RESULT_CHALLENGER_WIN : MatchInfo.RESULT_ADVERSARY_WIN;
 			info.setResult(matchResult);
 			String score = matchResult == MatchInfo.RESULT_CHALLENGER_WIN ? "2:1" : "0:2";
 			info.setScore(score);
