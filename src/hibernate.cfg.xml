@@ -48,6 +48,7 @@
 	<mapping resource="com/achilles/model/MatchInfo.hbm.xml" />
 	<mapping resource="com/achilles/model/Score.hbm.xml" />
 	<mapping resource="com/achilles/model/Config.hbm.xml" />
+	<mapping resource="com/achilles/model/Season.hbm.xml" />
 
 
 </session-factory>

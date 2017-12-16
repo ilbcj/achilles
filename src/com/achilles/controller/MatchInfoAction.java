@@ -145,7 +145,6 @@ public class MatchInfoAction extends ActionSupport {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			activeRegistrationInfo = service.QueryActiveMatchRegistrationInfo();
-			
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

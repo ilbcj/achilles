@@ -218,6 +218,18 @@ function _initACHILLES(o) {
             menu += '</li>';
             
             menu += '<li class="treeview">';
+			menu += '<a href="javascript:void(0)"><i class="fa fa-gears"></i> <span>赛季管理</span>';
+            menu +=   '<span class="pull-right-container">';
+            menu +=     '<i class="fa fa-angle-left pull-right"></i>';
+            menu +=   '</span>';
+            menu += '</a>';
+            menu += '<ul class="treeview-menu">';
+            menu +=   '<li><a id="menu_season_maintain" href="javascript:void(0)"><i class="fa fa-circle-o"/>赛季信息</a></li>';
+            menu +=   '<li><a id="menu_scene_maintain" href="javascript:void(0)"><i class="fa fa-circle-o"/>场次信息</a></li>';
+            menu += '</ul>';
+            menu += '</li>';
+            
+            menu += '<li class="treeview">';
 			menu += '<a href="javascript:void(0)"><i class="fa fa-gears"></i> <span>对战管理</span>';
             menu +=   '<span class="pull-right-container">';
             menu +=     '<i class="fa fa-angle-left pull-right"></i>';
@@ -257,6 +269,14 @@ function _initACHILLES(o) {
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/player/player_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
     					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.player.activate();});
     		});
+    		$('#menu_season_maintain').on('click.ACHILLES.menu.data-api',function(e){
+    			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/period/season_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.season.activate();});
+    		});
+    		$('#menu_scene_maintain').on('click.ACHILLES.menu.data-api',function(e){
+    			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/period/scene_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.scene.activate();});
+    		});
     		$('#menu_battle_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/battle/battle_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
     					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.match.activate();});
@@ -272,6 +292,145 @@ function _initACHILLES(o) {
 		}
 	};// end of $.ACHILLES.menu
 	
+	/* season
+	* ======
+	* match season infomation maintain page
+	*
+	* @type Object
+	* @usage $.ACHILLES.season.activate()
+	* @usage $.ACHILLES.season.addSeasonWindow()
+	* @usage $.ACHILLES.season.addSeasonConfirm()
+	* @usage $.ACHILLES.season.batchDelSeason()
+	* @usage $.ACHILLES.season.delSeason()
+	* @usage $.ACHILLES.season.delSeasonsConfirm()
+	*/
+	$.ACHILLES.season = {
+		activate: function () {
+			o.basePath && $('#season_main_table').DataTable( {
+				ajax:{
+					url: o.basePath + '/period/querySeasons.action',
+					type: 'POST',
+					dataSrc: 'items'
+				},
+				processing: true,
+				serverSide: true,
+				columns: [
+					{ data: '' },
+					{ data: 'name' },
+					{ data: 'timestamp' },
+					{ data: 'memo' }
+				],
+				rowId: 'id',
+				columnDefs: [
+					{
+						render: function ( data, type, row ) {
+							return '<input type="checkbox" data-id="' + row.id + '" />';
+						},
+						targets: 0
+					},
+					{
+						render: function ( data, type, row ) {
+							var html = '<div class="btn-group">';
+							html += '<button class="season_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-edit"></i>详情</button>';
+							html += '<button class="season_del btn btn-xs btn-danger" data-id="' + row.id + '"><i class="fa fa-trash-o"></i>删除</button>';
+							html += '</div>';
+							return html;
+						},
+						targets: -1
+					}
+				],
+				createdRow: function ( row, data, index ) {
+					$('td', row).eq(0).addClass('text-center');
+				}
+			});
+			
+			//listen page items' event
+			$('#add_season').on('click.ACHILLES.season.add', $.ACHILLES.season.addSeasonWindow);
+			$('#season_detail_modal_confirm').on('click.ACHILLES.season.addconfirm', $.ACHILLES.season.saveSeasonConfirm);
+			$('#del_seasons').on('click.ACHILLES.season.delete.batch', $.ACHILLES.season.batchDelSeason);
+			$('#season_main_table').on( 'draw.dt', function () {
+				$('.season_info').on('click.ACHILLES.season.detail', $.ACHILLES.season.addSeasonWindow);
+				$('.season_del').on('click.ACHILLES.season.delete.single', $.ACHILLES.season.delSeason);
+			});
+			$('#season_confirm_modal_confirm').on('click.ACHILLES.season.delconfirm', $.ACHILLES.season.delSeasonsConfirm);
+		},
+		addSeasonWindow: function () {
+			var id = $(this).data("id");
+			if( typeof id === 'undefined' ) {
+				$('#name').val('');
+		    	$('#memo').val('');
+		    	$('#season_detail_modal_confirm').data('season_id', 0);
+			}
+			else {
+				var rowData = $('#season_main_table').DataTable().row( '#' + id ).data();
+				$('#name').val(rowData.name);
+		    	$('#memo').val(rowData.memo);
+				$('#season_detail_modal_confirm').data('season_id', id);
+			}
+			$('#season_detail_modal').modal('show');
+		},
+		saveSeasonConfirm: function () {
+			var id = $('#season_detail_modal_confirm').data('season_id');
+			var name = $('#name').val();
+		    var memo = $('#memo').val();
+		    
+			var postData = 'season.id=' + id;
+			postData += '&season.name=' + name;
+			postData += '&season.memo=' + memo;
+	
+			o.basePath && $.post(o.basePath + '/period/saveSeason.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
+	    		if(retObj.result == true)
+				{
+					o.basePath && $('#season_main_table').DataTable().ajax.reload();
+					var message = '保存赛季信息成功!';
+					$.ACHILLES.tipMessage(message);
+				} else {
+					var message = '保存赛季信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+		},
+		batchDelSeason: function () {
+			if( ($('#season_main_table :checkbox:checked[data-id]').length == 0) ) { 
+				var message = "请选择要删除的赛季!";
+				$.ACHILLES.tipMessage(message);
+				return;
+			} else {
+				var delIds = '';
+				$("#season_main_table :checkbox").each(function(index,checkboxItem){
+					if($(checkboxItem).prop('checked') && index != 0){
+						delIds += "delIds=" + $(checkboxItem).attr('data-id') + "&";
+					}
+				});
+				var message = '已经选取了' + $("#season_main_table :checkbox:checked[data-id]").length + '条记录。是否要删除这些赛季？';
+				$('#season_confirm_modal_message').empty().append(message);
+				$('#season_confirm_modal_confirm').data('delIds', delIds);
+				$("#season_confirm_modal").modal('show');
+			}
+		},
+		delSeason: function () {
+			var rowId = $(this).data('id');
+			var delIds = 'delIds=' + rowId;
+			var message = '是否要删除此赛季？';
+			$('#season_confirm_modal_message').empty().append(message);
+			$('#season_confirm_modal_confirm').data('delIds', delIds);
+			$("#season_confirm_modal").modal('show');
+		},
+		delSeasonsConfirm: function () {
+			var postData = '';
+			postData = $('#season_confirm_modal_confirm').data('delIds');
+			o.basePath && $.post(o.basePath + '/period/deleteSeasons.action', postData, function(retObj) {
+				if(retObj.result == true) {
+					var message = '赛季信息已删除';
+					$.ACHILLES.tipMessage(message);
+					$('#season_main_table').DataTable().ajax.reload();
+				} else {
+					var message = '删除赛季信息操作失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+		}
+	};// end of $.ACHILLES.season
 	
 	/* player
 	* ======
