@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
+import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.service.MatchInfoService;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -27,10 +28,38 @@ public class MatchInfoAction extends ActionSupport {
 	
 	private List<MatchRegistrationInfo> activeRegistrationInfo;
 	
+	private int playerId;
+	private MatchRegistrationInfoForEdit regInfoForEdit;
+	private MatchRegistrationInfo regInfoForSave;
+	
 	private List<MatchDayInfo> activeMatchInfo;
 	
 	private boolean allResultSaved;
 	
+	public MatchRegistrationInfo getRegInfoForSave() {
+		return regInfoForSave;
+	}
+
+	public void setRegInfoForSave(MatchRegistrationInfo regInfoForSave) {
+		this.regInfoForSave = regInfoForSave;
+	}
+
+	public int getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(int playerId) {
+		this.playerId = playerId;
+	}
+
+	public MatchRegistrationInfoForEdit getRegInfoForEdit() {
+		return regInfoForEdit;
+	}
+
+	public void setRegInfoForEdit(MatchRegistrationInfoForEdit regInfoForEdit) {
+		this.regInfoForEdit = regInfoForEdit;
+	}
+
 	public boolean isAllResultSaved() {
 		return allResultSaved;
 	}
@@ -126,9 +155,30 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String QueryMatchDetailForEdit() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			regInfoForEdit = service.QueryMatchRegistrationInfoForEditByPlayerId(playerId);
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
 	public String SaveMatchDetail() {
-		//TODO: implement
-		return null;
+		try {
+			MatchInfoService service = new MatchInfoService();
+			service.SavePlayerMatchRegistrationInfo(regInfoForSave);
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
 	}
 	
 	public String QueryActiveMatchInfo() {
@@ -175,19 +225,6 @@ public class MatchInfoAction extends ActionSupport {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			service.TestCreateMatchResult();
-		} catch (Exception e) {
-			message = e.getMessage();
-			setResult(false);
-			return SUCCESS;
-		}
-		setResult(true);
-		return SUCCESS;
-	}
-	
-	public String CheckMatchInfoResult() {
-		try {
-			MatchInfoService service = new MatchInfoService();
-			allResultSaved = service.CheckActiveMatchInfoResult();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

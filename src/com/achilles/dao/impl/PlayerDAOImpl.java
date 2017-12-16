@@ -25,6 +25,9 @@ public class PlayerDAOImpl implements PlayerDAO {
 		
 		if( criteria != null ) {
 			sqlString += " and status =:status ";
+			if(criteria.getId() != 0) {
+				sqlString += " and id = :id ";
+			}
 			if(criteria.getLoginId() != null && criteria.getLoginId().length() > 0) {
 				sqlString += " and login_id like :login_id ";
 			}
@@ -36,6 +39,9 @@ public class PlayerDAOImpl implements PlayerDAO {
 			Query q = session.createSQLQuery(sqlString).addEntity(Player.class);
 			if( criteria != null ) {
 				q.setInteger("status", criteria.getStatus());
+				if(criteria.getId() != 0) {
+					q.setInteger("id", criteria.getId());
+				}
 				if(criteria.getLoginId() != null && criteria.getLoginId().length() > 0) {
 					q.setString( "login_id", "%" + criteria.getLoginId() + "%" );
 				}

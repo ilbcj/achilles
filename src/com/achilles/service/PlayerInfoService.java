@@ -74,7 +74,15 @@ public class PlayerInfoService {
 		//TODO: query and fill other info
 		return detail;
 	}
-
+	
+	public List<Player> QueryAllActivePlayer() throws Exception {
+		PlayerDAO playerDAO = new PlayerDAOImpl();
+		Player criteria = new Player();
+		criteria.setStatus(Player.STATUS_USING);
+		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		return players;
+	}
+	
 	public void TestInitPlayers() throws Exception {
 		PlayerDAO dao = new PlayerDAOImpl();
 		Player criteria = new Player();

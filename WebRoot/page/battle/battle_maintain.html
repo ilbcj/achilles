@@ -50,12 +50,12 @@
 											<thead>
 												<tr>
 													<th>序号</th>
+													<th>操作</th>
 													<th>账号</th>
 													<th>姓名</th>
 													<th>种族</th>
 													<th>挑战对手</th>
 													<th>对战时间</th>
-													<th>操作</th>
 												</tr>
 											</thead>
 										</table>
@@ -117,114 +117,35 @@
 			<!-- /#match_maintain_center_main_wapper -->
 		
 			<!-- 模态框（Modal） -->
-			<div class="modal modal-info fade" id="add_Modal" tabindex="-1">
-			   <div class="modal-dialog">
-			      <div class="modal-content">
-			         <div class="modal-header">
-			            <button type="button" class="close" data-dismiss="modal">&times;</button>
-			            <h4 class="modal-title">添加用户</h4>
-			         </div>
-			         <div class="modal-body">
-						<!-- form start -->
-						<form class="form-horizontal">
-			            	<div class="form-group">
-								<label for="loginid" class="col-sm-2 control-label">账号</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="loginid" placeholder="账号">
-								</div>
-							</div>
-			                <div class="form-group">
-								<label for="pwd" class="col-sm-2 control-label">口令</label>
-								<div class="col-sm-10">
-									<input type="password" class="form-control" id="pwd" placeholder="口令">
-								</div>
-							</div>
-			                <div class="form-group">
-								<label for="name" class="col-sm-2 control-label">姓名</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="name" placeholder="姓名">
-								</div>
-							</div>
-			                
-			                <div class="form-group">
-								<label for="race" class="col-sm-2 control-label">种族</label>
-								<div class="col-sm-10">
-									<select class="form-control" id="race">
-										<option value="">请选择种族</option>
-					                    <option value="T">人类</option>
-					                    <option value="P">星灵</option>
-					                    <option value="Z">异虫</option>
-					                </select>
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label for="telephone" class="col-sm-2 control-label">电话</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="telephone" placeholder="电话">
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label for="email" class="col-sm-2 control-label">邮箱</label>
-								<div class="col-sm-10">
-									<input type="email" class="form-control" id="email" placeholder="邮箱">
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label for="qq" class="col-sm-2 control-label">QQ</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="qq" placeholder="QQ">
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label for="wechat" class="col-sm-2 control-label">微信</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="wechat" placeholder="微信">
-								</div>
-							</div>
-			            </form>
-			         </div>
-			         <!-- /.modal-body -->
-			         <div class="modal-footer">
-			            <button id="add_player_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">确定</button>
-			            <button class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
-			         </div>
-			      </div><!-- /.modal-content -->
-				</div><!-- /.modal -->
-			</div>
-			
-			<div class="modal modal-default fade" id="match_registration_detail_modal" tabindex="-1">
+			<div class="modal modal-default fade" id="match_registration_detail_modal" data-backdrop='static' tabindex="-1">
 			   <div class="modal-dialog modal-lg">
 			      <div class="modal-content">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">报名信息</h4>
+								<h4 class="modal-title"><b id="match_registration_detail_player_name" class="margin"></b><span class="margin">报名信息</span></h4>
 							</div>
-							<div class="modal-body">
-								<div class="form-group">
+							<div id="match_registration_detail_modal_body" class="modal-body">
+<!--								<div class="form-group">
                   <label>选择挑战对手</label>
                   <ul class="list-group list-group-unbordered">
 		                <li class="list-group-item">
-		                  <input id="adversary-1" type="checkbox">
+		                  <input id="adversary1" type="checkbox" value="11">
 											<label>第一名 - 马在允 - Savior</label>
 		                </li>
 		                <li class="list-group-item">
-		                  <input id="adversary-2" type="checkbox">
+		                  <input id="adversary2" type="checkbox" value="21">
 											<label>第二名 - 李明哲 - ggplay</label>
 		                </li>
 		                <li class="list-group-item">
-		                  <input id="adversary-3" type="checkbox">
+		                  <input id="adversary3" type="checkbox" value="13">
 											<label>第三名 - 李激动11 - jeadon</label>
 		                </li>
 		                <li class="list-group-item">
-		                  <input id="adversary-4" type="checkbox">
+		                  <input id="adversary4" type="checkbox" value="34">
 											<label>第三名 - 李激动22 - jeadon</label>
 		                </li>
 		                <li class="list-group-item">
-		                  <input id="adversary-5" type="checkbox">
+		                  <input id="adversary5" type="checkbox" value="25">
 											<label>第三名 - 李激动33 - jeadon</label>
 		                </li>
 		              </ul>
@@ -234,27 +155,27 @@
                   <ul class="list-group list-group-unbordered">
 		                <li class="list-group-item">
 		                	<span class="margin">
-		                  <input id="monday" type="checkbox">
+		                  <input id="monday" type="checkbox" value="0">
 		                  <label for="monday">星期一</label>
 		                  </span>
 		                  <span class="margin">
-											<input id="tuesday" type="checkbox">
+											<input id="tuesday" type="checkbox" value="1">
 		                  <label for="tuesday">星期二</label>
 											</span>
 		                  <span class="margin">
-											<input id="wednesday" type="checkbox">
+											<input id="wednesday" type="checkbox" value="2">
 											<label for="wednesday">星期三</label>
 											</span>
 		                  <span class="margin">
-											<input id="thusday" type="checkbox">
+											<input id="thusday" type="checkbox" value="3">
 											<label for="thusday">星期四</label>
 											</span>
 		                  <span class="margin">
-		                  <input id="friday" type="checkbox">
+		                  <input id="friday" type="checkbox" value="4">
 											<label for="friday">星期五</label>
 											</span>
 		                  <span class="margin">
-		                  <input id="saturday" type="checkbox">
+		                  <input id="saturday" type="checkbox" value="5">
 											<label for="saturday">星期六</label>
 											</span>
 		                  <span class="margin">
@@ -265,53 +186,72 @@
 									</ul>
                 </div>
                 <div class="form-group">
-                	<label for="exampleInputEmail1">对选手奖惩的分数</label>
+                	<label for="exampleInputEmail1">本轮独立奖惩分数</label>
 									<ul class="list-group list-group-unbordered">
 		                <li class="list-group-item">
-											<input type="text" class="knob" value="-80" data-min="-150" data-max="150" data-width="90" data-height="90" data-fgColor="#00a65a">
+		                	<p id="reward_display">当前分数: <span id="reward_display_val">0</span></p>
+											<input id="reward_sponsor" type="text" />
 										</li>
 									</ul>
-								</div>
+								</div>-->
 							</div>
+							<!--  /.modal-body -->
 							<div class="modal-footer">
-								<button type="button" id="match_registration_detail_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">保存</button>
-								<button type="button" class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
+								<div class="row">
+									<div class="col-xs-4 col-xs-offset-1">
+										<button type="button" id="match_registration_detail_confirm" class="btn btn-block btn-primary" data-dismiss="modal">保存</button>
+									</div>
+									<div class="col-xs-4 col-xs-offset-1">
+										<button type="buton" class="btn btn-block btn-default" data-dismiss="modal">取消</button>
+									</div>
+								</div>
 							</div>
 			      </div><!-- /.modal-content -->
 				</div><!-- /.modal -->
 			</div>
 			
-			<div class="modal modal-danger fade" id="archive_Match_Info_Modal" tabindex="-1">
-				<div class="modal-dialog">
-		      <div class="modal-content">
-		         <div class="modal-header">
-		            <button type="button" class="close" data-dismiss="modal">&times;</button>
-		            <h4 class="modal-title">提示</h4>
-		         </div>
-		         <div class="modal-body" id="archive_match_info_message"></div>
-		         <div class="modal-footer">
-		            <button type="button" id="archive_match_info_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">确定</button>
-		            <button type="button" class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
-		         </div>
-		      	</div><!-- /.modal-content -->
-					</div><!-- /.modal -->
-				</div>
-		
-			<div class="modal modal-danger fade" id="del_Modal" tabindex="-1">
+			<div class="modal modal-default fade" id="match_info_detail_modal" data-backdrop='static' tabindex="-1">
+			   <div class="modal-dialog modal-lg">
+			      <div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title"><b id="match_info_detail_player_name" class="margin"></b><span class="margin">对战信息</span></h4>
+							</div>
+							<div id="match_registration_detail_modal_body" class="modal-body">
+								
+							</div>
+							<!--  /.modal-body -->
+							<div class="modal-footer">
+								<div class="row">
+									<div class="col-xs-4 col-xs-offset-1">
+										<button type="button" id="match_info_detail_confirm" class="btn btn-block btn-primary" data-dismiss="modal">保存</button>
+									</div>
+									<div class="col-xs-4 col-xs-offset-1">
+										<button type="buton" class="btn btn-block btn-default" data-dismiss="modal">取消</button>
+									</div>
+								</div>
+							</div>
+			      </div><!-- /.modal-content -->
+				</div><!-- /.modal -->
+			</div>
+			
+								
+			<div class="modal modal-danger fade" id="match_confirm_modal" tabindex="-1">
 			   <div class="modal-dialog">
 			      <div class="modal-content">
 			         <div class="modal-header">
 			            <button type="button" class="close" data-dismiss="modal">&times;</button>
 			            <h4 class="modal-title">提示</h4>
 			         </div>
-			         <div class="modal-body" id="del_message"></div>
+			         <div class="modal-body" id="match_confirm_modal_message"></div>
 			         <div class="modal-footer">
-			            <button type="button" id="del_players_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">确定</button>
+			            <button type="button" id="match_confirm_modal_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">确定</button>
 			            <button type="button" class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
 			         </div>
 			      </div><!-- /.modal-content -->
 				</div><!-- /.modal -->
 			</div>
+			
     </section>
     <!-- /.content -->
   </div>

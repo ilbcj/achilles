@@ -538,7 +538,8 @@ function _initACHILLES(o) {
 				dom: 'tr',
 				columns: [
 					{ data: 'playerId' },
-					{ data: 'loginid' },
+					{ data: null},
+					{ data: 'loginId' },
 					{ data: 'name' },
 					{ data: 'race' },
 					{ data: 'adversaries' },
@@ -549,7 +550,7 @@ function _initACHILLES(o) {
 					{
 						visible: false,
 		                targets: 0
-		           },
+					},
 					{
 						render: function ( data, type, row ) {
 							var text = '';
@@ -564,16 +565,16 @@ function _initACHILLES(o) {
 							}
 							return text;
 						},
-						targets: 3
+						targets: 4
 					},
 					{
 						render: function ( data, type, row ) {
 							var html = '<div class="btn-group">';
-							html += '<button class="edit_match_registration btn btn-xs btn-success" data-id="' + row.playerId + '"><i class="fa fa-check"></i>编辑</button>';
+							html += '<button class="edit_match_registration btn btn-xs btn-success" data-id="' + row.playerId + '"><i class="fa fa-edit"></i>编辑</button>';
 							html += '</div>';
 							return html;
 						},
-						targets: 6
+						targets: 1
 					}
 				],
 				createdRow: function ( row, data, index ) {
@@ -586,12 +587,13 @@ function _initACHILLES(o) {
 			$('#batch_create_registration').on('click.ACHILLES.match.batchcreateregistration', $.ACHILLES.match.testBatchCreateRegistration);
 			$('#batch_create_match_result').on('click.ACHILLES.match.batchcreatematchresult', $.ACHILLES.match.testBatchCreateMatchResult);
 			$('#match_player_registration_info_table').on( 'draw.dt', function () {
-				$('.edit_match_registration').on('click.ACHILLES.match.edit', $.ACHILLES.match.editMatchRegistration);
+				$('.edit_match_registration').on('click.ACHILLES.match.registration.edit', $.ACHILLES.match.editMatchRegistration);
 			});
 			$('#match_registration_detail_confirm').on('click.ACHILLES.match.editmatchregistrationconfirm', $.ACHILLES.match.editMatchRegistrationConfirm);
+			$('#match_info_detail_confirm').on('click.ACHILLES.match.editmatchinfoconfirm', $.ACHILLES.match.editMatchInfoConfirm);
+			$('#match_confirm_modal_confirm').on('click.ACHILLES.match.confirmmodalconfirm', $.ACHILLES.match.matchConfirmModalConfirm);
 			$('#update_match_info').on('click.ACHILLES.match.updatematchinfo', $.ACHILLES.match.updateMatchInfo);
 			$('#archive_match_info').on('click.ACHILLES.match.archivematchinfo', $.ACHILLES.match.archiveMatchInfo);
-			$('#archive_match_info_confirm').on('click.ACHILLES.match.archivematchinfoconfirm', $.ACHILLES.match.archiveMatchInfoConfirm);
 		},
 		testBatchCreateRegistration: function () {
 			$("#progress_Modal").modal('show');
@@ -627,60 +629,166 @@ function _initACHILLES(o) {
 			var rowData = $('#match_player_registration_info_table').DataTable().row( '#' + playerId ).data();
 			//console.log(rowData);
 
-//	    	$("#del_enterpriseUser_message").empty().append(message);
-			
-			$('#adversary-1,#adversary-2').each(function(){
-			    var self = $(this),
-			      label = self.next(),
-			      label_text = label.text();
-			
-			    label.remove();
-			    self.iCheck({
-			      checkboxClass: 'icheckbox_line-blue',
-			      radioClass: 'iradio_line-blue',
-			      insert: '<div class="icheck_line-icon"></div>' + label_text
-			    });
-			  });
-			  
-			  $('#adversary-3,#adversary-4,#adversary-5').each(function(){
-			    var self = $(this),
-			      label = self.next(),
-			      label_text = label.text();
-			
-			    label.remove();
-			    self.iCheck({
-			      checkboxClass: 'icheckbox_line-red',
-			      radioClass: 'iradio_line-red',
-			      insert: '<div class="icheck_line-icon"></div>' + label_text
-			    });
-			  });
-			
-			$('#monday,#tuesday,#wednesday,#thusday,#friday,#saturday,#sunday').iCheck({
-			    checkboxClass: 'icheckbox_square-blue',
-				radioClass: 'iradio_square-blue',
-			    increaseArea: '20%' // optional
-			  });
-			  
-			  
-			$("#match_registration_detail_modal").modal('show');
-			
-			/*var poststr = "";
-			poststr += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/match/auditY.action", poststr, function(retObj) {
+			var postData = "playerId=" + playerId; 
+			o.basePath && $.post(o.basePath + "/match/queryMatchDetailForEdit.action", postData, function(retObj) {
 				if(retObj.result == true) {
-					var message = "审核操作完成，设备注册申请审核通过!";
-					$.ACHILLES.tipMessage(message);
+					$('#match_registration_detail_player_name').html(rowData.name + ' -- ' + rowData.loginId);
+					var html = '';
+					// 对战选手
+					html += '<div class="form-group">';
+					html += '<label>选择挑战对手</label>'
+					html += '<ul class="list-group list-group-unbordered">';
+					retObj.regInfoForEdit.adversaries.forEach(function(player, index){
+						html += '<li class="list-group-item">';
+						var flag = $.inArray(player.id, rowData.adversaryIds);
+						if(flag >= 0) {
+							html += '<input id="adversary' + index + '" type="checkbox" checked ';
+						}else {
+							html += '<input id="adversary' + index + '" type="checkbox" ';	
+						}
+						html += 'value="' + player.id + '">'
+						html += '<label>第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</label>';
+						html += '</li>';
+					});
+					html += '</ul></div>';
 					
-					o.basePath && $('#devicereg_main_table').DataTable().ajax.reload();
+					// 对战日期
+					html += '<div class="form-group"><label for="exampleInputEmail1">选择对战日期</label>';
+					html += '<ul class="list-group list-group-unbordered"><li class="list-group-item">';
+					html += '<span class="margin"><input id="week0" type="checkbox" value="0"><label for="monday">星期一</label></span>';
+					html += '<span class="margin"><input id="week1" type="checkbox" value="1"><label for="tuesday">星期二</label></span>';
+					html += '<span class="margin"><input id="week2" type="checkbox" value="2"><label for="wednesday">星期三</label></span>';
+					html += '<span class="margin"><input id="week3" type="checkbox" value="3"><label for="thusday">星期四</label></span>';
+					html += '<span class="margin"><input id="week4" type="checkbox" value="4"><label for="friday">星期五</label></span>';
+					html += '<span class="margin"><input id="week5" type="checkbox" value="5"><label for="saturday">星期六</label></span>';
+					html += '<span class="margin"><input id="week6" type="checkbox" value="6"><label for="sunday">星期日</label></span>';
+					html += '</li></ul></div>';
+					
+					// 本轮奖惩
+					html += '<div class="form-group"><label for="exampleInputEmail1">本轮独立奖惩分数</label><ul class="list-group list-group-unbordered"><li class="list-group-item">';
+					html += '<p id="reward_display">当前分数: <span id="reward_display_val">' + rowData.scoreReward + '</span></p><input id="reward_sponsor" type="text" /></li></ul></div>';
+					
+					$("#match_registration_detail_modal_body").empty().append(html);
+					$('#adversary0,#adversary1').each(function(){
+					    var self = $(this),
+					    label = self.next(),
+					    label_text = label.text();
+					
+					    label.remove();
+					    self.iCheck({
+					      checkboxClass: 'icheckbox_line-blue',
+					      radioClass: 'iradio_line-blue',
+					      insert: '<div class="icheck_line-icon"></div>' + label_text
+					    });
+					});
+					  
+					$('#adversary2,#adversary3,#adversary4').each(function(){
+						var self = $(this),
+						label = self.next(),
+						label_text = label.text();
+						
+						label.remove();
+						self.iCheck({
+							checkboxClass: 'icheckbox_line-red',
+							radioClass: 'iradio_line-red',
+							insert: '<div class="icheck_line-icon"></div>' + label_text
+						});
+					});
+					
+					$('#week0, #week1, #week2, #week3, #week4, #week5, #week6').iCheck({
+					    checkboxClass: 'icheckbox_square-blue margin',
+						radioClass: 'iradio_square-blue margin',
+					    increaseArea: '20%' // optional
+					});
+					// for rest day
+					$('#week0').iCheck('disable');
+					$('#week0').parent().next().addClass("text-gray");
+					rowData.dayIds.forEach(function(dayId){
+						$('#week'+ dayId).iCheck('check');
+					});
+					  
+					$("#reward_sponsor").slider({ 
+						id: "reward_sponsor_slider", 
+						ticks: [-100, -50, 0, 50, 100],
+						min: -100, 
+						max: 100, 
+						value: -101
+					});
+					$("#reward_sponsor").on("change", function(slideEvt) {
+						var colorUnselect = '#f9f9f9';
+						var colorGreen = '#00a65a';
+						var colorRed = '#f56954';
+						var colorDefault = '#89cdef';
+						$('#reward_sponsor_slider .slider-selection, #reward_sponsor_slider .slider-track-high, #reward_sponsor_slider .slider-tick').css('background', colorUnselect);
+						
+						if(slideEvt.value.newValue > 0) {
+							$('#reward_sponsor_slider .slider-selection, #reward_sponsor_slider .slider-tick.in-selection').css('background', colorGreen);
+						}
+						else if(slideEvt.value.newValue < 0) {
+							$('#reward_sponsor_slider .slider-track-high, #reward_sponsor_slider .slider-tick').css('background', colorRed);
+							$('#reward_sponsor_slider .slider-tick.in-selection').css('background', colorUnselect);
+						}
+						else if(slideEvt.value.newValue == 0) {
+							//pass
+						}
+						$("#reward_display_val").text(slideEvt.value.newValue);
+					});
+					// for the first value display in correct way
+					$("#reward_sponsor").slider('setValue', rowData.scoreReward, true, true);
+					
+					$('#match_registration_detail_confirm').data('reg_info', rowData);
+					$("#match_registration_detail_modal").modal('show');
 				} else {
-					var message = "审核设备注册信息操作失败! " + retObj.message;
+					var message = "获取选手详细报名信息失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");
-			return;*/
 		},
 		editMatchRegistrationConfirm: function (regInfo) {
+			var regInfo = $('#match_registration_detail_confirm').data('reg_info');
 			
+			regInfo.adversaryIds = [];
+			$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').each(function(index, adversary){
+				var self = $(this);
+				if(self.prop('checked')) {
+					var adversaryId = self.val();
+					regInfo.adversaryIds.push(adversaryId);
+				}
+			});
+				
+			regInfo.dayIds= [];
+			$('#week0, #week1, #week2, #week3, #week4, #week5, #week6').each(function(index, day){
+				var self = $(this);
+				if(self.prop('checked')) {
+					var dayId = self.val();
+					regInfo.dayIds.push(dayId);
+				}
+			});
+			
+			regInfo.scoreReward = $("#reward_sponsor").slider('getValue');
+			//console.log(regInfo);
+			
+			var postData = 'regInfoForSave.playerId=' + regInfo.playerId;
+			postData + '&regInfoForSave.scoreReward=' + regInfo.scoreReward;
+			regInfo.adversaryIds.forEach(function(adversaryId){
+				postData += '&regInfoForSave.adversaryIds=' + adversaryId;
+			});
+			regInfo.dayIds.forEach(function(dayId){
+				postData += '&regInfoForSave.dayIds=' + dayId;
+			});
+			postData += '&regInfoForSave.scoreReward=' + regInfo.scoreReward;
+			o.basePath && $.post(o.basePath + "/match/saveMatchDetail.action", postData, function(retObj) {
+				if(retObj.result == true) {
+					var message = "选手报名信息更新成功!";
+					$.ACHILLES.tipMessage(message);
+					
+					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
+				} else {
+					var message = "选手报名信息更新失败! " + retObj.message;
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+			return;
 		},
  		queryActiveMatchInfo: function () {
 			o.basePath && $.post(o.basePath + "/match/queryActiveMatchInfo.action", {}, function(retObj) {
@@ -699,11 +807,11 @@ function _initACHILLES(o) {
 					        data: matchInfo.matchInfo,
 					        rowId: 'id',
 					        columns: [
+					        	{ title: "操作", data: null, defaultContent: "", width: "100px" },
 					            { title: "挑战者", data: "challengerName", width: "200px" },
 					            { title: "擂主", data: "adversaryName", width: "200px" },
 					            { title: "结果", data: "result" },
-					            { title: "比分", data: "score" },
-					            { title: "操作", data: null, defaultContent: "" }
+					            { title: "比分", data: "score" }					            
 					        ],
 					        columnDefs: [
 					        	{
@@ -717,19 +825,23 @@ function _initACHILLES(o) {
 										}
 										return html;
 									},
-									targets: 2
+									targets: 3
 								},
 					        	{
 									render: function ( data, type, row ) {
 										var html = '<div class="btn-group">';
-										html += '<button class="edit_match_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-check"></i>编辑</button>';
+										html += '<button class="edit_match_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-edit"></i>编辑</button>';
 										html += '</div>';
 										return html;
 									},
-									targets: -1
+									targets: 0
 								}
 							]
-					    } );
+					    });
+					    
+					    $('#active_match_info_day_' + index).on( 'draw.dt', function () {
+							$('.edit_match_info').on('click.ACHILLES.match.info.edit', $.ACHILLES.match.editMatchInfo);
+						});
 					}
 					
 				} else {
@@ -738,7 +850,32 @@ function _initACHILLES(o) {
 				}
 			}, "json");
 		},
+		editMatchInfo: function () {
+			var matchInfoId = $(this).data("id");
+			$('#match_info_detail_player_name').html(matchInfoId);
+			$('#match_info_detail_modal').modal('show');
+		},
+		matchConfirmModalConfirm: function () {
+			// 1 -- updateMatchInfoConfirm()
+			// 2 -- archiveMatchInfoConfirm()
+			var type = $('#match_confirm_modal_confirm').data('type');
+			if(type === 1) {
+				$.ACHILLES.match.updateMatchInfoConfirm();
+			}
+			else if(type === 2) {
+				$.ACHILLES.match.archiveMatchInfoConfirm();
+			}
+			else {
+				$.ACHILLES.tipMessage("没有找到合适的处理流程，请联系系统维护人员!", false);
+			}
+		},		
 		updateMatchInfo: function () {
+			var message = '执行对战匹配操作后，会丢失现有对战相关结果，是否继续归档？';
+			$('#match_confirm_modal_message').empty().append(message);
+			$('#match_confirm_modal_confirm').data('type', 1);
+			$("#match_confirm_modal").modal('show');
+		},
+		updateMatchInfoConfirm: function () {
 			$("#progress_Modal").modal('show');
 			o.basePath && $.post(o.basePath + "/match/updateMatchInfo.action", {}, function(retObj) {
 				$("#progress_Modal").modal('hide');
@@ -754,22 +891,10 @@ function _initACHILLES(o) {
 			}, "json");
 		},
 		archiveMatchInfo: function () {
-			$("#progress_Modal").modal('show');
-			o.basePath && $.post(o.basePath + "/match/checkMatchInfoResult.action", {}, function(retObj) {
-				$("#progress_Modal").modal('hide');
-				if(retObj.result == true) {
-					var message = '执行归档操作后，不可再改变本轮比赛的所有对战结果，是否继续归档？';
-					if(!retObj.allResultSaved) {
-						message = '<span class="fa fa-bomb">仍有比赛结果没有保存</span>' + message;
-					}
-					$('#archive_match_info_message').empty().append(message);
-					$("#archive_Match_Info_Modal").modal('show');
-					//o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
-				} else {
-					var message = "检查对战结果是否已经全部保存操作失败![" + retObj.message + "]";
-					$.ACHILLES.tipMessage(message, false);
-				}
-			}, "json");
+			var message = '执行归档操作后，不可再改变本轮比赛的所有对战结果，是否继续归档？';
+			$('#match_confirm_modal_message').empty().append(message);
+			$('#match_confirm_modal_confirm').data('type', 2);
+			$("#match_confirm_modal").modal('show');
 		},
 		archiveMatchInfoConfirm: function () {
 			$("#progress_Modal").modal('show');

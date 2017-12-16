@@ -30,21 +30,24 @@ public class DateTimeUtil {
 		String name = "";
 		switch(day) {
 		case 0:
-			name = "星期二";
+			name = "星期一";
 			break;
 		case 1:
-			name = "星期三";
+			name = "星期二";
 			break;
 		case 2:
-			name = "星期四";
+			name = "星期三";
 			break;
 		case 3:
-			name = "星期五";
+			name = "星期四";
 			break;
 		case 4:
-			name = "星期六";
+			name = "星期五";
 			break;
 		case 5:
+			name = "星期六";
+			break;
+		case 6:
 			name = "星期日";
 			break;
 		default:

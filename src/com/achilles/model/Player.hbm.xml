@@ -20,7 +20,6 @@
 		<property name="qq" type="java.lang.String" length="32"/>
 		<property name="wechat" type="java.lang.String" length="32"/>
 		<property name="timestamp" type="java.lang.String" length="32"/>
-		<property name="scoreReward" column="score_reward" type="java.lang.Integer"/>
 		<property name="remainingChallengeTimes" column="remaining_challenge_times" type="java.lang.Integer"/>
 		<property name="status" type="java.lang.Integer"/>
 	</class>

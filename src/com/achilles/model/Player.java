@@ -20,16 +20,16 @@ public class Player implements Comparable<Player>{
 	private String qq;
 	private String wechat;
 	private String timestamp;
-	private String scoreReward;
+//	private int scoreReward;
 	private int remainingChallengeTimes;
 	private int status;
 	
-	public String getScoreReward() {
-		return scoreReward;
-	}
-	public void setScoreReward(String scoreReward) {
-		this.scoreReward = scoreReward;
-	}
+//	public int getScoreReward() {
+//		return scoreReward;
+//	}
+//	public void setScoreReward(int scoreReward) {
+//		this.scoreReward = scoreReward;
+//	}
 	public String getQq() {
 		return qq;
 	}

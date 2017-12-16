@@ -27,10 +27,15 @@ public class MatchDAOImpl implements MatchDAO {
 			Query q = session.createSQLQuery(sqlString).addEntity(MatchPeriod.class);
 			q.setInteger("status", MatchPeriod.STATUS_ACTIVE);
 			rs = q.list();
-			if(rs.size() != 1) {
+			if(rs.size() == 0) {
+				result = null;
+			}
+			else if(rs.size() > 1) {
 				throw new Exception("当前活动赛程数大于1，请检查系统状态");
 			}
-			result = rs.get(0);
+			else {
+				result = rs.get(0);
+			}
 			tx.commit();
 		} catch (Exception e) {
 			e.printStackTrace();

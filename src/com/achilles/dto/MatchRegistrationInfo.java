@@ -4,25 +4,32 @@ import java.util.List;
 
 public class MatchRegistrationInfo {
 	private int playerId;
-	private String loginid;
+	private String loginId;
 	private String name;
 	private String race;
+	private int scoreReward;
 	private List<Integer> adversaryIds;
 	private String adversaries;
 	private List<Integer> dayIds;
 	private String days;
 	
+	public int getScoreReward() {
+		return scoreReward;
+	}
+	public void setScoreReward(int scoreReward) {
+		this.scoreReward = scoreReward;
+	}
 	public int getPlayerId() {
 		return playerId;
 	}
 	public void setPlayerId(int playerId) {
 		this.playerId = playerId;
 	}
-	public String getLoginid() {
-		return loginid;
+	public String getLoginId() {
+		return loginId;
 	}
-	public void setLoginid(String loginid) {
-		this.loginid = loginid;
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
 	}
 	public String getName() {
 		return name;

@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.Set;
 
 import com.achilles.dao.MatchDAO;
-import com.achilles.dao.PlayerDAO;
 import com.achilles.dao.impl.MatchDAOImpl;
-import com.achilles.dao.impl.PlayerDAOImpl;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
+import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.MatchInfo;
 import com.achilles.model.MatchPeriod;
 import com.achilles.model.MatchRegistrationAdversary;
 import com.achilles.model.MatchRegistrationDays;
 import com.achilles.model.Player;
+import com.achilles.model.Score;
 import com.achilles.util.ConfigUtil;
 import com.achilles.util.DateTimeUtil;
 import com.achilles.util.RandomUtil;
@@ -27,21 +27,21 @@ public class MatchInfoService {
 	public List<MatchRegistrationInfo> QueryActiveMatchRegistrationInfo() throws Exception {
 		MatchDAO matchDao = new MatchDAOImpl();
 		MatchPeriod active = matchDao.GetActivePeriod();
+		if( active == null ) {
+			return new ArrayList<MatchRegistrationInfo>();
+		}
 		
 		List<MatchRegistrationInfo> result = QueryMatchRegistrationInfo(active.getId());
 		return result;
 	}
 
 	public void TestInitRegistration() throws Exception {
-		PlayerDAO playerDao = new PlayerDAOImpl();
 		MatchDAO matchDao = new MatchDAOImpl();
 		// get matchperiod
 		MatchPeriod active = matchDao.GetActivePeriod();
 				
 		// get all players
-		Player criteria = new Player();
-		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDao.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
 		
 		// get ranking info
 		RankingService rankingService = new RankingService();
@@ -53,8 +53,6 @@ public class MatchInfoService {
 			//1. get adversary
 			iter = players.get(i);
 			List<Integer> adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
-			adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
-			
 			
 			//2. pick up from 1 to 5 and update MatchRegistrationAdversary
 			List<Integer> chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
@@ -86,7 +84,7 @@ public class MatchInfoService {
 						}
 						RandomUtil r = new RandomUtil();
 						if( r.ProbabilityGenerator(chosenPercent) ) {
-							days.add(o);
+							days.add(o+1);
 						}
 					}
 				}
@@ -136,10 +134,7 @@ public class MatchInfoService {
 	
 	private List<MatchRegistrationInfo> QueryMatchRegistrationInfo(int matchPeriodId) throws Exception {
 		// get all players
-		PlayerDAO playerDAO = new PlayerDAOImpl();
-		Player criteria = new Player();
-		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
@@ -152,13 +147,17 @@ public class MatchInfoService {
 		MatchRegistrationInfo mri = null;
 		
 		MatchDAO matchDao = new MatchDAOImpl();
+		ScoreInfoService ss = new ScoreInfoService();
+		Score s = null;
 		for(int i=0; i<players.size(); i++) {
 			player = players.get(i);
 			mri = new MatchRegistrationInfo();
 			mri.setPlayerId(player.getId());
-			mri.setLoginid(player.getLoginId());
+			mri.setLoginId(player.getLoginId());
 			mri.setName(player.getName());
 			mri.setRace(player.getRace());
+			s = ss.QueryActiveMatchPeriodScoreByPlayer(player.getId());
+			mri.setScoreReward(s == null ? 0 : s.getRewardSponsor());
 
 			// get player's adversaries
 			List<MatchRegistrationAdversary> adversaries = matchDao.GetRegistrationAdversaryByPlayer(matchPeriodId, player.getId());
@@ -197,10 +196,7 @@ public class MatchInfoService {
 		MatchPeriod active = matchDao.GetActivePeriod();
 		
 		// get all players
-		PlayerDAO playerDAO = new PlayerDAOImpl();
-		Player criteria = new Player();
-		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
 		
 		// get registration info of every players
 		Player player = null;
@@ -397,20 +393,18 @@ public class MatchInfoService {
 		List<MatchDayInfo> dayInfos = new ArrayList<MatchDayInfo>();
 		Map<Integer, MatchDayInfo> dayInfosMap = new HashMap<Integer, MatchDayInfo>();
 		for(int i = 0; i < ConfigUtil.getInstance().getMaxDateRange(); i++) {
+			int dayId = i + 1;//monday is rest day
 			MatchDayInfo dayInfo = new MatchDayInfo();
-			dayInfo.setDayId(i);
-			dayInfo.setDayName(DateTimeUtil.GetDayDesc(i));
+			dayInfo.setDayId(dayId);
+			dayInfo.setDayName(DateTimeUtil.GetDayDesc(dayId));
 			dayInfos.add(dayInfo);
 			List<MatchInfo> infosInDayInfo = new ArrayList<MatchInfo>();
 			dayInfo.setMatchInfo(infosInDayInfo);
-			dayInfosMap.put(i, dayInfo);
+			dayInfosMap.put(dayId, dayInfo);
 		}
 		
 		// get all players
-		PlayerDAO playerDAO = new PlayerDAOImpl();
-		Player criteria = new Player();
-		criteria.setStatus(Player.STATUS_USING);
-		List<Player> players = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
@@ -452,7 +446,58 @@ public class MatchInfoService {
 		return;
 	}
 
-	public boolean CheckActiveMatchInfoResult() throws Exception {
+	public MatchRegistrationInfoForEdit QueryMatchRegistrationInfoForEditByPlayerId(int playerId) throws Exception {
+		// get ranking info
+		RankingService rankingService = new RankingService();
+		Map<Integer, Integer> playerRankingMap = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> rankingPlayerMap = new HashMap<Integer, Integer>();
+		rankingService.QueryActivePlayerRanking(playerRankingMap, rankingPlayerMap);
+
+		List<Integer> adversaryIds = queryAdversariesByPlayerId(playerId, playerRankingMap, rankingPlayerMap);
+		
+		// get all players
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
+		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
+		Player player = null;
+		for(int x = 0; x<players.size(); x++) {
+			player = players.get(x);
+			playerMap.put(player.getId(), player);
+		}
+		
+		// make result object
+		MatchRegistrationInfoForEdit result = new MatchRegistrationInfoForEdit();
+		result.setPlayerId(playerId);
+		
+		MatchDAO matchDao = new MatchDAOImpl();
+		MatchPeriod active = matchDao.GetActivePeriod();
+		result.setMatchPeriodId(active.getId());
+		
+		List<Player> adversaries = new ArrayList<Player>();
+		Player adversary = null;
+		for(int i = 0; i < adversaryIds.size(); i++) {
+			int adversaryId = adversaryIds.get(i);
+			adversary = playerMap.get(adversaryId);
+			adversary.setRanking(playerRankingMap.get(adversaryId));
+			adversaries.add(adversary);
+		}
+		result.setAdversaries(adversaries);
+		return result;
+	}
+	
+	public void ArchiveActiveMatchInfo() throws Exception {
+		if( !checkActiveMatchInfoResult() ) {
+			throw new Exception("仍有比赛结果没有保存，不能归档本轮比赛!");
+		}
+		
+		// 1. caculate ranking of the round
+		
+		// 2. delete init match_period ranking, if exist
+		
+		// 3. change match_period status
+		return;
+	}
+	
+	private boolean checkActiveMatchInfoResult() throws Exception {
 		// if all of result has been saved ,then return true, otherwise return false
 		boolean result = true;
 		MatchDAO matchDao = new MatchDAOImpl();
@@ -466,12 +511,34 @@ public class MatchInfoService {
 		return result;
 	}
 
-	public void ArchiveActiveMatchInfo() {
-		// 1. caculate ranking of the round
+	public void SavePlayerMatchRegistrationInfo(MatchRegistrationInfo regInfo) throws Exception {
+		// get matchperiod
+		MatchDAO matchDao = new MatchDAOImpl();
+		MatchPeriod active = matchDao.GetActivePeriod();
 		
-		// 2. delete init match_period ranking, if exist
+		matchDao.ClearAdversaries(active.getId(), regInfo.getPlayerId());
+		for(int i = 0; i < regInfo.getAdversaryIds().size(); i++) {
+			MatchRegistrationAdversary adversary = new MatchRegistrationAdversary();
+			adversary.setMatchPeriodId(active.getId());
+			adversary.setPlayerId(regInfo.getPlayerId());
+			adversary.setAdversaryId(regInfo.getAdversaryIds().get(i));
+			matchDao.SaveMatchRegistrationAdversary(adversary);
+		}
 		
-		// 3. change match_period status
+		matchDao.ClearDays(active.getId(), regInfo.getPlayerId());
+		for(int j = 0; j < regInfo.getDayIds().size(); j++) {
+			MatchRegistrationDays day = new MatchRegistrationDays();
+			day.setMatchPeriodId(active.getId());
+			day.setPlayerId(regInfo.getPlayerId());
+			day.setFreeDay(regInfo.getDayIds().get(j));
+			matchDao.SaveMatchRegistrationDay(day);
+		}
+		
+		ScoreInfoService ss = new ScoreInfoService();
+		ss.SavePlayerActiveMatchPeriodSponsorReward(regInfo.getPlayerId(), regInfo.getScoreReward());
+		return;
 	}
+
+	
 	
 }

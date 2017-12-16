@@ -13,10 +13,10 @@
 	
 	<!-- 
 		获取当前轮比赛选手报名信息				method="queryActiveMatchRegistrationInfo"
+		获取选手当前轮比赛报名可选信息				method="queryMatchDetailForEdit"
 		保存选手当前轮比赛报名信息				method="saveMatchDetail"
 		获取当前轮比赛选手对战表信息				method="queryActiveMatchInfo"
 		根据最新报名结果匹配对战信息				method="updateMatchInfo"
-		检查当前轮比赛结果是否都已上传				method="checkMatchInfoResult"
 		归档当前轮比赛信息						method="archiveMatchInfo"
 		
 		[测试]批量生成选手报名信息				method="testInitRegistration"
@@ -26,6 +26,9 @@
 	 	<action name="queryActiveMatchRegistrationInfo" class="com.achilles.controller.MatchInfoAction" method="QueryActiveMatchRegistrationInfo" >
  			<result name="success" type="json" />
 		</action>
+		<action name="queryMatchDetailForEdit" class="com.achilles.controller.MatchInfoAction" method="QueryMatchDetailForEdit" >
+ 			<result name="success" type="json" />
+		</action>
 		<action name="saveMatchDetail" class="com.achilles.controller.MatchInfoAction" method="SaveMatchDetail" >
  			<result name="success" type="json" />
 		</action>
@@ -33,9 +36,6 @@
  			<result name="success" type="json" />
 		</action>
 		<action name="updateMatchInfo" class="com.achilles.controller.MatchInfoAction" method="UpdateMatchInfo" >
- 			<result name="success" type="json" />
-		</action>
-		<action name="checkMatchInfoResult" class="com.achilles.controller.MatchInfoAction" method="CheckMatchInfoResult" >
  			<result name="success" type="json" />
 		</action>
 		<action name="archiveMatchInfo" class="com.achilles.controller.MatchInfoAction" method="ArchiveMatchInfo" >
