@@ -120,7 +120,7 @@ $(function () {
 				$(this).closest('table').find('th input[type=checkbox]').iCheck(th_checked2?'check':'uncheck');
 			});
 			
-			$('input').iCheck({
+			$('table input').iCheck({
 				checkboxClass: 'icheckbox_square-blue',
 				radioClass: 'iradio_square-blue',
 				increaseArea: '20%' // optional
@@ -588,6 +588,7 @@ function _initACHILLES(o) {
 			$('#match_player_registration_info_table').on( 'draw.dt', function () {
 				$('.edit_match_registration').on('click.ACHILLES.match.edit', $.ACHILLES.match.editMatchRegistration);
 			});
+			$('#match_registration_detail_confirm').on('click.ACHILLES.match.editmatchregistrationconfirm', $.ACHILLES.match.editMatchRegistrationConfirm);
 			$('#update_match_info').on('click.ACHILLES.match.updatematchinfo', $.ACHILLES.match.updateMatchInfo);
 			$('#archive_match_info').on('click.ACHILLES.match.archivematchinfo', $.ACHILLES.match.archiveMatchInfo);
 			$('#archive_match_info_confirm').on('click.ACHILLES.match.archivematchinfoconfirm', $.ACHILLES.match.archiveMatchInfoConfirm);
@@ -623,17 +624,49 @@ function _initACHILLES(o) {
 		},
 		editMatchRegistration: function () {
 			var playerId = $(this).data("id");
-			//var rowData = $('#devicereg_main_table').DataTable().row( '#' + rowId ).data();
-			
-			//console.log( rowData );
-//			$('#attestation_aid').html(rowData.attestationId);
-//			var message = '您选取了' + $("#enterpriseUserMainTable :checkbox:checked[data-id]").length + '条记录。确认要删除所选行业用户？';
+			var rowData = $('#match_player_registration_info_table').DataTable().row( '#' + playerId ).data();
+			//console.log(rowData);
+
 //	    	$("#del_enterpriseUser_message").empty().append(message);
-//			$("#del_enterpriseUser_Modal").modal('show');
 			
-			var poststr = "";
+			$('#adversary-1,#adversary-2').each(function(){
+			    var self = $(this),
+			      label = self.next(),
+			      label_text = label.text();
+			
+			    label.remove();
+			    self.iCheck({
+			      checkboxClass: 'icheckbox_line-blue',
+			      radioClass: 'iradio_line-blue',
+			      insert: '<div class="icheck_line-icon"></div>' + label_text
+			    });
+			  });
+			  
+			  $('#adversary-3,#adversary-4,#adversary-5').each(function(){
+			    var self = $(this),
+			      label = self.next(),
+			      label_text = label.text();
+			
+			    label.remove();
+			    self.iCheck({
+			      checkboxClass: 'icheckbox_line-red',
+			      radioClass: 'iradio_line-red',
+			      insert: '<div class="icheck_line-icon"></div>' + label_text
+			    });
+			  });
+			
+			$('#monday,#tuesday,#wednesday,#thusday,#friday,#saturday,#sunday').iCheck({
+			    checkboxClass: 'icheckbox_square-blue',
+				radioClass: 'iradio_square-blue',
+			    increaseArea: '20%' // optional
+			  });
+			  
+			  
+			$("#match_registration_detail_modal").modal('show');
+			
+			/*var poststr = "";
 			poststr += "id=" + rowId;
-			o.basePath && $.post(o.basePath + "/dev/auditY.action", poststr, function(retObj) {
+			o.basePath && $.post(o.basePath + "/match/auditY.action", poststr, function(retObj) {
 				if(retObj.result == true) {
 					var message = "审核操作完成，设备注册申请审核通过!";
 					$.ACHILLES.tipMessage(message);
@@ -644,9 +677,12 @@ function _initACHILLES(o) {
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");
-			return;
+			return;*/
 		},
-		queryActiveMatchInfo: function () {
+		editMatchRegistrationConfirm: function (regInfo) {
+			
+		},
+ 		queryActiveMatchInfo: function () {
 			o.basePath && $.post(o.basePath + "/match/queryActiveMatchInfo.action", {}, function(retObj) {
 				if(retObj.result == true) {
 					$('#match_day_info_table_wapper').html('');

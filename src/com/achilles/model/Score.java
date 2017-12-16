@@ -10,10 +10,44 @@ public class Score {
 	private int adversaryWin;
 	private int adversaryLose;
 	private int attendance;
-	private int reward;
+	private int rewardAbandon;
+	private int rewardSponsor;
+	private int reward1;
+	private int reward2;
+	private int reward3;
 	private int score;
 	private String memo;
 
+	public int getRewardAbandon() {
+		return rewardAbandon;
+	}
+	public void setRewardAbandon(int rewardAbandon) {
+		this.rewardAbandon = rewardAbandon;
+	}
+	public int getRewardSponsor() {
+		return rewardSponsor;
+	}
+	public void setRewardSponsor(int rewardSponsor) {
+		this.rewardSponsor = rewardSponsor;
+	}
+	public int getReward1() {
+		return reward1;
+	}
+	public void setReward1(int reward1) {
+		this.reward1 = reward1;
+	}
+	public int getReward2() {
+		return reward2;
+	}
+	public void setReward2(int reward2) {
+		this.reward2 = reward2;
+	}
+	public int getReward3() {
+		return reward3;
+	}
+	public void setReward3(int reward3) {
+		this.reward3 = reward3;
+	}
 	public int getId() {
 		return id;
 	}
@@ -67,12 +101,6 @@ public class Score {
 	}
 	public void setAttendance(int attendance) {
 		this.attendance = attendance;
-	}
-	public int getReward() {
-		return reward;
-	}
-	public void setReward(int reward) {
-		this.reward = reward;
 	}
 	public int getScore() {
 		return score;

@@ -19,7 +19,11 @@
 		<property name="adversaryWin" column="adversary_win" type="java.lang.Integer"/>
 		<property name="adversaryLose" column="adversary_lose" type="java.lang.Integer"/>
 		<property name="attendance" type="java.lang.Integer"/>
-		<property name="reward" type="java.lang.Integer"/>
+		<property name="rewardAbandon" column="reward_abandon" type="java.lang.Integer"/>
+		<property name="rewardSponsor" column="reward_sponsor" type="java.lang.Integer"/>
+		<property name="reward1" type="java.lang.Integer"/>
+		<property name="reward2" type="java.lang.Integer"/>
+		<property name="reward3" type="java.lang.Integer"/>
 		<property name="score" type="java.lang.Integer"/>
 		<property name="memo" type="java.lang.String" length="1024"/>
 	</class>

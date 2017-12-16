@@ -453,7 +453,7 @@ public class MatchInfoService {
 	}
 
 	public boolean CheckActiveMatchInfoResult() throws Exception {
-		// if all of result has benn saved ,then return true, otherwise return false
+		// if all of result has been saved ,then return true, otherwise return false
 		boolean result = true;
 		MatchDAO matchDao = new MatchDAOImpl();
 		List<MatchInfo> infos = matchDao.GetActiveMatchInfo();

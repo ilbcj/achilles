@@ -196,18 +196,87 @@
 				</div><!-- /.modal -->
 			</div>
 			
-			<div class="modal modal-info fade" id="detail_Modal" tabindex="-1">
-			   <div class="modal-dialog">
+			<div class="modal modal-default fade" id="match_registration_detail_modal" tabindex="-1">
+			   <div class="modal-dialog modal-lg">
 			      <div class="modal-content">
-			         <div class="modal-header">
-			            <button type="button" class="close" data-dismiss="modal">&times;</button>
-			            <h4 class="modal-title">详细信息</h4>
-			         </div>
-			         <div class="modal-body" id="detail_message"></div>
-			         <div class="modal-footer">
-			            <button type="button" id="detail_players_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">确定</button>
-			            <button type="button" class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
-			         </div>
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">报名信息</h4>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+                  <label>选择挑战对手</label>
+                  <ul class="list-group list-group-unbordered">
+		                <li class="list-group-item">
+		                  <input id="adversary-1" type="checkbox">
+											<label>第一名 - 马在允 - Savior</label>
+		                </li>
+		                <li class="list-group-item">
+		                  <input id="adversary-2" type="checkbox">
+											<label>第二名 - 李明哲 - ggplay</label>
+		                </li>
+		                <li class="list-group-item">
+		                  <input id="adversary-3" type="checkbox">
+											<label>第三名 - 李激动11 - jeadon</label>
+		                </li>
+		                <li class="list-group-item">
+		                  <input id="adversary-4" type="checkbox">
+											<label>第三名 - 李激动22 - jeadon</label>
+		                </li>
+		                <li class="list-group-item">
+		                  <input id="adversary-5" type="checkbox">
+											<label>第三名 - 李激动33 - jeadon</label>
+		                </li>
+		              </ul>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">选择对战日期</label>
+                  <ul class="list-group list-group-unbordered">
+		                <li class="list-group-item">
+		                	<span class="margin">
+		                  <input id="monday" type="checkbox">
+		                  <label for="monday">星期一</label>
+		                  </span>
+		                  <span class="margin">
+											<input id="tuesday" type="checkbox">
+		                  <label for="tuesday">星期二</label>
+											</span>
+		                  <span class="margin">
+											<input id="wednesday" type="checkbox">
+											<label for="wednesday">星期三</label>
+											</span>
+		                  <span class="margin">
+											<input id="thusday" type="checkbox">
+											<label for="thusday">星期四</label>
+											</span>
+		                  <span class="margin">
+		                  <input id="friday" type="checkbox">
+											<label for="friday">星期五</label>
+											</span>
+		                  <span class="margin">
+		                  <input id="saturday" type="checkbox">
+											<label for="saturday">星期六</label>
+											</span>
+		                  <span class="margin">
+		                  <input id="sunday" type="checkbox">
+		                  <label for="sunday">星期日</label>
+		                  </span>
+										</li>
+									</ul>
+                </div>
+                <div class="form-group">
+                	<label for="exampleInputEmail1">对选手奖惩的分数</label>
+									<ul class="list-group list-group-unbordered">
+		                <li class="list-group-item">
+											<input type="text" class="knob" value="-80" data-min="-150" data-max="150" data-width="90" data-height="90" data-fgColor="#00a65a">
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" id="match_registration_detail_confirm" class="btn btn-sm btn-outline"  data-dismiss="modal">保存</button>
+								<button type="button" class="btn btn-sm btn-outline" data-dismiss="modal">取消</button>
+							</div>
 			      </div><!-- /.modal-content -->
 				</div><!-- /.modal -->
 			</div>

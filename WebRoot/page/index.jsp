@@ -29,6 +29,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="<%=path %>/plugins/datatables/dataTables.bootstrap.css">
   <!-- iCheck -->
   <link rel="stylesheet" href="<%=path %>/plugins/iCheck/square/blue.css">
+  <link rel="stylesheet" href="<%=path %>/plugins/iCheck/line/blue.css">
+  <link rel="stylesheet" href="<%=path %>/plugins/iCheck/line/red.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<%=path %>/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
