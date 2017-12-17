@@ -6,7 +6,7 @@ import com.achilles.model.Player;
 
 public class MatchRegistrationInfoForEdit {
 	private int playerId;
-	private int matchPeriodId;
+	private int roundId;
 	private List<Player> adversaries;
 	
 	public int getPlayerId() {
@@ -15,11 +15,11 @@ public class MatchRegistrationInfoForEdit {
 	public void setPlayerId(int playerId) {
 		this.playerId = playerId;
 	}
-	public int getMatchPeriodId() {
-		return matchPeriodId;
+	public int getRoundId() {
+		return roundId;
 	}
-	public void setMatchPeriodId(int matchPeriodId) {
-		this.matchPeriodId = matchPeriodId;
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
 	}
 	public List<Player> getAdversaries() {
 		return adversaries;

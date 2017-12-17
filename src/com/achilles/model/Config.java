@@ -4,7 +4,7 @@ public class Config {
 	public final static String NAME_MAXCHALLENGECOUNT = "MaxChallengeCount";//5
 	public final static String NAME_MAXPLAYERSCOUNT = "MaxPlayersCount";//50
 	public final static String NAME_MAXDATERANGE = "MaxDateRange";//6
-	public final static String NAME_INITMATCHPERIODID = "InitMatchPeriodId";//1
+	public final static String NAME_INITROUNDID = "InitRoundId";//1
 	public final static String NAME_MAXPERCENTOFCHALLENGERWIN = "MaxPercentOfChallengerWin";//60
 	public final static String NAME_PERCENTOFCHALLENGERWINDIMINISHINGSTEP = "PercentOfChallengerWinDiminishingStep";//5
 	public final static String NAME_MAXINITTOPONESCORE = "MaxInitTopOneScore";//1050

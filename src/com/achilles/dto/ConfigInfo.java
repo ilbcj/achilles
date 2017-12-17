@@ -4,7 +4,7 @@ public class ConfigInfo implements Cloneable {
 	private int maxChallengeCount;// = 5;
 	private int maxPlayersCount;// = 50;
 	private int maxDateRange;// = 6;
-	private int initMatchPeriodId;// = 1;
+	private int initRoundId;// = 1;
 	private int maxPercentOfChallengerWin;// = 60;
 	private int percentOfChallengerWinDiminishingStep;// = 5;
 	private int maxInitTopOneScore;// = 1050;
@@ -22,7 +22,7 @@ public class ConfigInfo implements Cloneable {
 		this.maxChallengeCount = ci.getMaxChallengeCount();
 		this.maxPlayersCount = ci.getMaxPlayersCount();
 		this.maxDateRange = ci.getMaxDateRange();
-		this.initMatchPeriodId = ci.getInitMatchPeriodId();
+		this.initRoundId = ci.getInitRoundId();
 		this.maxPercentOfChallengerWin = ci.getMaxPercentOfChallengerWin();
 		this.percentOfChallengerWinDiminishingStep = ci.getPercentOfChallengerWinDiminishingStep();
 		this.maxInitTopOneScore = ci.getMaxInitTopOneScore();
@@ -64,12 +64,14 @@ public class ConfigInfo implements Cloneable {
 	public void setMaxDateRange(int maxDateRange) {
 		this.maxDateRange = maxDateRange;
 	}
-	public int getInitMatchPeriodId() {
-		return initMatchPeriodId;
+	public int getInitRoundId() {
+		return initRoundId;
 	}
-	public void setInitMatchPeriodId(int initMatchPeriodId) {
-		this.initMatchPeriodId = initMatchPeriodId;
+
+	public void setInitRoundId(int initRoundId) {
+		this.initRoundId = initRoundId;
 	}
+
 	public int getMaxPercentOfChallengerWin() {
 		return maxPercentOfChallengerWin;
 	}

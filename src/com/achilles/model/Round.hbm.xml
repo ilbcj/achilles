@@ -5,18 +5,21 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.achilles.model">
 	<!-- 每个class元素对应一个持久化对象 -->
-	<class name="MatchPeriod" table="match_period">
+	<class name="Round" table="round">
 		<!-- id元素定义持久化类的标识属性 -->
 		<id name="id" type="java.lang.Integer">
 			<generator class="identity"/>
 		</id>
 		<!-- property元素定义常规属性 -->
 		<property name="name" type="java.lang.String" length="64"/>
-		<property name="Year" type="java.lang.String" length="8"/>
-		<property name="Month" type="java.lang.String" length="64"/>
-		<property name="Week" type="java.lang.String" length="64"/>
+		<property name="year" type="java.lang.String" length="8"/>
+		<property name="month" type="java.lang.String" length="8"/>
+		<property name="week" type="java.lang.String" length="8"/>
+		<property name="timestamp" type="java.lang.String" length="32"/>
 		<property name="memo" type="java.lang.String" length="32"/>
+		<property name="seasonId" column="season_id" type="java.lang.Integer"/>
 		<property name="status" type="java.lang.Integer"/>
-		<property name="lastPeriodId" column="last_period_id" type="java.lang.Integer"/>
+		<property name="lastRoundId" column="last_round_id" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>
+

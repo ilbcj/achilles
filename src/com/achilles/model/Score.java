@@ -2,7 +2,7 @@ package com.achilles.model;
 
 public class Score {
 	private int id;
-	private int matchPeriodId;
+	private int roundId;
 	private int playerId;
 	private int lastScore;
 	private int challengerWin;
@@ -18,6 +18,12 @@ public class Score {
 	private int score;
 	private String memo;
 
+	public int getRoundId() {
+		return roundId;
+	}
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
+	}
 	public int getRewardAbandon() {
 		return rewardAbandon;
 	}
@@ -53,12 +59,6 @@ public class Score {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public int getMatchPeriodId() {
-		return matchPeriodId;
-	}
-	public void setMatchPeriodId(int matchPeriodId) {
-		this.matchPeriodId = matchPeriodId;
 	}
 	public int getPlayerId() {
 		return playerId;

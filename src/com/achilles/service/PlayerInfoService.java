@@ -43,7 +43,7 @@ public class PlayerInfoService {
 		
 		// add init match period ranking
 		Ranking ranking = new Ranking();
-		ranking.setMatchPeriodId(ConfigUtil.getInstance().getInitMatchPeriodId());
+		ranking.setRoundId(ConfigUtil.getInstance().getInitRoundId());
 		ranking.setPlayerId(player.getId());
 		ranking.setRanking(player.getId());
 		int score = (int)(ConfigUtil.getInstance().getMaxInitTopOneScore() - count * ConfigUtil.getInstance().getInitScoreDiminishingStep());

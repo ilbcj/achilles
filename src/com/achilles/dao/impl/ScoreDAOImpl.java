@@ -11,16 +11,16 @@ import com.achilles.model.Score;
 public class ScoreDAOImpl implements ScoreDAO {
 
 	@Override
-	public Score GetScoreByPlayerid(int matchPeriodId, int playerId)
+	public Score GetScoreByPlayerid(int roundId, int playerId)
 			throws Exception {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		Score rs = null;
-		String sqlString = "SELECT * FROM Score WHERE match_period_id=:match_period_id and player_id = :player_id ";
+		String sqlString = "SELECT * FROM Score WHERE round_id=:round_id and player_id = :player_id ";
 		
 		try {
 			Query q = session.createSQLQuery(sqlString).addEntity(Score.class);
-			q.setInteger("match_period_id", matchPeriodId);
+			q.setInteger("round_id", roundId);
 			q.setInteger("player_id", playerId);
 			rs = (Score)q.uniqueResult();
 			tx.commit();
@@ -65,7 +65,7 @@ public class ScoreDAOImpl implements ScoreDAO {
 //		Session session = HibernateUtil.currentSession();
 //		Transaction tx = session.beginTransaction();
 //		List<Ranking> rs = null;
-//		String sqlString = "SELECT r.* FROM ranking r join player p on r.player_id=p.id and p.status = :pstatus join match_period m on r.match_period_id=m.id and m.status in(:lastactive, :initperiod) order by ranking ";
+//		String sqlString = "SELECT r.* FROM ranking r join player p on r.player_id=p.id and p.status = :pstatus join round rd on r.round_id=rd.id and rd.status in(:lastactive, :initperiod) order by ranking ";
 //		
 //		try {
 //			Query q = session.createSQLQuery(sqlString).addEntity(Ranking.class);

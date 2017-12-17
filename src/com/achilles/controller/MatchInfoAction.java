@@ -233,16 +233,4 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String ArchiveMatchInfo() {
-		try {
-			MatchInfoService service = new MatchInfoService();
-			service.ArchiveActiveMatchInfo();
-		} catch (Exception e) {
-			message = e.getMessage();
-			setResult(false);
-			return SUCCESS;
-		}
-		setResult(true);
-		return SUCCESS;
-	}
 }

@@ -8,7 +8,7 @@ public class MatchInfo {
 	public final static int RESULT_ADVERSARY_ABSENT = 5;
 	
 	private int id;
-	private int matchPeriodId;
+	private int roundId;
 	private int dayId;
 	private int challengerId;
 	private int challengerVranking;
@@ -47,11 +47,11 @@ public class MatchInfo {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getMatchPeriodId() {
-		return matchPeriodId;
+	public int getRoundId() {
+		return roundId;
 	}
-	public void setMatchPeriodId(int matchPeriodId) {
-		this.matchPeriodId = matchPeriodId;
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
 	}
 	public int getDayId() {
 		return dayId;

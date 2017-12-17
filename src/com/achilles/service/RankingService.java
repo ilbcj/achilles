@@ -9,15 +9,15 @@ import com.achilles.model.Ranking;
 
 public class RankingService {
 	
-//	public Ranking QueryRankingByPlayerid(int matchPeriodId, int playerId) throws Exception {
+//	public Ranking QueryRankingByPlayerid(int roundId, int playerId) throws Exception {
 //		RankingDAO dao = new RankingDAOImpl();
-//		Ranking result = dao.GetRankingByPlayerid(matchPeriodId, playerId);
+//		Ranking result = dao.GetRankingByPlayerid(roundId, playerId);
 //		return result;
 //	}
 //	
-//	public Ranking QuyeryRankingByRanking(int matchPeriodId, int ranking) throws Exception {
+//	public Ranking QuyeryRankingByRanking(int roundId, int ranking) throws Exception {
 //		RankingDAO dao = new RankingDAOImpl();
-//		Ranking result = dao.GetRankingByRanking(matchPeriodId, ranking);
+//		Ranking result = dao.GetRankingByRanking(roundId, ranking);
 //		return result;
 //	}
 

@@ -11,7 +11,7 @@
 			<generator class="identity"/>
 		</id>
 		<!-- property元素定义常规属性 -->
-		<property name="matchPeriodId" column="match_period_id" type="java.lang.Integer"/>
+		<property name="roundId" column="round_id" type="java.lang.Integer"/>
 		<property name="dayId" column="day_id" type="java.lang.Integer"/>
 		<property name="challengerId" column="challenger_id" type="java.lang.Integer"/>
 		<property name="challengerVranking" column="challenger_vranking" type="java.lang.Integer"/>

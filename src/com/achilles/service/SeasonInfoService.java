@@ -22,11 +22,13 @@ public class SeasonInfoService {
 	public void SaveSeason(Season season) throws Exception {
 		SeasonDAO dao = new SeasonDAOImpl();
 		
+		if(season.getId() == 0) {
+			season.setTimestamp(DateTimeUtil.GetCurrentTime());
+		}
 		season.setStatus(Season.STATUS_USING);
-		season.setTimestamp(DateTimeUtil.GetCurrentTime());
 		dao.AddSeason(season);
 		
-		return;		
+		return;
 	}
 
 	public void DeleteSeasons(List<Integer> delIds) throws Exception {

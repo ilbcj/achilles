@@ -17,7 +17,6 @@
 		保存选手当前轮比赛报名信息				method="saveMatchDetail"
 		获取当前轮比赛选手对战表信息				method="queryActiveMatchInfo"
 		根据最新报名结果匹配对战信息				method="updateMatchInfo"
-		归档当前轮比赛信息						method="archiveMatchInfo"
 		
 		[测试]批量生成选手报名信息				method="testInitRegistration"
 		[测试]批量生成选手对战结果信息			method="testCreateMatchResult"
@@ -36,9 +35,6 @@
  			<result name="success" type="json" />
 		</action>
 		<action name="updateMatchInfo" class="com.achilles.controller.MatchInfoAction" method="UpdateMatchInfo" >
- 			<result name="success" type="json" />
-		</action>
-		<action name="archiveMatchInfo" class="com.achilles.controller.MatchInfoAction" method="ArchiveMatchInfo" >
  			<result name="success" type="json" />
 		</action>
 		<action name="testInitRegistration" class="com.achilles.controller.MatchInfoAction" method="TestInitRegistration" >

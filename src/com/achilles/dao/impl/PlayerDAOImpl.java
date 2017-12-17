@@ -70,7 +70,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 	public long QueryPlayersCount(Player criteria) throws Exception {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
-		int rs;
+		Long rs;
 		String sqlString = "SELECT COUNT(*) FROM Player WHERE 1=1 ";
 		
 		if( criteria != null ) {
@@ -93,7 +93,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 					q.setString( "name", "%" + criteria.getName() + "%" );
 				}
 			}
-			rs = ((Long)q.uniqueResult()).intValue();
+			rs = (Long)q.uniqueResult();
 			tx.commit();
 		} catch (Exception e) {
 			e.printStackTrace();

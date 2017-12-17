@@ -30,9 +30,9 @@ public class ConfigInfoService {
 			info.setFirstPlayerAcceptChallengeCount(item.getIval());
 		}
 		
-		item = itemsMap.get(Config.NAME_INITMATCHPERIODID);
+		item = itemsMap.get(Config.NAME_INITROUNDID);
 		if(item != null) {
-			info.setInitMatchPeriodId(item.getIval());
+			info.setInitRoundId(item.getIval());
 		}
 		
 		item = itemsMap.get(Config.NAME_INITSCOREDIMINISHINGSTEP);
@@ -98,8 +98,8 @@ public class ConfigInfoService {
 		dao.SaveConfigItem(configItem);
 		
 		configItem = new Config();
-		configItem.setName(Config.NAME_INITMATCHPERIODID);
-		configItem.setIval(config.getInitMatchPeriodId());
+		configItem.setName(Config.NAME_INITROUNDID);
+		configItem.setIval(config.getInitRoundId());
 		dao.SaveConfigItem(configItem);
 		
 		configItem = new Config();

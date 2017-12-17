@@ -225,7 +225,7 @@ function _initACHILLES(o) {
             menu += '</a>';
             menu += '<ul class="treeview-menu">';
             menu +=   '<li><a id="menu_season_maintain" href="javascript:void(0)"><i class="fa fa-circle-o"/>赛季信息</a></li>';
-            menu +=   '<li><a id="menu_scene_maintain" href="javascript:void(0)"><i class="fa fa-circle-o"/>场次信息</a></li>';
+            menu +=   '<li><a id="menu_round_maintain" href="javascript:void(0)"><i class="fa fa-circle-o"/>场次信息</a></li>';
             menu += '</ul>';
             menu += '</li>';
             
@@ -273,9 +273,9 @@ function _initACHILLES(o) {
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/period/season_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
     					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.season.activate();});
     		});
-    		$('#menu_scene_maintain').on('click.ACHILLES.menu.data-api',function(e){
-    			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/period/scene_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
-    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.scene.activate();});
+    		$('#menu_round_maintain').on('click.ACHILLES.menu.data-api',function(e){
+    			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/period/round_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.round.activate();});
     		});
     		$('#menu_battle_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/battle/battle_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
@@ -336,7 +336,7 @@ function _initACHILLES(o) {
 							html += '</div>';
 							return html;
 						},
-						targets: -1
+						targets: 4
 					}
 				],
 				createdRow: function ( row, data, index ) {
@@ -358,12 +358,14 @@ function _initACHILLES(o) {
 			var id = $(this).data("id");
 			if( typeof id === 'undefined' ) {
 				$('#name').val('');
+		    	$('#timestamp').val('');
 		    	$('#memo').val('');
 		    	$('#season_detail_modal_confirm').data('season_id', 0);
 			}
 			else {
 				var rowData = $('#season_main_table').DataTable().row( '#' + id ).data();
 				$('#name').val(rowData.name);
+		    	$('#timestamp').val(rowData.timestamp);
 		    	$('#memo').val(rowData.memo);
 				$('#season_detail_modal_confirm').data('season_id', id);
 			}
@@ -372,10 +374,12 @@ function _initACHILLES(o) {
 		saveSeasonConfirm: function () {
 			var id = $('#season_detail_modal_confirm').data('season_id');
 			var name = $('#name').val();
+		    var time = $('#timestamp').val();
 		    var memo = $('#memo').val();
 		    
 			var postData = 'season.id=' + id;
 			postData += '&season.name=' + name;
+			postData += '&season.timestamp=' + time;
 			postData += '&season.memo=' + memo;
 	
 			o.basePath && $.post(o.basePath + '/period/saveSeason.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
@@ -431,6 +435,266 @@ function _initACHILLES(o) {
 			}, 'json');
 		}
 	};// end of $.ACHILLES.season
+	
+	/* round
+	* ======
+	* match round infomation maintain page
+	*
+	* @type Object
+	* @usage $.ACHILLES.round.activate()
+	* @usage $.ACHILLES.round.addRoundWindow()
+	* @usage $.ACHILLES.round.addRoundConfirm()
+	* @usage $.ACHILLES.round.batchDelRound()
+	* @usage $.ACHILLES.round.delRound()
+	* @usage $.ACHILLES.round.delRoundsConfirm()
+	*/
+	$.ACHILLES.round = {
+		activate: function () {
+			o.basePath && $('#round_main_table').DataTable( {
+				ajax:{
+					url: o.basePath + '/period/queryRounds.action',
+					type: 'POST',
+					dataSrc: 'items'
+				},
+				processing: true,
+				serverSide: true,
+				columns: [
+					{ data: '' },
+					{ data: 'name' },
+					{ data: 'timestamp' },
+					{ data: 'seasonName' },
+					{ data: 'status' },
+					{ data: 'memo' }
+				],
+				rowId: 'id',
+				columnDefs: [
+					{
+						render: function ( data, type, row ) {
+							return '<input type="checkbox" data-id="' + row.id + '" />';
+						},
+						targets: 0
+					},
+					{
+						render: function ( data, type, row ) {
+							var text = '';
+							if(data == 0) {
+								text = '已删除场次';
+							}
+							else if(data == 1) {
+								text = '活动中';
+							}
+							else if(data == 2) {
+								text = '上一轮';
+							}
+							else if(data == 3) {
+								text = '历史场次';
+							}
+							if(data == 9) {
+								text = '初始场次';
+							}
+							return text;
+						},
+						targets: 4
+					},
+					{
+						render: function ( data, type, row ) {
+							var html = '<div class="btn-group">';
+							html += '<button class="round_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-edit"></i>详情</button>';
+							html += '<button class="round_del btn btn-xs btn-danger hidden" data-id="' + row.id + '"><i class="fa fa-trash-o"></i>删除</button>';
+							if(row.status == 1) {
+								html += '<button class="round_archive btn btn-xs btn-danger" data-id="' + row.id + '"><i class="fa fa-trash-o"></i>归档</button>';	
+							}
+							html += '</div>';
+							return html;
+						},
+						targets: 6
+					}
+				],
+				createdRow: function ( row, data, index ) {
+					$('td', row).eq(0).addClass('text-center');
+				}
+			});
+			
+			//listen page items' event
+			$('#add_round').on('click.ACHILLES.round.add', $.ACHILLES.round.addRoundWindow);
+			$('#round_detail_modal_confirm').on('click.ACHILLES.round.addconfirm', $.ACHILLES.round.saveRoundConfirm);
+			$('#del_rounds').on('click.ACHILLES.round.delete.batch', $.ACHILLES.round.batchDelRound);
+			$('#round_main_table').on( 'draw.dt', function () {
+				$('.round_info').on('click.ACHILLES.round.detail', $.ACHILLES.round.addRoundWindow);
+				$('.round_del').on('click.ACHILLES.round.delete.single', $.ACHILLES.round.delRound);
+				$('.round_archive').on('click.ACHILLES.round.archive', $.ACHILLES.round.archiveRound);
+			});
+			$('#round_confirm_modal_confirm').on('click.ACHILLES.round.delconfirm', $.ACHILLES.round.roundConfirmModalConfirm);
+		},
+		addRoundWindow: function () {
+			var id = $(this).data("id");
+			o.basePath && $.post(o.basePath + '/period/querySeasons.action?rand=' + Math.random(), {}, function(retObj,textStatus, jqXHR) {
+				if(retObj.result == true)
+				{
+					$('#season option').remove();
+					$('#season').append('<option value="">请选择一个所属赛季</option>');
+					retObj.items.forEach(function(season){
+						$('#season').append('<option value="' + season.id + '">' + season.name + '</option>');
+					});
+					if( typeof id === 'undefined' ) {
+						$('#name').val('');
+				    	$('#timestamp').val('');
+				    	$('#memo').val('');
+				    	$('#status').val('');
+				    	$("#status").data('status', '');
+				    	$('#season').val('');
+				    	$('#last_round').val('');
+				    	$('#last_round').data('last_round_id', '');
+				    	$('#round_detail_modal_confirm').data('round_id', 0);
+					}
+					else {
+						var rowData = $('#round_main_table').DataTable().row( '#' + id ).data();
+						$('#name').val(rowData.name);
+				    	$('#timestamp').val(rowData.timestamp);
+				    	$('#memo').val(rowData.memo);
+				    	var statusText = '';
+				    	if(rowData.status == 0) {
+				    		statusText = '已删除场次';
+				    	}
+				    	else if(rowData.status == 1) {
+				    		statusText = '当前场次';
+				    	}
+				    	else if(rowData.status == 2) {
+				    		statusText = '上一场次';
+				    	}
+				    	else if(rowData.status == 3) {
+				    		statusText = '历史场次';
+				    	}
+				    	else if(rowData.status == 9) {
+				    		statusText = '初始场次';
+				    	}
+				    	$("#status").val(statusText);
+				    	$("#status").data('status', rowData.status);
+				    	$("#season").val(rowData.seasonId);
+				    	$('#last_round').val(rowData.lastRoundName);
+				    	$('#last_round').data('last_round_id', rowData.lastRoundId);
+						$('#round_detail_modal_confirm').data('round_id', id);
+					}
+					$('#round_detail_modal').modal('show');
+				} else {
+					var message = '获取赛季信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+		},
+		saveRoundConfirm: function () {
+			var id = $('#round_detail_modal_confirm').data('round_id');
+			var name = $('#name').val();
+		    var time = $('#timestamp').val();
+		    var memo = $('#memo').val();
+		    var status = $('#status').data('status');
+		    var season = $('#season').val();
+		    var lastRoundId = $('#last_round').data('last_round_id');
+		    
+			var postData = 'round.id=' + id;
+			postData += '&round.name=' + name;
+			postData += '&round.timestamp=' + time;
+			postData += '&round.memo=' + memo;
+			postData += '&round.status=' + status;
+			postData += '&round.seasonId=' + season;
+			postData += '&round.lastPeriodId=' + lastRoundId;
+	
+			o.basePath && $.post(o.basePath + '/period/saveRound.action?rand=' + Math.random(), postData, function(retObj,textStatus, jqXHR) {
+	    		if(retObj.result == true)
+				{
+					o.basePath && $('#round_main_table').DataTable().ajax.reload();
+					var message = '保存场次信息成功!';
+					$.ACHILLES.tipMessage(message);
+				} else {
+					var message = '保存场次信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+		},
+		roundConfirmModalConfirm: function () {
+			// 1 -- delRoundsConfirm()
+			// 2 -- archiveRoundConfirm()
+			var type = $('#round_confirm_modal_confirm').data('type');
+			if(type === 1) {
+				var postData = '';
+				postData = $('#round_confirm_modal_confirm').data('delIds');
+				$.ACHILLES.round.delRoundsConfirm(postData);
+			}
+			else if(type === 2) {
+				var roundId = $('#round_confirm_modal_confirm').data('round_id');
+				$.ACHILLES.round.archiveRoundConfirm(roundId);
+			}
+			else {
+				$.ACHILLES.tipMessage("没有找到合适的处理流程，请联系系统维护人员!", false);
+			}
+		},
+		batchDelRound: function () {
+			if( ($('#round_main_table :checkbox:checked[data-id]').length == 0) ) { 
+				var message = "请选择要删除的场次!";
+				$.ACHILLES.tipMessage(message);
+				return;
+			} else {
+				var delIds = '';
+				$("#round_main_table :checkbox").each(function(index,checkboxItem){
+					if($(checkboxItem).prop('checked') && index != 0){
+						delIds += "delIds=" + $(checkboxItem).attr('data-id') + "&";
+					}
+				});
+				var message = '已经选取了' + $("#round_main_table :checkbox:checked[data-id]").length + '条记录。是否要删除这些场次？';
+				$('#round_confirm_modal_message').empty().append(message);
+				$('#round_confirm_modal_confirm').data('type', 1);
+				$('#round_confirm_modal_confirm').data('delIds', delIds);
+				$("#round_confirm_modal").modal('show');
+			}
+		},
+		delRound: function () {
+			var rowId = $(this).data('id');
+			var delIds = 'delIds=' + rowId;
+			var message = '是否要删除此场次？';
+			$('#round_confirm_modal_message').empty().append(message);
+			$('#round_confirm_modal_confirm').data('type', 1);
+			$('#round_confirm_modal_confirm').data('delIds', delIds);
+			$("#round_confirm_modal").modal('show');
+		},
+		delRoundsConfirm: function (postData) {
+			o.basePath && $.post(o.basePath + '/period/deleteRounds.action', postData, function(retObj) {
+				if(retObj.result == true) {
+					var message = '场次信息已删除';
+					$.ACHILLES.tipMessage(message);
+					$('#round_main_table').DataTable().ajax.reload();
+				} else {
+					var message = '删除场次信息操作失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+				$("#round_main_table :checkbox").each(function(index,checkboxItem){
+					$(checkboxItem).iCheck('uncheck');
+				});
+			}, 'json');
+		},
+		archiveRound: function () {
+			var rowId = $(this).data('id');
+			var message = '执行归档操作后，不可再改变本轮比赛的所有对战结果，是否继续归档？';
+			$('#round_confirm_modal_message').empty().append(message);
+			$('#round_confirm_modal_confirm').data('type', 2);
+			$('#round_confirm_modal_confirm').data('round_id', rowId);
+			$("#round_confirm_modal").modal('show');
+		},
+		archiveRoundConfirm: function (roundId) {
+			$("#progress_Modal").modal('show');
+			var postData = 'roundId=' + roundId;
+			o.basePath && $.post(o.basePath + "/period/archiveRound.action", postData, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = "本轮比赛数据已归档完成!<br/>接下来可以创建新一轮比赛，或者查看上一轮的排行榜";
+					$.ACHILLES.tipMessage(message);
+					o.basePath && $('#round_main_table').DataTable().ajax.reload();
+				} else {
+					var message = "归档比赛数据操作失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+		}
+	};// end of $.ACHILLES.round
 	
 	/* player
 	* ======
@@ -1016,13 +1280,9 @@ function _initACHILLES(o) {
 		},
 		matchConfirmModalConfirm: function () {
 			// 1 -- updateMatchInfoConfirm()
-			// 2 -- archiveMatchInfoConfirm()
 			var type = $('#match_confirm_modal_confirm').data('type');
 			if(type === 1) {
 				$.ACHILLES.match.updateMatchInfoConfirm();
-			}
-			else if(type === 2) {
-				$.ACHILLES.match.archiveMatchInfoConfirm();
 			}
 			else {
 				$.ACHILLES.tipMessage("没有找到合适的处理流程，请联系系统维护人员!", false);
@@ -1048,29 +1308,7 @@ function _initACHILLES(o) {
 					$.ACHILLES.tipMessage(message, false);
 				}
 			}, "json");
-		},
-		archiveMatchInfo: function () {
-			var message = '执行归档操作后，不可再改变本轮比赛的所有对战结果，是否继续归档？';
-			$('#match_confirm_modal_message').empty().append(message);
-			$('#match_confirm_modal_confirm').data('type', 2);
-			$("#match_confirm_modal").modal('show');
-		},
-		archiveMatchInfoConfirm: function () {
-			$("#progress_Modal").modal('show');
-			o.basePath && $.post(o.basePath + "/match/archiveMatchInfo.action", {}, function(retObj) {
-				$("#progress_Modal").modal('hide');
-				if(retObj.result == true) {
-					var message = "本轮比赛数据已归档完成!";
-					$.ACHILLES.tipMessage(message);
-					o.basePath && $('#match_player_registration_info_table').DataTable().ajax.reload();
-					$.ACHILLES.match.queryActiveMatchInfo();
-					//o.basePath && $('#match_day_info_table').DataTable().ajax.reload();
-				} else {
-					var message = "归档比赛数据操作失败![" + retObj.message + "]";
-					$.ACHILLES.tipMessage(message, false);
-				}
-			}, "json");
-		}
+		}		
 	};// end of $.ACHILLES.attestation
 	
 	/* config
@@ -1098,7 +1336,7 @@ function _initACHILLES(o) {
 		        	$('#max_challenge_count').val(config.maxChallengeCount);
 		        	$('#max_players_count').val(config.maxPlayersCount);
 		        	//$('#max_date_range').val(config.maxDateRange);
-		        	$('#init_match_period_id').val(config.initMatchPeriodId);
+		        	$('#init_round_id').val(config.initRoundId);
 		        	$('#max_init_top_one_score').val(config.maxInitTopOneScore);
 		        	$('#init_score_diminishing_step').val(config.initScoreDiminishingStep);
 		        	$('#first_player_accept_challenge_count').val(config.firstPlayerAcceptChallengeCount);
@@ -1119,7 +1357,7 @@ function _initACHILLES(o) {
 			var postData = 'config.maxChallengeCount=' + $('#max_challenge_count').val();
 			postData += '&config.maxPlayersCount=' + $('#max_players_count').val();
 			postData += '&config.maxDateRange=6';
-			postData += '&config.initMatchPeriodId=' + $('#init_match_period_id').val();
+			postData += '&config.initRoundId=' + $('#init_round_id').val();
 		    postData += '&config.maxInitTopOneScore=' + $('#max_init_top_one_score').val();
 		    postData += '&config.initScoreDiminishingStep=' + $('#init_score_diminishing_step').val();
 			postData += '&config.firstPlayerAcceptChallengeCount=' + $('#first_player_accept_challenge_count').val();

@@ -2,7 +2,7 @@ package com.achilles.model;
 
 public class Ranking {
 	private int id;
-	private int matchPeriodId;
+	private int roundId;
 	private int ranking;
 	private int playerId;
 	private int score;
@@ -19,11 +19,11 @@ public class Ranking {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getMatchPeriodId() {
-		return matchPeriodId;
+	public int getRoundId() {
+		return roundId;
 	}
-	public void setMatchPeriodId(int matchPeriodId) {
-		this.matchPeriodId = matchPeriodId;
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
 	}
 	public int getRanking() {
 		return ranking;

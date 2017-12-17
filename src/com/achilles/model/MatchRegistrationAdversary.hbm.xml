@@ -12,7 +12,7 @@
 		</id>
 		<!-- property元素定义常规属性 -->
 		<property name="playerId" column="player_id" type="java.lang.Integer"/>
-		<property name="matchPeriodId" column="match_period_id" type="java.lang.Integer"/>
+		<property name="roundId" column="round_id" type="java.lang.Integer"/>
 		<property name="adversaryId" column="adversary_id" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>

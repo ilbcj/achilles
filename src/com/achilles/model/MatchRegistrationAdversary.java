@@ -3,7 +3,7 @@ package com.achilles.model;
 public class MatchRegistrationAdversary {
 	private int id;
 	private int playerId;
-	private int matchPeriodId;
+	private int roundId;
 	private int adversaryId;
 	
 	public int getId() {
@@ -18,11 +18,11 @@ public class MatchRegistrationAdversary {
 	public void setPlayerId(int playerId) {
 		this.playerId = playerId;
 	}
-	public int getMatchPeriodId() {
-		return matchPeriodId;
+	public int getRoundId() {
+		return roundId;
 	}
-	public void setMatchPeriodId(int matchPeriodId) {
-		this.matchPeriodId = matchPeriodId;
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
 	}
 	public int getAdversaryId() {
 		return adversaryId;

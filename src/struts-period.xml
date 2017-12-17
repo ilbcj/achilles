@@ -12,8 +12,13 @@
 		</global-exception-mappings>
 	
 	<!-- 
-		//获取赛季信息				method="querySeasons"
-		
+		获取赛季信息					method="querySeasons"
+		保存赛季信息					method="saveSeason"
+		删除赛季信息					method="deleteSeasons"
+		获取场次信息					method="queryRounds"
+		保存场次信息					method="saveRound"
+		删除场次信息					method="deleteRounds"
+		归档当前活动场次数据			method="archiveRound"
 	 -->
 		<action name="querySeasons" class="com.achilles.controller.SeasonInfoAction" method="QuerySeasons" >
  			<result name="success" type="json" />
@@ -22,6 +27,18 @@
  			<result name="success" type="json" />
 		</action>
 		<action name="deleteSeasons" class="com.achilles.controller.SeasonInfoAction" method="DeleteSeasons" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryRounds" class="com.achilles.controller.RoundInfoAction" method="QueryRounds" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="saveRound" class="com.achilles.controller.RoundInfoAction" method="SaveRound" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="deleteRounds" class="com.achilles.controller.RoundInfoAction" method="DeleteRounds" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="archiveRound" class="com.achilles.controller.RoundInfoAction" method="ArchiveRound" >
  			<result name="success" type="json" />
 		</action>
 	</package>	

@@ -3,11 +3,11 @@ package com.achilles.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.achilles.model.Season;
-import com.achilles.service.SeasonInfoService;
+import com.achilles.model.Round;
+import com.achilles.service.RoundInfoService;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class SeasonInfoAction extends ActionSupport {
+public class RoundInfoAction extends ActionSupport {
 
 	/**
 	 * 
@@ -24,10 +24,20 @@ public class SeasonInfoAction extends ActionSupport {
 	private int start;
 	private int length;
 	
-	private List<Season> items;
-	private Season season;
+	private List<Round> items;
+	private Round round;
 	private List<Integer> delIds;
 	
+	private int roundId;
+	
+	public int getRoundId() {
+		return roundId;
+	}
+
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
+	}
+
 	public List<Integer> getDelIds() {
 		return delIds;
 	}
@@ -36,20 +46,20 @@ public class SeasonInfoAction extends ActionSupport {
 		this.delIds = delIds;
 	}
 
-	public List<Season> getItems() {
+	public List<Round> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Season> items) {
+	public void setItems(List<Round> items) {
 		this.items = items;
 	}
 
-	public Season getSeason() {
-		return season;
+	public Round getRound() {
+		return round;
 	}
 
-	public void setSeason(Season season) {
-		this.season = season;
+	public void setRound(Round round) {
+		this.round = round;
 	}
 
 	public boolean isResult() {
@@ -108,11 +118,11 @@ public class SeasonInfoAction extends ActionSupport {
 		this.length = length;
 	}
 
-	public String QuerySeasons() {
+	public String QueryRounds() {
 		try {
-			SeasonInfoService service = new SeasonInfoService();
-			items = new ArrayList<Season>();
-			recordsTotal = service.QuerySeasons(start, length, items);
+			RoundInfoService service = new RoundInfoService();
+			items = new ArrayList<Round>();
+			recordsTotal = service.QueryRounds(start, length, items);
 			recordsFiltered = recordsTotal;
 			draw = draw + 1;
 		} catch (Exception e) {
@@ -124,12 +134,12 @@ public class SeasonInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String SaveSeason() {
+	public String SaveRound() {
 		try {
-			if(season == null || season.getName() == null || season.getName().trim().length() == 0) 
-				throw new Exception("赛季数据错误，无法保存。");
-			SeasonInfoService service = new SeasonInfoService();
-			service.SaveSeason(season);
+			if(round == null || round.getSeasonId() == 0 || round.getName() == null || round.getName().trim().length() == 0) 
+				throw new Exception("场次数据错误，无法保存。");
+			RoundInfoService service = new RoundInfoService();
+			service.SaveRound(round);
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
@@ -139,18 +149,33 @@ public class SeasonInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String DeleteSeasons() {
+	public String DeleteRounds() {
 		try {
 			if(delIds == null) 
-				throw new Exception("没有指定要删除的赛季。");
-			SeasonInfoService service = new SeasonInfoService();
-			service.DeleteSeasons(delIds);
+				throw new Exception("没有指定要删除的场次。");
+			RoundInfoService service = new RoundInfoService();
+			service.DeleteRounds(delIds);
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
 			return SUCCESS;
 		}
 		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String ArchiveRound() {
+		try {
+			if( roundId == 0 ) 
+				throw new Exception( "没有指定要归档的场次。" );
+			RoundInfoService service = new RoundInfoService();
+			service.ArchiveRound( roundId );
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult( false );
+			return SUCCESS;
+		}
+		setResult( true );
 		return SUCCESS;
 	}
 }
