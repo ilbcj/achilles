@@ -35,7 +35,9 @@ public class ScoreInfoService {
 		return;
 	}
 	
-	public List<Score> QueryCurrentRoundScoreBySort() {
-		return ;
+	public List<Score> QueryCurrentRoundScoreByRanking() throws Exception {
+		ScoreDAO scoreDao = new ScoreDAOImpl();
+		List<Score> scores = scoreDao.GetScoreByRanking();
+		return scores;
 	}
 }

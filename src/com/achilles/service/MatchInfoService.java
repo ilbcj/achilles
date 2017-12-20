@@ -13,6 +13,7 @@ import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.MatchInfo;
+import com.achilles.model.Ranking;
 import com.achilles.model.Round;
 import com.achilles.model.MatchRegistrationAdversary;
 import com.achilles.model.MatchRegistrationDays;
@@ -498,11 +499,27 @@ public class MatchInfoService {
 		}
 		
 		// 2. gerenate ranking of the round
-		
+		ScoreInfoService ss = new ScoreInfoService();
+		List<Score> scores = ss.QueryCurrentRoundScoreByRanking();
+		RankingService rs = new RankingService();
+		Ranking ranking = null;
+		for( int j = 0; j < scores.size(); j++ ) {
+			Score score = scores.get(j);
+			ranking = new Ranking();
+			ranking.setPlayerId(score.getPlayerId());
+			ranking.setRoundId(score.getRoundId());
+			ranking.setScore(score.getScore());
+			ranking.setRanking(j+1);
+			rs.SaveRanking(ranking);
+		}
 		return;
 	}
 	
 	private void caculatePlayerScoreOfCurrentRound(Player player) {
+		int score = 0;
+		//1. caculate score as challenger
+		MatchDAO mdao = new MatchDAOImpl();
+		List<MatchInfo> infos = mdao.getActiveMatchInfoByChallenger(player.getId());
 		
 	}
 	

@@ -1,11 +1,14 @@
 package com.achilles.dao.impl;
 
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.achilles.dao.ScoreDAO;
 import com.achilles.model.HibernateUtil;
+import com.achilles.model.Round;
 import com.achilles.model.Score;
 
 public class ScoreDAOImpl implements ScoreDAO {
@@ -57,6 +60,31 @@ public class ScoreDAOImpl implements ScoreDAO {
 			HibernateUtil.closeSession();
 		}
 		return score;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Score> GetScoreByRanking() throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<Score> rs = null;
+		String sqlString = "SELECT s.* FROM Score s join Round r on s.round_id = r.id and r.status = :status order by score";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Score.class);
+			q.setInteger("status", Round.STATUS_ACTIVE);
+			rs = q.list();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			rs = null;
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return rs;
 	}
 
 //	@SuppressWarnings("unchecked")

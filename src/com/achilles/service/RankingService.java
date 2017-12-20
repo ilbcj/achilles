@@ -34,6 +34,19 @@ public class RankingService {
 		return;
 	}
 	
+	public void SaveRanking( Ranking ranking ) throws Exception {
+		if(ranking == null ) {
+			throw new Exception("排名容器对象错误");
+		}
+		RankingDAO dao = new RankingDAOImpl();
+		Ranking isExist = dao.GetRankingByPlayerid(ranking.getRoundId(), ranking.getPlayerId());
+		if(isExist != null) {
+			ranking.setId(isExist.getId());
+		}
+		dao.SaveRanking(ranking);
+		return;
+	}
+	
 //	public void CalculateActiveScore() {
 //		
 //	}
