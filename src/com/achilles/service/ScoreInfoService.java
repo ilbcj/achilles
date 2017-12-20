@@ -1,12 +1,14 @@
 package com.achilles.service;
 
+import java.util.List;
+
 import com.achilles.dao.ScoreDAO;
 import com.achilles.dao.impl.ScoreDAOImpl;
 import com.achilles.model.Round;
 import com.achilles.model.Score;
 
 public class ScoreInfoService {
-	public Score QueryActiveMatchPeriodScoreByPlayer(int playerId) throws Exception {
+	public Score QueryCurrentRoundScoreByPlayer(int playerId) throws Exception {
 		RoundInfoService roundService = new RoundInfoService();
 		Round active = roundService.GetActiveRound();
 		
@@ -31,5 +33,9 @@ public class ScoreInfoService {
 		score.setRewardSponsor(sponsorReward);
 		scoreDao.SaveScore(score);
 		return;
+	}
+	
+	public List<Score> QueryCurrentRoundScoreBySort() {
+		return ;
 	}
 }

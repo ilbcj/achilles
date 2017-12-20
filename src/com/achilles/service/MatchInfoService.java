@@ -157,7 +157,7 @@ public class MatchInfoService {
 			mri.setLoginId(player.getLoginId());
 			mri.setName(player.getName());
 			mri.setRace(player.getRace());
-			s = ss.QueryActiveMatchPeriodScoreByPlayer(player.getId());
+			s = ss.QueryCurrentRoundScoreByPlayer(player.getId());
 			mri.setScoreReward(s == null ? 0 : s.getRewardSponsor());
 
 			// get player's adversaries
@@ -491,12 +491,19 @@ public class MatchInfoService {
 			throw new Exception("仍有比赛结果没有保存，不能归档本轮比赛!");
 		}
 		
-		// 1. caculate ranking of the round
+		// 1. caculate player score of the round
+		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
+		for( int i = 0; i < players.size(); i++ ) {
+			caculatePlayerScoreOfCurrentRound(players.get(i));
+		}
 		
-		// 2. delete init round ranking, if exist
+		// 2. gerenate ranking of the round
 		
-		// 3. change round status
 		return;
+	}
+	
+	private void caculatePlayerScoreOfCurrentRound(Player player) {
+		
 	}
 	
 	private boolean checkActiveMatchInfoResult() throws Exception {

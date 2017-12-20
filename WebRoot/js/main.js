@@ -283,7 +283,7 @@ function _initACHILLES(o) {
     		});
     		$('#menu_score_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/score/score_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
-    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.devicereg.activate();});
+    					function(response,status,xhr){$.ACHILLES.checkLoad(response);$.ACHILLES.score.activate();});
     		});
     		$('#menu_config_maintain').on('click.ACHILLES.menu.data-api',function(e){
     			o.basePath && $('div.content-wrapper').load(o.basePath + '/page/config/config_maintain.html?random=' + Math.random() + ' .content-wrapper-inner',
@@ -1309,7 +1309,76 @@ function _initACHILLES(o) {
 				}
 			}, "json");
 		}		
-	};// end of $.ACHILLES.attestation
+	};// end of $.ACHILLES.match
+	
+	/* score
+	* ======
+	* score infomation maintain page
+	*
+	* @type Object
+	* @usage $.ACHILLES.score.activate()
+	* @usage $.ACHILLES.score.save()
+	* @usage $.ACHILLES.score.reset()
+	*/
+	$.ACHILLES.score = {
+		activate: function () {
+//			$.ACHILLES.score.reset();
+			
+			//listen page items' event
+//			$('#score_reset').on('click.ACHILLES.score.reset', $.ACHILLES.score.reset);
+//			$('#score_save').on('click.ACHILLES.score.save', $.ACHILLES.score.save);
+			
+		},
+		reset: function () {
+			o.basePath && $.post(o.basePath + '/config/query.action', {}, function(retObj){
+		        if(retObj.result == true) {
+		        	var config = retObj.config;
+		        	$('#max_challenge_count').val(config.maxChallengeCount);
+		        	$('#max_players_count').val(config.maxPlayersCount);
+		        	//$('#max_date_range').val(config.maxDateRange);
+		        	$('#init_round_id').val(config.initRoundId);
+		        	$('#max_init_top_one_score').val(config.maxInitTopOneScore);
+		        	$('#init_score_diminishing_step').val(config.initScoreDiminishingStep);
+		        	$('#first_player_accept_challenge_count').val(config.firstPlayerAcceptChallengeCount);
+		        	$('#min_accept_challenge_count').val(config.minAcceptChallengeCount);
+		        	
+		        	$('#max_percent_of_challenger_win').val(config.maxPercentOfChallengerWin);
+		        	$('#percent_of_challenger_win_diminishing_step').val(config.percentOfChallengerWinDiminishingStep);
+		        	$('#rate_of_chosen_mondy_to_thursday').val(config.rateOfChosenMondyToThursday);
+		        	$('#rate_of_chosen_saturday_to_sunday').val(config.rateOfChosenSaturdayToSunday);
+		        } else { 
+					var message = '加载系统配置失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+		            return false;
+		        } 
+			});
+		},
+		save: function () {
+			var postData = 'config.maxChallengeCount=' + $('#max_challenge_count').val();
+			postData += '&config.maxPlayersCount=' + $('#max_players_count').val();
+			postData += '&config.maxDateRange=6';
+			postData += '&config.initRoundId=' + $('#init_round_id').val();
+		    postData += '&config.maxInitTopOneScore=' + $('#max_init_top_one_score').val();
+		    postData += '&config.initScoreDiminishingStep=' + $('#init_score_diminishing_step').val();
+			postData += '&config.firstPlayerAcceptChallengeCount=' + $('#first_player_accept_challenge_count').val();
+			postData += '&config.minAcceptChallengeCount=' + $('#min_accept_challenge_count').val();
+			postData += '&config.maxPercentOfChallengerWin=' + $('#max_percent_of_challenger_win').val();
+		    postData += '&config.percentOfChallengerWinDiminishingStep=' + $('#percent_of_challenger_win_diminishing_step').val();
+		    postData += '&config.rateOfChosenMondyToThursday=' + $('#rate_of_chosen_mondy_to_thursday').val();
+		    postData += '&config.rateOfChosenSaturdayToSunday=' + $('#rate_of_chosen_saturday_to_sunday').val();
+			
+			o.basePath && $.post(o.basePath + '/config/save.action', postData, function(retObj){
+	    		if(retObj.result == true)
+				{
+					var message = '保存配置信息成功!';
+					$.ACHILLES.tipMessage(message);
+				} else {
+					var message = '保存配置信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, "json");
+		}
+	};// end of $.ACHILLES.score
 	
 	/* config
 	* ======
