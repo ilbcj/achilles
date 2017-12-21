@@ -1089,7 +1089,8 @@ function _initACHILLES(o) {
 					
 					// 本轮奖惩
 					html += '<div class="form-group"><label for="exampleInputEmail1">本轮独立奖惩分数</label><ul class="list-group list-group-unbordered"><li class="list-group-item">';
-					html += '<p id="reward_display">当前分数: <span id="reward_display_val">' + rowData.scoreReward + '</span></p><input id="reward_sponsor" type="text" /></li></ul></div>';
+					html += '<p id="reward_display">当前分数: <span id="reward_display_val">' + rowData.scoreReward + '</span></p><input id="reward_sponsor" type="text" /></li>';
+					html += '<li class="list-group-item"><textarea class="form-control" rows="7" id="reward_memo" placeholder="奖惩原因"></textarea></li></ul></div>';
 					
 					$("#match_registration_detail_modal_body").empty().append(html);
 					$('#adversary0,#adversary1').each(function(){
@@ -1125,19 +1126,19 @@ function _initACHILLES(o) {
 					});
 					// for rest day
 					$('#week0').iCheck('disable');
-					$('#week0').parent().next().addClass("text-gray");
+					$('#week0').parent().next().addClass('text-gray');
 					rowData.dayIds.forEach(function(dayId){
 						$('#week'+ dayId).iCheck('check');
 					});
 					  
-					$("#reward_sponsor").slider({ 
-						id: "reward_sponsor_slider", 
+					$('#reward_sponsor').slider({ 
+						id: 'reward_sponsor_slider', 
 						ticks: [-100, -50, 0, 50, 100],
 						min: -100, 
 						max: 100, 
 						value: -101
 					});
-					$("#reward_sponsor").on("change", function(slideEvt) {
+					$('#reward_sponsor').on('change', function(slideEvt) {
 						var colorUnselect = '#f9f9f9';
 						var colorGreen = '#00a65a';
 						var colorRed = '#f56954';
@@ -1154,13 +1155,14 @@ function _initACHILLES(o) {
 						else if(slideEvt.value.newValue == 0) {
 							//pass
 						}
-						$("#reward_display_val").text(slideEvt.value.newValue);
+						$('#reward_display_val').text(slideEvt.value.newValue);
 					});
 					// for the first value display in correct way
-					$("#reward_sponsor").slider('setValue', rowData.scoreReward, true, true);
+					$('#reward_sponsor').slider('setValue', rowData.scoreReward, true, true);
+					$('#reward_memo').val(rowData.scoreRewardMemo);
 					
 					$('#match_registration_detail_confirm').data('reg_info', rowData);
-					$("#match_registration_detail_modal").modal('show');
+					$('#match_registration_detail_modal').modal('show');
 				} else {
 					var message = "获取选手详细报名信息失败![" + retObj.message + "]";
 					$.ACHILLES.tipMessage(message, false);
@@ -1188,18 +1190,19 @@ function _initACHILLES(o) {
 				}
 			});
 			
-			regInfo.scoreReward = $("#reward_sponsor").slider('getValue');
+			regInfo.scoreReward = $('#reward_sponsor').slider('getValue');
+			regInfo.scoreRewardMemo = $('#reward_memo').val();
 			//console.log(regInfo);
 			
 			var postData = 'regInfoForSave.playerId=' + regInfo.playerId;
-			postData + '&regInfoForSave.scoreReward=' + regInfo.scoreReward;
+			postData += '&regInfoForSave.scoreReward=' + regInfo.scoreReward;
+			postData += '&regInfoForSave.scoreRewardMemo=' + regInfo.scoreRewardMemo;
 			regInfo.adversaryIds.forEach(function(adversaryId){
 				postData += '&regInfoForSave.adversaryIds=' + adversaryId;
 			});
 			regInfo.dayIds.forEach(function(dayId){
 				postData += '&regInfoForSave.dayIds=' + dayId;
 			});
-			postData += '&regInfoForSave.scoreReward=' + regInfo.scoreReward;
 			o.basePath && $.post(o.basePath + "/match/saveMatchDetail.action", postData, function(retObj) {
 				if(retObj.result == true) {
 					var message = "选手报名信息更新成功!";
@@ -1323,60 +1326,109 @@ function _initACHILLES(o) {
 	$.ACHILLES.score = {
 		activate: function () {
 //			$.ACHILLES.score.reset();
-			
+			o.basePath && $.post(o.basePath + '/score/queryRoundList.action', {}, function(retObj){
+				if(retObj.result == true) {
+					var rounds = retObj.rounds;
+					var htmlData = '<li class="time-label"><span class="bg-red">第一赛季</span></li>';
+					rounds.forEach(function(round, index){
+						htmlData += '<li><i class="fa fa-table bg-blue"></i>';
+						htmlData +='<div class="timeline-item">';
+						htmlData += '<span class="time"><i class="fa fa-clock-o"></i> ' + round.timestamp + '</span>';
+						//htmlData += '<h3 class="timeline-header"><a data-toggle="collapse" data-target="#round' + index + '" href="#" ' + ( index === 0 ? '' : 'class="collapsed"' ) +  ' data-round_id="' + round.id + '">' + round.name + '</a></h3>';
+						htmlData += '<h3 class="timeline-header"><a data-toggle="collapse" data-target="#round' + index + '" href="#" class="round-score collapsed" data-round_id="' + round.id + '">' + round.name + '</a></h3>';
+						htmlData += '<div class="timeline-body">';
+						htmlData += '<div class="box box-primary collapse " id="round' + index + '">';
+						htmlData += '<div class="box-body no-padding"><table id="round_score_' + round.id + '" class="table table-striped"></table></div>';
+						htmlData += '</div></div></div></li>';
+					});
+					
+					htmlData += '<li><i class="fa fa-clock-o bg-gray"></i></li>';
+					
+					$('#score_list').html(htmlData);
+					
+					$('.round-score').on('click.ACHILLES.score.scoreload', $.ACHILLES.score.loadScore);
+					
+					$('.round-score').get(0).click();
+				}
+				else {
+					var message = '获取比赛场次信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+		            return;
+				}
+			});
 			//listen page items' event
 //			$('#score_reset').on('click.ACHILLES.score.reset', $.ACHILLES.score.reset);
 //			$('#score_save').on('click.ACHILLES.score.save', $.ACHILLES.score.save);
 			
 		},
-		reset: function () {
-			o.basePath && $.post(o.basePath + '/config/query.action', {}, function(retObj){
-		        if(retObj.result == true) {
-		        	var config = retObj.config;
-		        	$('#max_challenge_count').val(config.maxChallengeCount);
-		        	$('#max_players_count').val(config.maxPlayersCount);
-		        	//$('#max_date_range').val(config.maxDateRange);
-		        	$('#init_round_id').val(config.initRoundId);
-		        	$('#max_init_top_one_score').val(config.maxInitTopOneScore);
-		        	$('#init_score_diminishing_step').val(config.initScoreDiminishingStep);
-		        	$('#first_player_accept_challenge_count').val(config.firstPlayerAcceptChallengeCount);
-		        	$('#min_accept_challenge_count').val(config.minAcceptChallengeCount);
-		        	
-		        	$('#max_percent_of_challenger_win').val(config.maxPercentOfChallengerWin);
-		        	$('#percent_of_challenger_win_diminishing_step').val(config.percentOfChallengerWinDiminishingStep);
-		        	$('#rate_of_chosen_mondy_to_thursday').val(config.rateOfChosenMondyToThursday);
-		        	$('#rate_of_chosen_saturday_to_sunday').val(config.rateOfChosenSaturdayToSunday);
-		        } else { 
-					var message = '加载系统配置失败![' + retObj.message + ']';
-					$.ACHILLES.tipMessage(message, false);
-		            return false;
-		        } 
-			});
-		},
-		save: function () {
-			var postData = 'config.maxChallengeCount=' + $('#max_challenge_count').val();
-			postData += '&config.maxPlayersCount=' + $('#max_players_count').val();
-			postData += '&config.maxDateRange=6';
-			postData += '&config.initRoundId=' + $('#init_round_id').val();
-		    postData += '&config.maxInitTopOneScore=' + $('#max_init_top_one_score').val();
-		    postData += '&config.initScoreDiminishingStep=' + $('#init_score_diminishing_step').val();
-			postData += '&config.firstPlayerAcceptChallengeCount=' + $('#first_player_accept_challenge_count').val();
-			postData += '&config.minAcceptChallengeCount=' + $('#min_accept_challenge_count').val();
-			postData += '&config.maxPercentOfChallengerWin=' + $('#max_percent_of_challenger_win').val();
-		    postData += '&config.percentOfChallengerWinDiminishingStep=' + $('#percent_of_challenger_win_diminishing_step').val();
-		    postData += '&config.rateOfChosenMondyToThursday=' + $('#rate_of_chosen_mondy_to_thursday').val();
-		    postData += '&config.rateOfChosenSaturdayToSunday=' + $('#rate_of_chosen_saturday_to_sunday').val();
+		loadScore: function () {
+			var roundTitle = $(this);
+			var isLoaded = roundTitle.data("loaded");
+			if(isLoaded) {
+				return;
+			}
 			
-			o.basePath && $.post(o.basePath + '/config/save.action', postData, function(retObj){
+			var roundId = roundTitle.data("round_id");
+			var postData = "roundId=" + roundId;
+			o.basePath && $.post(o.basePath + '/score/queryRoundScore.action', postData, function(retObj){
 	    		if(retObj.result == true)
 				{
-					var message = '保存配置信息成功!';
-					$.ACHILLES.tipMessage(message);
+					$('#round_score_' + roundId).DataTable( {
+						paging: false,
+				        data: retObj.items,
+				        rowId: 'id',
+				        columns: [
+				        	{ title: "操作", data: null, defaultContent: "", width: "100px" },
+				        	{ title: "选手", data: "playerName", width: "200px" },
+				        	{ title: "排名", data: "ranking" },
+				            { title: "比分", data: "score" }	,
+				            { title: "挑战胜场", data: "challengerWin", width: "200px" },
+				            { title: "挑战败场", data: "challengerLose", width: "200px" },
+				            { title: "守擂胜场", data: "adversaryWin", width: "200px" },
+				            { title: "守擂败场", data: "adversaryLose", width: "200px" },
+				            { title: "是否缺席", data: "absent", width: "200px" }					            				            
+				        ],
+				        columnDefs: [
+				        	{
+								render: function ( data, type, row ) {
+									var html = '';
+									if(data === 0) {
+										html = '<span class="looser">全部出席</span>' ;
+									}
+									else if(data === 2) {
+										html = '<span class="winner">存在缺席</span>' ;
+									}
+									return html;
+								},
+								targets: 8
+							},
+				        	{
+								render: function ( data, type, row ) {
+									var html = '<div class="btn-group">';
+									html += '<button class="score_detail_info btn btn-xs btn-success" data-memo="' + row.memo + '"><i class="fa fa-edit"></i>积分详情</button>';
+									html += '</div>';
+									return html;
+								},
+								targets: 0
+							}
+						]
+				    });
+					
+					$('#round_score_' + roundId).on( 'draw.dt', function () {
+						$('.score_detail_info').on('click.ACHILLES.score.info.detail', $.ACHILLES.score.detailScoreInfo);
+					});
+					
+					roundTitle.data('loaded', true);
 				} else {
-					var message = '保存配置信息失败![' + retObj.message + ']';
+					var message = '获取比赛积分信息失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, "json");
+			}, "json");			
+		},
+		detailScoreInfo: function () {
+			var memo = $(this).data('memo');
+			$('#detail_score_info_message').empty().append(memo);
+			$('#detail_score_info_modal').modal('show');
 		}
 	};// end of $.ACHILLES.score
 	

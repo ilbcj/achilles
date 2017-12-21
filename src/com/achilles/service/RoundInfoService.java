@@ -1,5 +1,6 @@
 package com.achilles.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,11 +118,11 @@ public class RoundInfoService {
 		return result;
 	}
 
-	public void ArchiveRound(int roundId) throws Exception {
+	public void ArchiveRound( int roundId ) throws Exception {
 		RoundDAO dao = new RoundDAOImpl();
-		Round active = dao.GetRoundById(roundId);
+		Round active = dao.GetRoundById( roundId );
 		if( active.getStatus() != Round.STATUS_ACTIVE ) {
-			throw new Exception("指定场次不是当前比赛场次，无法进行归档操作！");
+			throw new Exception( "指定场次不是当前比赛场次，无法进行归档操作！" );
 		}
 		
 		MatchInfoService service = new MatchInfoService();
@@ -133,10 +134,31 @@ public class RoundInfoService {
 			dao.AddRound( last );
 		}
 		
-		active.setStatus(Round.STATUS_LAST_ACTIVE);
+		active.setStatus( Round.STATUS_LAST_ACTIVE );
 		dao.AddRound( active );
 		
 		return;
+	}
+
+
+	public List<Round> QueryRoundListForDisplayScore() throws Exception {
+		List<Round> result = new ArrayList<Round>();
+		RoundDAO dao = new RoundDAOImpl();
+		Round tmp = getLastRound();
+		int id = 0;
+		
+		do {
+			if(tmp == null) {
+				break;
+			}
+			result.add(tmp);
+			id = tmp.getLastRoundId();
+			tmp = dao.GetRoundById(id);
+			
+		}
+		while( tmp !=null && tmp.getStatus() != Round.STATUS_INIT && id != 0);
+		
+		return result;
 	}
 
 }

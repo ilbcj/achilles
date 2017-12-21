@@ -1,6 +1,9 @@
 package com.achilles.model;
 
 public class Score {
+	public final static int ABSENT_YES = 1;
+	public final static int ABSENT_NO = 0;
+	
 	private int id;
 	private int roundId;
 	private int playerId;
@@ -9,7 +12,7 @@ public class Score {
 	private int challengerLose;
 	private int adversaryWin;
 	private int adversaryLose;
-	private int attendance;
+	private int absent;
 	private int rewardAbandon;
 	private int rewardSponsor;
 	private int reward1;
@@ -17,7 +20,14 @@ public class Score {
 	private int reward3;
 	private int score;
 	private String memo;
+	private String rewardSponsorReason;
 
+	public String getRewardSponsorReason() {
+		return rewardSponsorReason;
+	}
+	public void setRewardSponsorReason(String rewardSponsorReason) {
+		this.rewardSponsorReason = rewardSponsorReason;
+	}
 	public int getRoundId() {
 		return roundId;
 	}
@@ -96,11 +106,11 @@ public class Score {
 	public void setAdversaryLose(int adversaryLose) {
 		this.adversaryLose = adversaryLose;
 	}
-	public int getAttendance() {
-		return attendance;
+	public int getAbsent() {
+		return absent;
 	}
-	public void setAttendance(int attendance) {
-		this.attendance = attendance;
+	public void setAbsent(int absent) {
+		this.absent = absent;
 	}
 	public int getScore() {
 		return score;
@@ -113,5 +123,22 @@ public class Score {
 	}
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+	
+	//non persistence attribute
+	private String playerName;
+	private int ranking;
+
+	public String getPlayerName() {
+		return playerName;
+	}
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+	}
+	public int getRanking() {
+		return ranking;
+	}
+	public void setRanking(int ranking) {
+		this.ranking = ranking;
 	}
 }

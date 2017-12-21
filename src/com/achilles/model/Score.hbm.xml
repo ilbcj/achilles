@@ -18,7 +18,7 @@
 		<property name="challengerLose" column="challenger_lose" type="java.lang.Integer"/>
 		<property name="adversaryWin" column="adversary_win" type="java.lang.Integer"/>
 		<property name="adversaryLose" column="adversary_lose" type="java.lang.Integer"/>
-		<property name="attendance" type="java.lang.Integer"/>
+		<property name="absent" type="java.lang.Integer"/>
 		<property name="rewardAbandon" column="reward_abandon" type="java.lang.Integer"/>
 		<property name="rewardSponsor" column="reward_sponsor" type="java.lang.Integer"/>
 		<property name="reward1" type="java.lang.Integer"/>
@@ -26,5 +26,6 @@
 		<property name="reward3" type="java.lang.Integer"/>
 		<property name="score" type="java.lang.Integer"/>
 		<property name="memo" type="java.lang.String" length="1024"/>
+		<property name="rewardSponsorReason" column="reward_sponsor_reason" type="java.lang.String" length="128"/>
 	</class>
 </hibernate-mapping>

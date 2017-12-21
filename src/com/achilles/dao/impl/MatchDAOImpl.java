@@ -355,4 +355,65 @@ public class MatchDAOImpl implements MatchDAO {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<MatchInfo> GetActiveMatchInfoByChallenger(int playerId) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<MatchInfo> rs = null;
+		String sqlString = "SELECT info.* FROM match_info info join round rd on info.round_id = rd.id and rd.status = :status and info.challenger_id=:challenger ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(MatchInfo.class);;
+			q.setInteger("status", Round.STATUS_ACTIVE);
+			q.setInteger("challenger", playerId);
+			rs = q.list();
+			
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<MatchInfo> GetActiveMatchInfoByadversary(int playerId)
+			throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<MatchInfo> rs = null;
+		String sqlString = "SELECT info.* FROM match_info info join round rd on info.round_id = rd.id and rd.status = :status and info.adversary_id=:adversary ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(MatchInfo.class);;
+			q.setInteger("status", Round.STATUS_ACTIVE);
+			q.setInteger("adversary", playerId);
+			rs = q.list();
+			
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 }

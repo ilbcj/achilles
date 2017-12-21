@@ -8,11 +8,18 @@ public class MatchRegistrationInfo {
 	private String name;
 	private String race;
 	private int scoreReward;
+	private String scoreRewardMemo;
 	private List<Integer> adversaryIds;
 	private String adversaries;
 	private List<Integer> dayIds;
 	private String days;
 	
+	public String getScoreRewardMemo() {
+		return scoreRewardMemo;
+	}
+	public void setScoreRewardMemo(String scoreRewardMemo) {
+		this.scoreRewardMemo = scoreRewardMemo;
+	}
 	public int getScoreReward() {
 		return scoreReward;
 	}

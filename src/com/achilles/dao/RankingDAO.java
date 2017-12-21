@@ -13,4 +13,6 @@ public interface RankingDAO {
 	public Ranking GetRankingByRanking(int roundId, int ranking) throws Exception;
 
 	public List<Ranking> GetRankingOfActivePlayer() throws Exception;
+
+	public void DelRankingByPlayerid(int roundId, int playerId) throws Exception;
 }

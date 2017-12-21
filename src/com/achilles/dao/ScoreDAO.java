@@ -13,5 +13,7 @@ public interface ScoreDAO {
 
 	public List<Score> GetScoreByRanking() throws Exception;
 
+	public List<Score> GetRoundScoreByRanking(int roundId) throws Exception;
+
 //	public List<Score> GetScoreOfActivePlayer() throws Exception;
 }

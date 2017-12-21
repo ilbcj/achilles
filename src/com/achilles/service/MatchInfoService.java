@@ -2,6 +2,7 @@ package com.achilles.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import com.achilles.model.MatchRegistrationDays;
 import com.achilles.model.Player;
 import com.achilles.model.Score;
 import com.achilles.util.ConfigUtil;
+import com.achilles.util.ConstValue;
 import com.achilles.util.DateTimeUtil;
 import com.achilles.util.RandomUtil;
 
@@ -57,11 +59,10 @@ public class MatchInfoService {
 			List<Integer> adversaries = queryAdversariesByPlayerId(iter.getId(), playerRankingMap, rankingPlayerMap);
 			
 			//2. pick up from 1 to 5 and update MatchRegistrationAdversary
-			List<Integer> chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
+			List<Integer> chosenAdversaries = new RandomUtil().RandomPickUp(adversaries, ConfigUtil.getInstance().getMaxChallengeCount());
 //			while(playerRankingMap.get(iter.getId())!= 1 && chosenAdversaries.size() == 0) {
 //				chosenAdversaries = new RandomUtil().RandomPickUp(adversaries);
 //			}
-			chosenAdversaries = adversaries;
 			matchDao.ClearAdversaries(active.getId(), iter.getId());
 			for(int j = 0; j<chosenAdversaries.size(); j++) {
 				MatchRegistrationAdversary adversary = new MatchRegistrationAdversary();
@@ -116,8 +117,10 @@ public class MatchInfoService {
 		
 		List<Integer> result = new ArrayList<Integer>();
 		//2. get adversaries by ranking
-		if(ranking > ConfigUtil.getInstance().getMaxChallengeCount()) {
-			for(int i = 0; i < ConfigUtil.getInstance().getMaxChallengeCount(); i++) {
+		//if(ranking > ConfigUtil.getInstance().getMaxChallengeCount()) {
+		//	for(int i = 0; i < ConfigUtil.getInstance().getMaxChallengeCount(); i++) {
+		if(ranking > ConstValue.MaxChallengeRange) {
+			for(int i = 0; i < ConstValue.MaxChallengeRange; i++) {
 				int adversaryId = rankingMap.get(ranking-i-1);
 				result.add(adversaryId);
 			}
@@ -137,12 +140,28 @@ public class MatchInfoService {
 	private List<MatchRegistrationInfo> QueryMatchRegistrationInfo(int roundId) throws Exception {
 		// get all players
 		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
+		
+		// get registration info of every players
+		RankingService rankingService = new RankingService();
+		Map<Integer, Integer> playerRankingMap = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> rankingPlayerMap = new HashMap<Integer, Integer>();
+		rankingService.QueryActivePlayerRanking(playerRankingMap, rankingPlayerMap);
+		
+		// gerenate player map
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
-			player = players.get(x);
-			playerMap.put(player.getId(), player);
+			player = players.get( x );
+			player.setRanking( playerRankingMap.get( player.getId() ) );
+			playerMap.put( player.getId(), player );
 		}
+		
+		Collections.sort(players, new Comparator<Player>() {
+            @Override
+            public int compare(Player o1, Player o2) {
+                return o1.getRanking()-o2.getRanking();
+            }
+        });
 		
 		//handle every player's registration info
 		List<MatchRegistrationInfo> result = new ArrayList<MatchRegistrationInfo>();
@@ -151,15 +170,16 @@ public class MatchInfoService {
 		MatchDAO matchDao = new MatchDAOImpl();
 		ScoreInfoService ss = new ScoreInfoService();
 		Score s = null;
-		for(int i=0; i<players.size(); i++) {
-			player = players.get(i);
+		for( int i=0; i<players.size(); i++ ) {
+			player = players.get( i );
 			mri = new MatchRegistrationInfo();
-			mri.setPlayerId(player.getId());
-			mri.setLoginId(player.getLoginId());
-			mri.setName(player.getName());
-			mri.setRace(player.getRace());
-			s = ss.QueryCurrentRoundScoreByPlayer(player.getId());
-			mri.setScoreReward(s == null ? 0 : s.getRewardSponsor());
+			mri.setPlayerId( player.getId() );
+			mri.setLoginId( player.getLoginId() );
+			mri.setName( player.getName() );
+			mri.setRace( player.getRace() );
+			s = ss.QueryCurrentRoundScoreByPlayer( player.getId() );
+			mri.setScoreReward( s == null ? 0 : s.getRewardSponsor() );
+			mri.setScoreRewardMemo( s == null ? "" : s.getRewardSponsorReason() );
 
 			// get player's adversaries
 			List<MatchRegistrationAdversary> adversaries = matchDao.GetRegistrationAdversaryByPlayer(roundId, player.getId());
@@ -218,10 +238,6 @@ public class MatchInfoService {
 				adversaryIds.add(advIter.getAdversaryId());
 			}
 			player.setAdversaryIds(adversaryIds);
-			//for challenge strategy
-			if(adversaryIds.size() > 0) {
-				player.setRemainingChallengeTimes(ConfigUtil.getInstance().getMinAcceptChallengeCount());
-			}
 			
 			// get player's free day
 			List<MatchRegistrationDays> days = matchDao.GetRegistrationDayByPlayer(active.getId(), player.getId());
@@ -257,7 +273,12 @@ public class MatchInfoService {
 			
 			for(int p = 0; p<player.getAdversaryIds().size(); p++) {
 				tryToArrangeMatch(active.getId(), player, playerMap.get(player.getAdversaryIds().get(p)), playerMap);
-			}			
+			}
+			
+			if( player.getRemainingChallengeTimes() == 0 ) {
+				//for challenge strategy
+				player.setRemainingChallengeTimes(ConfigUtil.getInstance().getMinAcceptChallengeCount());
+			}
 		}
 		
 		return;
@@ -292,6 +313,7 @@ public class MatchInfoService {
 					matchDao.SaveMatchInfo(adversaryMatch);
 					//for challenge strategy
 					challenger.setRemainingChallengeTimes(challenger.getRemainingChallengeTimes() + 1);
+					compare.setRemainingChallengeTimes(compare.getRemainingChallengeTimes() - 1);
 					return;
 				}
 			}
@@ -494,8 +516,14 @@ public class MatchInfoService {
 		
 		// 1. caculate player score of the round
 		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
+		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
+		Player player = null;
+		for(int x = 0; x<players.size(); x++) {
+			player = players.get(x);
+			playerMap.put(player.getId(), player);
+		}
 		for( int i = 0; i < players.size(); i++ ) {
-			caculatePlayerScoreOfCurrentRound(players.get(i));
+			caculatePlayerScoreOfCurrentRound(players.get(i), playerMap);
 		}
 		
 		// 2. gerenate ranking of the round
@@ -512,15 +540,167 @@ public class MatchInfoService {
 			ranking.setRanking(j+1);
 			rs.SaveRanking(ranking);
 		}
+		
+		// 3. remove ranking of init round
+		Ranking target = new Ranking();
+		for( int i = 0; i < players.size(); i++ ) {
+			player = players.get( i );
+			target.setPlayerId( player.getId() );
+			target.setRoundId( ConfigUtil.getInstance().getInitRoundId() );
+			rs.RemoveInitRoundRanking( target );
+		}
+		
 		return;
 	}
 	
-	private void caculatePlayerScoreOfCurrentRound(Player player) {
+	private void caculatePlayerScoreOfCurrentRound(Player player, Map<Integer, Player> playerMap) throws Exception {
 		int score = 0;
+		int lastScore = 0;
+		int challengerWin = 0;
+		int challengerLose = 0;
+		int adversaryWin = 0;
+		int adversaryLose = 0;
+		int rewardAbandon = 0;
+		int rewardSponsor = 0;
+		int isAbandon = 0;
+		String memo = "";
+		
 		//1. caculate score as challenger
 		MatchDAO mdao = new MatchDAOImpl();
-		List<MatchInfo> infos = mdao.getActiveMatchInfoByChallenger(player.getId());
+		List<MatchInfo> challengeInfos = mdao.GetActiveMatchInfoByChallenger(player.getId());
+		MatchInfo info = null;
+		for( int i = 0; i < challengeInfos.size(); i++ ) {
+			info = challengeInfos.get(i);
+			
+			memo += "[挑战-" + playerMap.get(info.getAdversaryId()).getName() + "(" + info.getAdversaryVranking() + ")，挑战";
+			int battleResult = info.getResult();
+			if( MatchInfo.RESULT_ADVERSARY_ABSENT == battleResult || MatchInfo.RESULT_CHALLENGER_WIN == battleResult ) {
+				memo += "成功，";
+				challengerWin++;
+				int scoreTemp = 0;
+				scoreTemp += ConstValue.ScoreChallengerWin;
+				
+				scoreTemp += (info.getChallengerVranking()  - info.getAdversaryVranking() - 1 ) * ConstValue.ScoreChallengerRankingStep;
+				
+				if( info.getAdversaryVranking() < 6 ) {
+					scoreTemp += ( 6 - info.getAdversaryVranking() ) * ConstValue.ScoreAdversaryRankingStep;
+				}
+				score += scoreTemp;
+				memo += "积分" + scoreTemp + "]";
+			}
+			else if ( MatchInfo.RESULT_DRAW == battleResult ){
+				//pass
+			}
+			else {
+				memo += "失败，";
+				challengerLose++;
+				int scoreTemp = 0;
+				if( MatchInfo.RESULT_CHALLENGER_ABSENT == battleResult ) {
+					memo += "本场缺席，";
+					scoreTemp -= ConstValue.ScoreAbsent;
+					isAbandon = Score.ABSENT_YES;
+				}
+				
+				if( info.getAdversaryVranking() < 6 ) {
+					scoreTemp -= ( 6 - info.getAdversaryVranking() ) * ConstValue.ScoreAdversaryRankingStep;
+				}
+				score += scoreTemp;
+				memo += "积分" + scoreTemp + "]";
+			}
+		}
 		
+		//2. caculate score as adversary
+		List<MatchInfo> adversaryInfos = mdao.GetActiveMatchInfoByadversary( player.getId() );
+		for( int j = 0; j < adversaryInfos.size(); j++ ) {
+			info = adversaryInfos.get(j);
+			
+			memo += "[被-" + playerMap.get(info.getChallengerId()).getName() + "(" + info.getChallengerVranking() + ")挑战，守擂";
+			int battleResult = info.getResult();
+			if( MatchInfo.RESULT_CHALLENGER_ABSENT == battleResult || MatchInfo.RESULT_ADVERSARY_WIN == battleResult ) {
+				memo += "成功，";
+				adversaryWin++;
+				int scoreTemp = 0;
+				scoreTemp += ConstValue.ScoreAdversaryWin;
+				score += scoreTemp;
+				memo += "积分" + scoreTemp + "]";
+			}
+			else if ( MatchInfo.RESULT_DRAW == battleResult ){
+				//pass
+			}
+			else {
+				memo += "失败，";
+				adversaryLose++;
+				int scoreTemp = 0;
+				scoreTemp -= ConstValue.ScoreAdversaryLose;
+				if( MatchInfo.RESULT_ADVERSARY_ABSENT == battleResult ) {
+					memo += "本场缺席，";
+					scoreTemp -= ConstValue.ScoreAbsent;
+					isAbandon = Score.ABSENT_YES;
+				}
+				score += scoreTemp;
+				memo += "积分" + scoreTemp + "]";
+			}
+		}
+		
+		//3. caculate score of arrange day counts
+		memo += "[本周报名比赛";
+		Round active = new RoundInfoService().GetActiveRound();
+		List<MatchRegistrationDays> days = mdao.GetRegistrationDayByPlayer( active.getId(), player.getId() );
+		if(days == null || days.size() == 0) {
+			memo += "0天，" ;
+			rewardAbandon -= ConstValue.ScoreArrangeDayCountZero;
+			score += rewardAbandon;
+			memo += "积分" + rewardAbandon;
+		}
+		else if( days.size() == 1 ) {
+			memo += "1天，";
+			rewardAbandon -= ConstValue.ScoreArrangeDayCountOne;
+			score += rewardAbandon;
+			memo += "积分" + rewardAbandon;
+		}
+		else {
+			memo += days.size() + "天，";
+			if( isAbandon == Score.ABSENT_NO ) {
+				rewardAbandon = ( days.size() - 2 ) * ConstValue.ScoreArrangeDayCountStep;
+				score += rewardAbandon;
+				memo += "积分" + rewardAbandon;
+			}
+			else {
+				rewardAbandon = 0;
+				memo += "由于缺席比赛，无出勤积分";
+			}
+		}
+		memo += "]";
+		
+		//4. get score record which contains sponsor's reward if exist.
+		ScoreInfoService ss = new ScoreInfoService();
+		Score scoreObj = ss.QueryCurrentRoundScoreByPlayer(player.getId());
+		if( scoreObj == null ) {
+			scoreObj = new Score();
+			scoreObj.setRoundId(active.getId());
+			scoreObj.setPlayerId(player.getId());
+		}
+		
+		Ranking lastRanking = new RankingService().QueryRankingByPlayerid(active.getLastRoundId(), player.getId());
+		lastScore = lastRanking.getScore();
+		
+		scoreObj.setLastScore(lastScore);
+		scoreObj.setChallengerWin(challengerWin);
+		scoreObj.setChallengerLose(challengerLose);
+		scoreObj.setAdversaryWin(adversaryWin);
+		scoreObj.setAdversaryLose(adversaryLose);
+		scoreObj.setAbsent(isAbandon);
+		scoreObj.setRewardAbandon(rewardAbandon);
+		rewardSponsor = scoreObj.getRewardSponsor();
+		score += scoreObj.getLastScore() + rewardSponsor;
+		scoreObj.setScore(score);
+		if(rewardSponsor != 0) {
+			memo += "[本轮赛事委员会奖惩积分" +  rewardSponsor + "," + scoreObj.getRewardSponsorReason() +"]";
+		}
+		scoreObj.setMemo(memo);
+		
+		//5. save score
+		ss.CaculateAndSaveCurrentRoundPlayerScoreBy(scoreObj);
 	}
 	
 	private boolean checkActiveMatchInfoResult() throws Exception {
@@ -528,10 +708,15 @@ public class MatchInfoService {
 		boolean result = true;
 		MatchDAO matchDao = new MatchDAOImpl();
 		List<MatchInfo> infos = matchDao.GetActiveMatchInfo();
-		for(int i = 0; i < infos.size(); i++) {
-			if(infos.get(i).getResult() == 0) {
-				result = false;
-				break;
+		if( infos == null || infos.size() == 0 ) {
+			result = false;
+		}
+		else {
+			for(int i = 0; i < infos.size(); i++) {
+				if(infos.get(i).getResult() == 0) {
+					result = false;
+					break;
+				}
 			}
 		}
 		return result;
@@ -567,7 +752,7 @@ public class MatchInfoService {
 		
 		
 		ScoreInfoService ss = new ScoreInfoService();
-		ss.SavePlayerActiveRoundSponsorReward(regInfo.getPlayerId(), regInfo.getScoreReward());
+		ss.SavePlayerActiveRoundSponsorReward(regInfo.getPlayerId(), regInfo.getScoreReward(), regInfo.getScoreRewardMemo());
 		return;
 	}
 

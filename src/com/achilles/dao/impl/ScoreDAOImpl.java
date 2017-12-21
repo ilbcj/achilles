@@ -68,11 +68,36 @@ public class ScoreDAOImpl implements ScoreDAO {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		List<Score> rs = null;
-		String sqlString = "SELECT s.* FROM Score s join Round r on s.round_id = r.id and r.status = :status order by score";
+		String sqlString = "SELECT s.* FROM Score s join Round r on s.round_id = r.id and r.status = :status order by score desc";
 		
 		try {
 			Query q = session.createSQLQuery(sqlString).addEntity(Score.class);
 			q.setInteger("status", Round.STATUS_ACTIVE);
+			rs = q.list();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			rs = null;
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Score> GetRoundScoreByRanking(int roundId) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<Score> rs = null;
+		String sqlString = "SELECT * FROM Score where round_id = :round_id order by score desc";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Score.class);
+			q.setInteger("round_id", roundId);
 			rs = q.list();
 			tx.commit();
 		} catch (Exception e) {

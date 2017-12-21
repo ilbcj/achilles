@@ -5,14 +5,19 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomUtil {
-	public List<Integer> RandomPickUp(List<Integer> input) {
+	public List<Integer> RandomPickUp(List<Integer> input, int maxSize) {
 		List<Integer> result = new ArrayList<Integer>();
 		Random r = new Random();
-		for(int i = 0; i<input.size(); i ++) {
-			int flag = r.nextInt(100);
-			if(flag < 50 ) 
-				result.add(input.get(i));
+		do {
+			result.clear();
+			for(int i = 0; i<input.size(); i ++) {
+				int flag = r.nextInt(100);
+				if(flag < 50 ) 
+					result.add(input.get(i));
+			}
 		}
+		while(result.size() > maxSize);
+		
 		return result;
 	}
 	

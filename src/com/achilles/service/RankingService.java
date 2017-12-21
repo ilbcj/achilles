@@ -47,7 +47,15 @@ public class RankingService {
 		return;
 	}
 	
-//	public void CalculateActiveScore() {
-//		
-//	}
+	public Ranking QueryRankingByPlayerid(int roundId, int playerId) throws Exception {
+		RankingDAO dao = new RankingDAOImpl();
+		Ranking result = dao.GetRankingByPlayerid(roundId, playerId);
+		return result;
+	}
+
+	public void RemoveInitRoundRanking(Ranking target) throws Exception {
+		RankingDAO dao = new RankingDAOImpl();
+		dao.DelRankingByPlayerid(target.getRoundId(), target.getPlayerId());
+		return;
+	}
 }
