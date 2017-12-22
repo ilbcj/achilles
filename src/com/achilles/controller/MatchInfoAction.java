@@ -6,6 +6,7 @@ import java.util.List;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
+import com.achilles.model.MatchInfo;
 import com.achilles.service.MatchInfoService;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -33,9 +34,18 @@ public class MatchInfoAction extends ActionSupport {
 	private MatchRegistrationInfo regInfoForSave;
 	
 	private List<MatchDayInfo> activeMatchInfo;
+	private MatchInfo matchInfoDetail;	
 	
 	private boolean allResultSaved;
 	
+	public MatchInfo getMatchInfoDetail() {
+		return matchInfoDetail;
+	}
+
+	public void setMatchInfoDetail(MatchInfo matchInfoDetail) {
+		this.matchInfoDetail = matchInfoDetail;
+	}
+
 	public MatchRegistrationInfo getRegInfoForSave() {
 		return regInfoForSave;
 	}
@@ -207,6 +217,19 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String SaveMatchInfoDetail() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			service.SaveMatchInfoDetail(matchInfoDetail);
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
 	public String TestInitRegistration() {
 		try {
 			MatchInfoService service = new MatchInfoService();
@@ -231,6 +254,5 @@ public class MatchInfoAction extends ActionSupport {
 		}
 		setResult(true);
 		return SUCCESS;
-	}
-	
+	}	
 }

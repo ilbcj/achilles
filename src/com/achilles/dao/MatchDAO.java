@@ -24,6 +24,7 @@ public interface MatchDAO {
 	public void ClearMatchInfos(int roundId) throws Exception;
 	public List<MatchInfo> GetMatchInfosByAdversary(int roundId, int adversaryId) throws Exception;
 	public MatchInfo SaveMatchInfo(MatchInfo matchinfo) throws Exception;
+	public MatchInfo GetMatchInfoById(int id) throws Exception;
 	public List<MatchInfo> GetActiveMatchInfo() throws Exception;
 	public List<MatchInfo> GetActiveMatchInfoByChallenger(int playerId) throws Exception;
 	public List<MatchInfo> GetActiveMatchInfoByadversary(int playerId) throws Exception;

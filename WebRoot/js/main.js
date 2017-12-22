@@ -355,7 +355,7 @@ function _initACHILLES(o) {
 			$('#season_confirm_modal_confirm').on('click.ACHILLES.season.delconfirm', $.ACHILLES.season.delSeasonsConfirm);
 		},
 		addSeasonWindow: function () {
-			var id = $(this).data("id");
+			var id = $(this).data('id');
 			if( typeof id === 'undefined' ) {
 				$('#name').val('');
 		    	$('#timestamp').val('');
@@ -527,7 +527,7 @@ function _initACHILLES(o) {
 			$('#round_confirm_modal_confirm').on('click.ACHILLES.round.delconfirm', $.ACHILLES.round.roundConfirmModalConfirm);
 		},
 		addRoundWindow: function () {
-			var id = $(this).data("id");
+			var id = $(this).data('id');
 			o.basePath && $.post(o.basePath + '/period/querySeasons.action?rand=' + Math.random(), {}, function(retObj,textStatus, jqXHR) {
 				if(retObj.result == true)
 				{
@@ -853,7 +853,7 @@ function _initACHILLES(o) {
 		},
 		detail: function () {
 			
-			var rowId = $(this).data("id");
+			var rowId = $(this).data('id');
 			var postData = "";
 			postData += "id=" + rowId;
 			o.basePath && $.post(o.basePath + "/player/queryPlayerDetail.action", postData, function(retObj) {
@@ -1048,7 +1048,7 @@ function _initACHILLES(o) {
 			}, "json");
 		},
 		editMatchRegistration: function () {
-			var playerId = $(this).data("id");
+			var playerId = $(this).data('id');
 			var rowData = $('#match_player_registration_info_table').DataTable().row( '#' + playerId ).data();
 			//console.log(rowData);
 
@@ -1225,7 +1225,7 @@ function _initACHILLES(o) {
 					for (; index<len; index++) {
 						var matchInfo = matchInfos[index];
 						var html = '<div class="box"><div class="box-header"><h3 class="box-title">' + matchInfo.dayName + '</h3></div><div class="box-body no-padding"><table id="active_match_info_day_' 
-								+ index + '" class="table table-striped"></table></div></div>';
+								+ index + '" class="table table-striped table-hover"></table></div></div>';
 						$('#match_day_info_table_wapper').append(html);
 						
 						$('#active_match_info_day_' + index).DataTable( {
@@ -1244,10 +1244,19 @@ function _initACHILLES(o) {
 									render: function ( data, type, row ) {
 										var html = '';
 										if(data === 1) {
-											html = '<span class="winner fa fa-flag">' + row.challengerName + '</span><span class="looser fa fa-bomb">' + row.adversaryName + '</span>' ;
+											html = '<span class="winner fa fa-flag">' + row.challengerName + '</span><span class="looser fa fa-bomb">' + row.adversaryName + '</span>';
 										}
 										else if(data === 2) {
-											html = '<span class="looser fa fa-bomb">' + row.challengerName + '</span><span class="winner fa fa-flag">' + row.adversaryName + '</span>' ;
+											html = '<span class="looser fa fa-bomb">' + row.challengerName + '</span><span class="winner fa fa-flag">' + row.adversaryName + '</span>';
+										}
+										else if(data === 3) {
+											html = '平局';
+										}
+										else if(data === 4) {
+											html = '<span class="looser fa fa-bomb">' + row.challengerName + ' 缺席</span>';
+										}
+										else if(data === 5) {
+											html = '<span class="looser fa fa-bomb">' + row.adversaryName + ' 缺席</span>';
 										}
 										return html;
 									},
@@ -1256,7 +1265,7 @@ function _initACHILLES(o) {
 					        	{
 									render: function ( data, type, row ) {
 										var html = '<div class="btn-group">';
-										html += '<button class="edit_match_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-edit"></i>编辑</button>';
+										html += '<button class="edit_match_info btn btn-xs btn-success" data-id="' + row.id + '" data-index="' + index + '"><i class="fa fa-edit"></i>编辑</button>';
 										html += '</div>';
 										return html;
 									},
@@ -1271,15 +1280,82 @@ function _initACHILLES(o) {
 					}
 					
 				} else {
-					var message = "查询对战信息失败![" + retObj.message + "]";
+					var message = '查询对战信息失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, "json");
+			}, 'json');
 		},
 		editMatchInfo: function () {
-			var matchInfoId = $(this).data("id");
-			$('#match_info_detail_player_name').html(matchInfoId);
+			var matchInfoId = $(this).data('id');
+			var tableIndex = $(this).data('index');
+			var rowData = $('#active_match_info_day_' + tableIndex).DataTable().row( '#' + matchInfoId ).data();
+			
+			$('#cw, #aw, #draw, #ca, #aa').iCheck({
+			    checkboxClass: 'icheckbox_square-blue margin',
+				radioClass: 'iradio_square-blue margin',
+			    increaseArea: '20%' // optional
+			});
+			
+			var battleResult = rowData.result;
+			$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
+				var self = $(this);
+				if(self.val() == battleResult) {
+					self.iCheck('check');
+				}
+			});
+			
+			$('#match_score option').remove();
+			$('#match_score').append('<option value="0:0">' + rowData.challengerName + ' 0:0 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="1:0">' + rowData.challengerName + ' 1:0 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="2:0">' + rowData.challengerName + ' 2:0 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="0:1">' + rowData.challengerName + ' 0:1 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="1:1">' + rowData.challengerName + ' 1:1 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="2:1">' + rowData.challengerName + ' 2:1 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="0:2">' + rowData.challengerName + ' 0:2 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="1:2">' + rowData.challengerName + ' 1:2 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
+          	$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
+			$('#match_score').val(rowData.score);
+			
+			var title = rowData.challengerName + ' vs ' + rowData.adversaryName;
+			$('#match_info_detail_confirm').data('match_info', rowData);
+			$('#match_info_detail_confirm').data('table_index', tableIndex);
+			$('#match_info_detail_player_name').html(title);
 			$('#match_info_detail_modal').modal('show');
+		},
+		editMatchInfoConfirm: function () {
+			var matchInfo = $('#match_info_detail_confirm').data('match_info');
+			var tableIndex = $('#match_info_detail_confirm').data('table_index');
+			
+			var battleResult = 0;
+			$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
+				var self = $(this);
+				if(self.prop('checked')) {
+					battleResult = self.val();
+				}
+			});
+			var score = $('#match_score').val();
+			
+			var postData = 'matchInfoDetail.id=' + matchInfo.id;
+			postData += '&matchInfoDetail.result=' + battleResult;
+			postData += '&matchInfoDetail.score=' + score;
+			o.basePath && $.post(o.basePath + '/match/saveMatchInfoDetail.action', postData, function(retObj) {
+				if(retObj.result == true) {
+					matchInfo.result = battleResult;
+					//$('#active_match_info_day_' + tableIndex).DataTable().draw();
+					$.ACHILLES.match.queryActiveMatchInfo();
+					var message = '保存对战结果信息成功!';
+					$.ACHILLES.tipMessage(message);
+				} else {
+					var message = '保存对战结果信息失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
 		},
 		matchConfirmModalConfirm: function () {
 			// 1 -- updateMatchInfoConfirm()
@@ -1338,7 +1414,7 @@ function _initACHILLES(o) {
 						htmlData += '<h3 class="timeline-header"><a data-toggle="collapse" data-target="#round' + index + '" href="#" class="round-score collapsed" data-round_id="' + round.id + '">' + round.name + '</a></h3>';
 						htmlData += '<div class="timeline-body">';
 						htmlData += '<div class="box box-primary collapse " id="round' + index + '">';
-						htmlData += '<div class="box-body no-padding"><table id="round_score_' + round.id + '" class="table table-striped"></table></div>';
+						htmlData += '<div class="box-body no-padding"><table id="round_score_' + round.id + '" class="table table-striped table-hover"></table></div>';
 						htmlData += '</div></div></div></li>';
 					});
 					
@@ -1363,13 +1439,13 @@ function _initACHILLES(o) {
 		},
 		loadScore: function () {
 			var roundTitle = $(this);
-			var isLoaded = roundTitle.data("loaded");
+			var isLoaded = roundTitle.data('loaded');
 			if(isLoaded) {
 				return;
 			}
 			
-			var roundId = roundTitle.data("round_id");
-			var postData = "roundId=" + roundId;
+			var roundId = roundTitle.data('round_id');
+			var postData = 'roundId=' + roundId;
 			o.basePath && $.post(o.basePath + '/score/queryRoundScore.action', postData, function(retObj){
 	    		if(retObj.result == true)
 				{
@@ -1378,22 +1454,27 @@ function _initACHILLES(o) {
 				        data: retObj.items,
 				        rowId: 'id',
 				        columns: [
-				        	{ title: "操作", data: null, defaultContent: "", width: "100px" },
-				        	{ title: "选手", data: "playerName", width: "200px" },
-				        	{ title: "排名", data: "ranking" },
-				            { title: "比分", data: "score" }	,
-				            { title: "挑战胜场", data: "challengerWin", width: "200px" },
-				            { title: "挑战败场", data: "challengerLose", width: "200px" },
-				            { title: "守擂胜场", data: "adversaryWin", width: "200px" },
-				            { title: "守擂败场", data: "adversaryLose", width: "200px" },
-				            { title: "是否缺席", data: "absent", width: "200px" }					            				            
+				        	{ title: '操作', data: null, defaultContent: '', width: '100px' },
+				        	{ title: '选手', data: 'playerName', width: '200px' },
+				        	{ title: '排名', data: 'ranking' },
+				            { title: '比分', data: 'score' }	,
+				            { title: '挑战胜场', data: 'challengerWin', width: '200px' },
+				            { title: '挑战败场', data: 'challengerLose', width: '200px' },
+				            { title: '守擂胜场', data: 'adversaryWin', width: '200px' },
+				            { title: '守擂败场', data: 'adversaryLose', width: '200px' },
+				            { title: '是否缺席', data: 'absent', width: '200px' }					            				            
 				        ],
 				        columnDefs: [
 				        	{
 								render: function ( data, type, row ) {
 									var html = '';
 									if(data === 0) {
-										html = '<span class="looser">全部出席</span>' ;
+										if(row.challengerWin === 0 && row.challengerLose === 0 && row.adversaryWin === 0 && row.adversaryLose === 0) {
+											html = '<span class="winner">本周未申请比赛</span>' ;
+										}
+										else {
+											html = '<span class="looser">全部出席</span>' ;
+										}
 									}
 									else if(data === 2) {
 										html = '<span class="winner">存在缺席</span>' ;
@@ -1423,10 +1504,19 @@ function _initACHILLES(o) {
 					var message = '获取比赛积分信息失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
 				}
-			}, "json");			
+			}, 'json');			
 		},
 		detailScoreInfo: function () {
 			var memo = $(this).data('memo');
+			var strs=memo.split("],"); //字符分割 
+			memo = '';
+			var i=0;
+			for (;i<strs.length ;i++ ) 
+			{ 
+				if(strs[i].length > 0) {
+					memo += strs[i] + ']<br/>'; //分割后的字符输出
+				}
+			} 
 			$('#detail_score_info_message').empty().append(memo);
 			$('#detail_score_info_modal').modal('show');
 		}

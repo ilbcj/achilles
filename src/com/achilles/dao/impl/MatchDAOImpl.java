@@ -416,4 +416,32 @@ public class MatchDAOImpl implements MatchDAO {
 		return rs;
 	}
 
+	@Override
+	public MatchInfo GetMatchInfoById(int id) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		MatchInfo rs = null;
+		String sqlString = "SELECT * FROM match_info where id = :id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(MatchInfo.class);;
+			q.setInteger("id", id);
+			rs = (MatchInfo)q.uniqueResult();
+			
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 }

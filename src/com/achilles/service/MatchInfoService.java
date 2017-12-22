@@ -586,7 +586,7 @@ public class MatchInfoService {
 					scoreTemp += ( 6 - info.getAdversaryVranking() ) * ConstValue.ScoreAdversaryRankingStep;
 				}
 				score += scoreTemp;
-				memo += "积分" + scoreTemp + "]";
+				memo += "积分" + scoreTemp + "],";
 			}
 			else if ( MatchInfo.RESULT_DRAW == battleResult ){
 				//pass
@@ -605,7 +605,7 @@ public class MatchInfoService {
 					scoreTemp -= ( 6 - info.getAdversaryVranking() ) * ConstValue.ScoreAdversaryRankingStep;
 				}
 				score += scoreTemp;
-				memo += "积分" + scoreTemp + "]";
+				memo += "积分" + scoreTemp + "],";
 			}
 		}
 		
@@ -622,7 +622,7 @@ public class MatchInfoService {
 				int scoreTemp = 0;
 				scoreTemp += ConstValue.ScoreAdversaryWin;
 				score += scoreTemp;
-				memo += "积分" + scoreTemp + "]";
+				memo += "积分" + scoreTemp + "],";
 			}
 			else if ( MatchInfo.RESULT_DRAW == battleResult ){
 				//pass
@@ -638,7 +638,7 @@ public class MatchInfoService {
 					isAbandon = Score.ABSENT_YES;
 				}
 				score += scoreTemp;
-				memo += "积分" + scoreTemp + "]";
+				memo += "积分" + scoreTemp + "],";
 			}
 		}
 		
@@ -670,7 +670,7 @@ public class MatchInfoService {
 				memo += "由于缺席比赛，无出勤积分";
 			}
 		}
-		memo += "]";
+		memo += "],";
 		
 		//4. get score record which contains sponsor's reward if exist.
 		ScoreInfoService ss = new ScoreInfoService();
@@ -695,7 +695,7 @@ public class MatchInfoService {
 		score += scoreObj.getLastScore() + rewardSponsor;
 		scoreObj.setScore(score);
 		if(rewardSponsor != 0) {
-			memo += "[本轮赛事委员会奖惩积分" +  rewardSponsor + "," + scoreObj.getRewardSponsorReason() +"]";
+			memo += "[本轮赛事委员会奖惩积分" +  rewardSponsor + "，" + scoreObj.getRewardSponsorReason() +"],";
 		}
 		scoreObj.setMemo(memo);
 		
@@ -756,10 +756,29 @@ public class MatchInfoService {
 		return;
 	}
 
-	public boolean IsRoundUsed(int roundId) throws Exception {
+	public boolean IsRoundUsed( int roundId ) throws Exception {
 		MatchDAO matchDao = new MatchDAOImpl();
-		boolean result = matchDao.IsRoundUsedInMatch(roundId);
+		boolean result = matchDao.IsRoundUsedInMatch( roundId );
 		return result;
+	}
+
+	public void SaveMatchInfoDetail( MatchInfo matchInfoDetail ) throws Exception {
+		if( matchInfoDetail == null ) {
+			throw new Exception( "要保存的数据不能是空" );
+		}
+		
+		// get matchinfo object by id
+		MatchDAO dao = new MatchDAOImpl();
+		MatchInfo info = dao.GetMatchInfoById( matchInfoDetail.getId() );
+		if( info == null ) {
+			throw new Exception( "can not found match info by id: " + matchInfoDetail.getId() );
+		}
+		
+		// save match result 
+		info.setResult( matchInfoDetail.getResult() );
+		info.setScore( matchInfoDetail.getScore() );
+		dao.SaveMatchInfo( info );
+		return;
 	}
 	
 }
