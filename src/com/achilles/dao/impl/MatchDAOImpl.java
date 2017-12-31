@@ -1,5 +1,6 @@
 package com.achilles.dao.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -439,6 +440,41 @@ public class MatchDAOImpl implements MatchDAO {
 		}
 		finally
 		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public int GetMaxMatchCountByPlayer(int roundId) throws Exception {
+	Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		int rs = 0;
+		
+		//String sqlString = "SELECT COUNT(*) FROM Player WHERE 1=1 ";
+		String sqlString = "SELECT count(*)  FROM MatchInfo i , Player p where (p.id = i.challengerId or p.id = i.adversaryId) and i.roundId = :round_id group by i.dayId, p.id order by col_0_0_ desc";
+
+		try {
+			Query q = session.createQuery(sqlString);
+			q.setInteger("round_id", roundId);
+			List<Object> list = q.list();
+			Iterator<Object> it = list.iterator();
+			Long maxCount = 0L;
+			while(it.hasNext()){
+				Long count = (Long) it.next();
+			    if( count > maxCount ) {
+			    	maxCount = count;
+			    }
+			}
+			rs = maxCount.intValue();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
 			HibernateUtil.closeSession();
 		}
 		return rs;

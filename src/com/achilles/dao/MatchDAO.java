@@ -28,5 +28,6 @@ public interface MatchDAO {
 	public List<MatchInfo> GetActiveMatchInfo() throws Exception;
 	public List<MatchInfo> GetActiveMatchInfoByChallenger(int playerId) throws Exception;
 	public List<MatchInfo> GetActiveMatchInfoByadversary(int playerId) throws Exception;
+	public int GetMaxMatchCountByPlayer(int roundId) throws Exception;
 	
 }

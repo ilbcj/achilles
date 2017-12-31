@@ -26,4 +26,6 @@ public class ConstValue {
 	public static final int ScoreArrangeDayCountZero = 50;
 	public static final int ScoreArrangeDayCountOne = 30;
 	public static final int ScoreArrangeDayCountStep = 10;
+	
+	public static final int MaxMatchCountPerDay = 3;
 }

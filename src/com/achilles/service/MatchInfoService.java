@@ -266,23 +266,54 @@ public class MatchInfoService {
 			playerMap.put(player.getId(), player);
 		}
 		
-		//handle every player's Match info
-		matchDao.ClearMatchInfos(active.getId());
-		for(int o = 0; o<players.size(); o++) {
-			player = players.get(o);
-			
-			for(int p = 0; p<player.getAdversaryIds().size(); p++) {
-				tryToArrangeMatch(active.getId(), player, playerMap.get(player.getAdversaryIds().get(p)), playerMap);
+		int count = 0;
+		boolean isRemove = false;
+		do {
+			removeOneAdversary(players, isRemove);
+			//handle every player's Match info
+			matchDao.ClearMatchInfos(active.getId());
+			for(int o = 0; o<players.size(); o++) {
+				player = players.get(o);
+				
+				for(int p = 0; p<player.getAdversaryIds().size(); p++) {
+					tryToArrangeMatch(active.getId(), player, playerMap.get(player.getAdversaryIds().get(p)), playerMap);
+				}
+				
+				if( player.getRemainingChallengeTimes() == 0 ) {
+					//for challenge strategy
+					player.setRemainingChallengeTimes(ConfigUtil.getInstance().getMinAcceptChallengeCount());
+				}
 			}
-			
-			if( player.getRemainingChallengeTimes() == 0 ) {
-				//for challenge strategy
-				player.setRemainingChallengeTimes(ConfigUtil.getInstance().getMinAcceptChallengeCount());
+			count = matchDao.GetMaxMatchCountByPlayer(active.getId());
+			isRemove = true;
+		}
+		while(count > ConstValue.MaxMatchCountPerDay);
+		return;
+	}
+	private void removeOneAdversary(List<Player> players, boolean isRemove ) {
+		if( !isRemove ) 
+			return;
+		
+		int maxAdversaryCount = 0;
+		Player player = null;
+		for( int i = 0; i < players.size(); i++ ) {
+			player = players.get(i);
+			if( player.getAdversaryIds().size() > maxAdversaryCount ) {
+				maxAdversaryCount = player.getAdversaryIds().size();
 			}
 		}
 		
+		if( maxAdversaryCount > 0 ) {
+			for( int j = 0; j < players.size(); j++ ) {
+				player = players.get(j);
+				if( player.getAdversaryIds().size() == maxAdversaryCount ) {
+					player.getAdversaryIds().remove( player.getAdversaryIds().size() - 1 );
+					//System.out.println(player.getAdversaryIds().size());
+				}
+			}
+		}
 		return;
-	}	
+	}
 	
 	private void tryToArrangeMatch(int roundId, Player challenger, Player adversary, Map<Integer, Player> playerMap) throws Exception {
 		MatchDAO matchDao = new MatchDAOImpl();

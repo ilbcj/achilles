@@ -1057,23 +1057,18 @@ function _initACHILLES(o) {
 				if(retObj.result == true) {
 					$('#match_registration_detail_player_name').html(rowData.name + ' -- ' + rowData.loginId);
 					var html = '';
+					var optionStr = '';
 					// 对战选手
 					html += '<div class="form-group">';
 					html += '<label>选择挑战对手</label>'
 					html += '<ul class="list-group list-group-unbordered">';
 					retObj.regInfoForEdit.adversaries.forEach(function(player, index){
 						html += '<li class="list-group-item">';
-						var flag = $.inArray(player.id, rowData.adversaryIds);
-						if(flag >= 0) {
-							html += '<input id="adversary' + index + '" type="checkbox" checked ';
-						}else {
-							html += '<input id="adversary' + index + '" type="checkbox" ';	
-						}
-						html += 'value="' + player.id + '">'
-						html += '<label>第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</label>';
-						html += '</li>';
+						html += '<select id="adversary' + index + '" class="form-control"></select>';
+						optionStr += '<option value="' + player.id + '">第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</option>';
 					});
 					html += '</ul></div>';
+					
 					
 					// 对战日期
 					html += '<div class="form-group"><label for="exampleInputEmail1">选择对战日期</label>';
@@ -1093,30 +1088,12 @@ function _initACHILLES(o) {
 					html += '<li class="list-group-item"><textarea class="form-control" rows="7" id="reward_memo" placeholder="奖惩原因"></textarea></li></ul></div>';
 					
 					$("#match_registration_detail_modal_body").empty().append(html);
-					$('#adversary0,#adversary1').each(function(){
-					    var self = $(this),
-					    label = self.next(),
-					    label_text = label.text();
-					
-					    label.remove();
-					    self.iCheck({
-					      checkboxClass: 'icheckbox_line-blue',
-					      radioClass: 'iradio_line-blue',
-					      insert: '<div class="icheck_line-icon"></div>' + label_text
-					    });
+					$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').append( optionStr );
+					$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').each(function(){
+						$(this).get(0).selectedIndex = -1;
 					});
-					  
-					$('#adversary2,#adversary3,#adversary4').each(function(){
-						var self = $(this),
-						label = self.next(),
-						label_text = label.text();
-						
-						label.remove();
-						self.iCheck({
-							checkboxClass: 'icheckbox_line-red',
-							radioClass: 'iradio_line-red',
-							insert: '<div class="icheck_line-icon"></div>' + label_text
-						});
+					rowData.adversaryIds.forEach(function(adversaryId, index){
+						$('#adversary'+ index).val(adversaryId);
 					});
 					
 					$('#week0, #week1, #week2, #week3, #week4, #week5, #week6').iCheck({
@@ -1175,9 +1152,8 @@ function _initACHILLES(o) {
 			regInfo.adversaryIds = [];
 			$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').each(function(index, adversary){
 				var self = $(this);
-				if(self.prop('checked')) {
-					var adversaryId = self.val();
-					regInfo.adversaryIds.push(adversaryId);
+				if( self.val() != null ) {
+					regInfo.adversaryIds.push(self.val());
 				}
 			});
 				
@@ -1295,6 +1271,16 @@ function _initACHILLES(o) {
 				radioClass: 'iradio_square-blue margin',
 			    increaseArea: '20%' // optional
 			});
+			$('#cw, #aw, #draw, #ca, #aa').on('ifChecked', function(event){
+				var id = $(this).attr('id');
+				if( id === 'aa' || id === 'ca' ) {
+					$('#match_score').get(0).selectedIndex = -1;
+					$('#match_score').attr('disabled', 'disabled');
+				}
+				else {
+					$('#match_score').removeAttr('disabled');
+				}
+			});
 			
 			var battleResult = rowData.result;
 			$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
@@ -1308,18 +1294,18 @@ function _initACHILLES(o) {
 			$('#match_score').append('<option value="0:0">' + rowData.challengerName + ' 0:0 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="1:0">' + rowData.challengerName + ' 1:0 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="2:0">' + rowData.challengerName + ' 2:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="0:1">' + rowData.challengerName + ' 0:1 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="1:1">' + rowData.challengerName + ' 1:1 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="2:1">' + rowData.challengerName + ' 2:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="0:2">' + rowData.challengerName + ' 0:2 ' + rowData.adversaryName + '</option>');
           	$('#match_score').append('<option value="1:2">' + rowData.challengerName + ' 1:2 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
+          	//$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
 			$('#match_score').val(rowData.score);
 			
 			var title = rowData.challengerName + ' vs ' + rowData.adversaryName;
