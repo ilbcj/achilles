@@ -19,6 +19,12 @@ public class SeasonInfoService {
 		return count;
 	}
 
+	public Season QuerySeasonsById(int seasonId) throws Exception {
+		SeasonDAO dao = new SeasonDAOImpl();
+		Season season = dao.GetSeasonById(seasonId);
+		return season;
+	}
+	
 	public void SaveSeason(Season season) throws Exception {
 		SeasonDAO dao = new SeasonDAOImpl();
 		

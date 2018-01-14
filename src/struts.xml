@@ -12,5 +12,6 @@
  	<include file="struts-period.xml"/>
  	<include file="struts-match.xml"/>
  	<include file="struts-score.xml"/>
+ 	<include file="struts-sync.xml"/>
  	<include file="struts-config.xml"/>
 </struts>    

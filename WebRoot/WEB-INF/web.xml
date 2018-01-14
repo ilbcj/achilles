@@ -24,14 +24,6 @@
   </filter-mapping>
   <filter-mapping>
 	<filter-name>struts2</filter-name>
-	<url-pattern>/client/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-	<filter-name>struts2</filter-name>
 	<url-pattern>/sync/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-	<filter-name>struts2</filter-name>
-	<url-pattern>/tdms/*</url-pattern>
   </filter-mapping>
 </web-app>

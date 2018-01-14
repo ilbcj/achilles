@@ -6,6 +6,9 @@ public class Round {
 	public final static int STATUS_LAST_ACTIVE = 2;
 	public final static int STATUS_HISTORY = 3;
 	public final static int STATUS_INIT = 9;
+	public final static int PHASE_REGISTRATION = 0;
+	public final static int PHASE_ARRANGED = 1;
+	public final static int PHASE_CALCULATE = 2;
 	
 	private int id;
 	private String year;
@@ -16,8 +19,15 @@ public class Round {
 	private String timestamp;
 	private int seasonId;
 	private int status;
+	private int phase;
 	private int lastRoundId;
 	
+	public int getPhase() {
+		return phase;
+	}
+	public void setPhase(int phase) {
+		this.phase = phase;
+	}
 	public int getLastRoundId() {
 		return lastRoundId;
 	}

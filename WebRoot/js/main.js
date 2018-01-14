@@ -1055,20 +1055,32 @@ function _initACHILLES(o) {
 			var postData = "playerId=" + playerId; 
 			o.basePath && $.post(o.basePath + "/match/queryMatchDetailForEdit.action", postData, function(retObj) {
 				if(retObj.result == true) {
+					if( retObj.plats.length == 0 ) {
+						var message = "获取比赛地图信息失败![没有可用地图]";
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
 					$('#match_registration_detail_player_name').html(rowData.name + ' -- ' + rowData.loginId);
 					var html = '';
-					var optionStr = '';
+					var playerOptionStr = '';//'<option value></option>';
+					var platOptionStr = '';//'<option value></option>'
 					// 对战选手
 					html += '<div class="form-group">';
 					html += '<label>选择挑战对手</label>'
 					html += '<ul class="list-group list-group-unbordered">';
 					retObj.regInfoForEdit.adversaries.forEach(function(player, index){
-						html += '<li class="list-group-item">';
-						html += '<select id="adversary' + index + '" class="form-control"></select>';
-						optionStr += '<option value="' + player.id + '">第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</option>';
+						html += '<li class="list-group-item"><div class="row">';
+						html += '<div class="col-xs-10"><div class="row "><div class="col-xs-12"><select id="adversary' + index + '" class="form-control select2" data-placeholder="选择挑战对手" style="width: 100%;"></select></div></div><div class="row"><div class="col-xs-12"><select id="plat' + index + '" class="form-control select2" multiple="multiple" data-placeholder="选择地图可多选！！！" style="width: 100%;"></select></div></div></div>';
+						html += '<div class="col-xs-2"><a class="btn btn-app clearAdversaryItem" data-index="' + index + '"><i class="fa fa-trash-o"></i> 清空</a></div>';
+						html += '</div></li>';
+						playerOptionStr += '<option value=' + player.id + '>第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</option>';
 					});
 					html += '</ul></div>';
 					
+					// 对战地图
+					retObj.plats.forEach(function(plat, index){
+						platOptionStr += '<option value=' + plat.id + '>' + plat.name + '</option>';
+					});
 					
 					// 对战日期
 					html += '<div class="form-group"><label for="exampleInputEmail1">选择对战日期</label>';
@@ -1088,12 +1100,25 @@ function _initACHILLES(o) {
 					html += '<li class="list-group-item"><textarea class="form-control" rows="7" id="reward_memo" placeholder="奖惩原因"></textarea></li></ul></div>';
 					
 					$("#match_registration_detail_modal_body").empty().append(html);
-					$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').append( optionStr );
+					$('.clearAdversaryItem').on('click.ACHILLES.match.clearadversaryitem', $.ACHILLES.match.clearAdversaryItem);
+					$('.select2').select2();
+					$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').append( playerOptionStr );
 					$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').each(function(){
-						$(this).get(0).selectedIndex = -1;
+						$(this).val([]).select2();
 					});
 					rowData.adversaryIds.forEach(function(adversaryId, index){
-						$('#adversary'+ index).val(adversaryId);
+						$('#adversary'+ index).val(adversaryId).select2();
+					});
+					
+					$('#plat0, #plat1, #plat2, #plat3, #plat4').append( platOptionStr );
+					$('#plat0, #plat1, #plat2, #plat3, #plat4').each(function(){
+						$(this).val([]).select2();
+					});
+					rowData.platIds.forEach(function(platId, index){
+						if( platId != null ) {
+							var selectedPlat = platId.split(',');
+							$('#plat'+ index).val( selectedPlat ).select2();	
+						}
 					});
 					
 					$('#week0, #week1, #week2, #week3, #week4, #week5, #week6').iCheck({
@@ -1110,10 +1135,10 @@ function _initACHILLES(o) {
 					  
 					$('#reward_sponsor').slider({ 
 						id: 'reward_sponsor_slider', 
-						ticks: [-100, -50, 0, 50, 100],
-						min: -100, 
-						max: 100, 
-						value: -101
+						ticks: [-1000, -500, 0, 500, 1000],
+						min: -1000, 
+						max: 1000, 
+						value: -1001
 					});
 					$('#reward_sponsor').on('change', function(slideEvt) {
 						var colorUnselect = '#f9f9f9';
@@ -1146,17 +1171,53 @@ function _initACHILLES(o) {
 				}
 			}, "json");
 		},
+		clearAdversaryItem: function () {
+			var index = $(this).data('index');
+			if ( index != null && index >= 0 ) {
+				$('#adversary' + index).val([]).select2();
+				$('#plat' + index).val([]).select2();
+			}
+		},
 		editMatchRegistrationConfirm: function (regInfo) {
 			var regInfo = $('#match_registration_detail_confirm').data('reg_info');
 			
 			regInfo.adversaryIds = [];
+			regInfo.platIds = [];
+			var message = '';
 			$('#adversary0, #adversary1, #adversary2, #adversary3, #adversary4').each(function(index, adversary){
 				var self = $(this);
+				var platId = $('#plat' + index).val();
 				if( self.val() != null ) {
+					if( platId == null ) {
+						message = "没有为比赛指定地图！";
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
+					if( platId.length != 3 ) {
+						message = "每场挑战要选择三张地图！";
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
+					if( regInfo.adversaryIds.indexOf( self.val() ) != -1 ) {
+						message = "不能选择重复的对手！";
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
 					regInfo.adversaryIds.push(self.val());
+					regInfo.platIds.push(platId.toString());
+				}
+				else {
+					if( platId != null ) {
+						message = '选择了对战地图，但没有为比赛指定挑战对手！';
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
 				}
 			});
-				
+			if(message != '') {
+				return;
+			}
+			
 			regInfo.dayIds= [];
 			$('#week0, #week1, #week2, #week3, #week4, #week5, #week6').each(function(index, day){
 				var self = $(this);
@@ -1176,6 +1237,10 @@ function _initACHILLES(o) {
 			regInfo.adversaryIds.forEach(function(adversaryId){
 				postData += '&regInfoForSave.adversaryIds=' + adversaryId;
 			});
+			regInfo.platIds.forEach(function(platId){
+				postData += '&regInfoForSave.platIds=' + platId;
+			});
+			//postData += '&regInfoForSave.platIds=' + regInfo.platIds.toString();
 			regInfo.dayIds.forEach(function(dayId){
 				postData += '&regInfoForSave.dayIds=' + dayId;
 			});
@@ -1462,7 +1527,7 @@ function _initACHILLES(o) {
 											html = '<span class="looser">全部出席</span>' ;
 										}
 									}
-									else if(data === 2) {
+									else if(data === 1) {
 										html = '<span class="winner">存在缺席</span>' ;
 									}
 									return html;
@@ -1586,6 +1651,14 @@ function _initACHILLES(o) {
 	*/
 	$.ACHILLES.tipMessage = function(message, isAutoClose) {
 		isAutoClose = arguments[1]===undefined ? true : arguments[1];
+		$('#tipModal').removeClass('modal-danger').removeClass('modal-info');
+		if( isAutoClose ) {
+			$('#tipModal').addClass('modal-info');
+		}
+		else {
+			$('#tipModal').addClass('modal-danger');
+			$('#tipModal').modal({backdrop: 'static', keyboard: false});
+		}
 		$('#tipMessage').empty().append(message);
 		$('#tipModal').modal('show');
 		if(isAutoClose) {

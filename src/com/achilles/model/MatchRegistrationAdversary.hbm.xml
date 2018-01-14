@@ -14,6 +14,7 @@
 		<property name="playerId" column="player_id" type="java.lang.Integer"/>
 		<property name="roundId" column="round_id" type="java.lang.Integer"/>
 		<property name="adversaryId" column="adversary_id" type="java.lang.Integer"/>
+		<property name="platId" column="plat_id" type="java.lang.String" length="32"/>
 	</class>
 </hibernate-mapping>
 

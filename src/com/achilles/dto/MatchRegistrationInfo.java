@@ -10,10 +10,17 @@ public class MatchRegistrationInfo {
 	private int scoreReward;
 	private String scoreRewardMemo;
 	private List<Integer> adversaryIds;
+	private List<String> platIds;
 	private String adversaries;
 	private List<Integer> dayIds;
 	private String days;
 	
+	public List<String> getPlatIds() {
+		return platIds;
+	}
+	public void setPlatIds(List<String> platIds) {
+		this.platIds = platIds;
+	}
 	public String getScoreRewardMemo() {
 		return scoreRewardMemo;
 	}

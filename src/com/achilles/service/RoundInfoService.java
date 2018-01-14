@@ -135,6 +135,7 @@ public class RoundInfoService {
 		}
 		
 		active.setStatus( Round.STATUS_LAST_ACTIVE );
+		active.setPhase( Round.PHASE_CALCULATE );
 		dao.AddRound( active );
 		
 		return;

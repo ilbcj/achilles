@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="sync" extends="json-default" namespace="/sync">
+		
+		<global-results>
+ 			<result name="sqlException">/jsp/exception.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.sql.SQLException" result="sqlException" />
+			<exception-mapping exception="java.lang.Exception" result="sqlException" />	
+		</global-exception-mappings>
+	
+	<!-- 
+		获取比赛场次信息				method="queryRoundList"
+		获取比赛场次积分信息			method="queryRoundScore"
+	 -->
+		<action name="savePlayerMatchRegistrationInfo" class="com.achilles.controller.SyncAction" method="SavePlayerMatchRegistrationInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryPlayerMatchRegistrationInfo" class="com.achilles.controller.SyncAction" method="QueryPlayerMatchRegistrationInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryPlayerMatchRegistrationInfoForEdit" class="com.achilles.controller.SyncAction" method="QueryPlayerMatchRegistrationInfoForEdit" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryPlatList" class="com.achilles.controller.SyncAction" method="QueryPlatList" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="querySeasonRound" class="com.achilles.controller.SyncAction" method="QuerySeasonRound" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryActiveMatchInfo" class="com.achilles.controller.SyncAction" method="QueryActiveMatchInfo" >
+ 			<result name="success" type="json" />
+		</action>
+	</package>	
+</struts>

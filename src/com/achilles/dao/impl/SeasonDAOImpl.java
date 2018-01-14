@@ -122,4 +122,28 @@ public class SeasonDAOImpl implements SeasonDAO {
 		
 	}
 
+	@Override
+	public Season GetSeasonById(int seasonId) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		Season rs = null;
+		String sqlString = "SELECT * FROM Season WHERE status =:status and id=:id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Season.class);
+			q.setInteger("status", Season.STATUS_USING);
+			q.setInteger("id", seasonId);
+			rs = (Season)q.uniqueResult();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 }

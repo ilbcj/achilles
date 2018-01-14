@@ -14,4 +14,5 @@ public interface SeasonDAO {
 
 	public void DelSeason(Season target) throws Exception;
 
+	public Season GetSeasonById(int seasonId) throws Exception;
 }

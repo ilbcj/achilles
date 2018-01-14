@@ -5,7 +5,14 @@ public class MatchRegistrationAdversary {
 	private int playerId;
 	private int roundId;
 	private int adversaryId;
+	private String platId;
 	
+	public String getPlatId() {
+		return platId;
+	}
+	public void setPlatId(String platId) {
+		this.platId = platId;
+	}
 	public int getId() {
 		return id;
 	}

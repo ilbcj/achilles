@@ -18,11 +18,18 @@ public class Player implements Comparable<Player>{
 	private String tel;
 	private String email;
 	private String qq;
+	private String qqOpenId;
 	private String wechat;
 	private String timestamp;
 	private int remainingChallengeTimes;
 	private int status;
 	
+	public String getQqOpenId() {
+		return qqOpenId;
+	}
+	public void setQqOpenId(String qqOpenId) {
+		this.qqOpenId = qqOpenId;
+	}
 	public String getQq() {
 		return qq;
 	}

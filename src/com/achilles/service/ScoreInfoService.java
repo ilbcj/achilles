@@ -66,7 +66,7 @@ public class ScoreInfoService {
 		for(int i = 0; i < scores.size(); i++) {
 			score = scores.get( i );
 			score.setRanking( i + 1 );
-			score.setPlayerName( playerMap.get( score.getPlayerId() ).getName() );
+			score.setPlayerName( playerMap.get( score.getPlayerId() ).getName() + " - " + playerMap.get( score.getPlayerId() ).getLoginId() );
 		}
 		return scores;
 	}

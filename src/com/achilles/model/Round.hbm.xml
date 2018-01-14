@@ -19,6 +19,7 @@
 		<property name="memo" type="java.lang.String" length="32"/>
 		<property name="seasonId" column="season_id" type="java.lang.Integer"/>
 		<property name="status" type="java.lang.Integer"/>
+		<property name="phase" type="java.lang.Integer"/>
 		<property name="lastRoundId" column="last_round_id" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>

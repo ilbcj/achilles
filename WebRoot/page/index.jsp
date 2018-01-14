@@ -31,6 +31,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="<%=path %>/plugins/iCheck/square/blue.css">
   <link rel="stylesheet" href="<%=path %>/plugins/iCheck/line/blue.css">
   <link rel="stylesheet" href="<%=path %>/plugins/iCheck/line/red.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="<%=path %>/plugins/select2/select2.min.css">
   <!-- bootstrap-slider -->
   <link rel="stylesheet" href="<%=path %>/plugins/bootstrap-slider/slider.css">
   <!-- Theme style -->
@@ -237,6 +239,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="<%=path %>/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <!-- iCheck -->
 <script src="<%=path %>/plugins/iCheck/icheck.min.js"></script>
+<!-- Select2 -->
+<script src="<%=path %>/plugins/select2/select2.full.min.js"></script>
 <!-- bootstrap-slider -->
 <script src="<%=path %>/plugins/bootstrap-slider/bootstrap-slider.js"></script>
 <!-- AdminLTE App -->

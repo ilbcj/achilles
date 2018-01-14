@@ -185,13 +185,16 @@ public class MatchInfoService {
 			List<MatchRegistrationAdversary> adversaries = matchDao.GetRegistrationAdversaryByPlayer(roundId, player.getId());
 			String adversariesName = "";
 			List<Integer> adversaryIds = new ArrayList<Integer>();
+			List<String> platIds = new ArrayList<String>();
 			MatchRegistrationAdversary advIter = null;
 			for(int j = 0; j < adversaries.size(); j++) {
 				advIter = adversaries.get(j);
 				adversaryIds.add(advIter.getAdversaryId());
+				platIds.add(advIter.getPlatId());
 				adversariesName += playerMap.get(advIter.getAdversaryId()).getName() + "[" + playerMap.get(advIter.getAdversaryId()).getLoginId() + "]，";
 			}
 			mri.setAdversaryIds(adversaryIds);
+			mri.setPlatIds(platIds);
 			mri.setAdversaries(adversariesName);
 			
 			// get player's free days
@@ -288,8 +291,13 @@ public class MatchInfoService {
 			isRemove = true;
 		}
 		while(count > ConstValue.MaxMatchCountPerDay);
+		
+		// update round status
+		active.setPhase(Round.PHASE_ARRANGED);
+		roundService.SaveRound(active);
 		return;
 	}
+	
 	private void removeOneAdversary(List<Player> players, boolean isRemove ) {
 		if( !isRemove ) 
 			return;
@@ -766,6 +774,7 @@ public class MatchInfoService {
 				adversary.setRoundId(active.getId());
 				adversary.setPlayerId(regInfo.getPlayerId());
 				adversary.setAdversaryId(regInfo.getAdversaryIds().get(i));
+				adversary.setPlatId(regInfo.getPlatIds().get(i));
 				matchDao.SaveMatchRegistrationAdversary(adversary);
 			}
 		}
@@ -810,6 +819,21 @@ public class MatchInfoService {
 		info.setScore( matchInfoDetail.getScore() );
 		dao.SaveMatchInfo( info );
 		return;
+	}
+
+	public MatchRegistrationInfo QueryActiveMatchRegistrationInfoByPlayerId(
+			int playerId) throws Exception {
+		List<MatchRegistrationInfo> matchRegistrationInfos =  QueryActiveMatchRegistrationInfo();
+		MatchRegistrationInfo result = null;
+		MatchRegistrationInfo tmp = null;
+		for(int i = 0; i < matchRegistrationInfos.size(); i++ ) {
+			tmp = matchRegistrationInfos.get(i);
+			if( playerId == tmp.getPlayerId() ) {
+				result = tmp;
+				break;
+			}
+		}
+		return result;
 	}
 	
 }

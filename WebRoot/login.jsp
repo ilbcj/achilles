@@ -57,11 +57,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     </div>
     <form id="login" name="login" action="<%=path %>/login/loginpwd.action" method="post">
       <div class="form-group has-feedback">
-        <input type="text" class="form-control" name="loginid" placeholder="请输入管理员账号" value="admin" />
+        <input type="text" class="form-control" name="loginid" placeholder="请输入管理员账号" value="" />
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" name="pwd" placeholder="请输入管理员口令" value="admin" />
+        <input type="password" class="form-control" name="pwd" placeholder="请输入管理员口令" value="" />
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">

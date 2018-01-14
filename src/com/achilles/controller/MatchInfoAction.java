@@ -7,7 +7,9 @@ import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.MatchInfo;
+import com.achilles.model.Plat;
 import com.achilles.service.MatchInfoService;
+import com.achilles.service.PlatService;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class MatchInfoAction extends ActionSupport {
@@ -31,6 +33,7 @@ public class MatchInfoAction extends ActionSupport {
 	
 	private int playerId;
 	private MatchRegistrationInfoForEdit regInfoForEdit;
+	private List<Plat> plats;
 	private MatchRegistrationInfo regInfoForSave;
 	
 	private List<MatchDayInfo> activeMatchInfo;
@@ -38,6 +41,14 @@ public class MatchInfoAction extends ActionSupport {
 	
 	private boolean allResultSaved;
 	
+	public List<Plat> getPlats() {
+		return plats;
+	}
+
+	public void setPlats(List<Plat> plats) {
+		this.plats = plats;
+	}
+
 	public MatchInfo getMatchInfoDetail() {
 		return matchInfoDetail;
 	}
@@ -168,6 +179,8 @@ public class MatchInfoAction extends ActionSupport {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			regInfoForEdit = service.QueryMatchRegistrationInfoForEditByPlayerId(playerId);
+			PlatService ps = new PlatService();
+			plats = ps.QueryAllMaps();			
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
