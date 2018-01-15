@@ -480,4 +480,33 @@ public class MatchDAOImpl implements MatchDAO {
 		return rs;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<MatchRegistrationAdversary> GetActiveRoundRegistrationAdversary() throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<MatchRegistrationAdversary> rs = null;
+		String sqlString = "SELECT m.* FROM match_registration_adversary m join round r on r.id = m.round_id and r.status=:status ";
+		
+		try
+		{
+			Query q = session.createSQLQuery(sqlString).addEntity(MatchRegistrationAdversary.class);
+			q.setInteger("status", Round.STATUS_ACTIVE);
+			rs = q.list();
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 }

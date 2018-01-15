@@ -9,6 +9,7 @@ public class Player implements Comparable<Player>{
 	public final static String RACE_T = "T";
 	public final static String RACE_P = "P";
 	public final static String RACE_Z = "Z";
+	public final static String RACE_X = "X";
 	
 	private int id;
 	private String loginId;

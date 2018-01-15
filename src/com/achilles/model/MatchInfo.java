@@ -17,6 +17,24 @@ public class MatchInfo {
 	private String score;
 	private int result;
 	
+	public String getChallengerRace() {
+		return challengerRace;
+	}
+	public void setChallengerRace(String challengerRace) {
+		this.challengerRace = challengerRace;
+	}
+	public String getAdversaryRace() {
+		return adversaryRace;
+	}
+	public void setAdversaryRace(String adversaryRace) {
+		this.adversaryRace = adversaryRace;
+	}
+	public String getPlatName() {
+		return platName;
+	}
+	public void setPlatName(String platName) {
+		this.platName = platName;
+	}
 	public int getChallengerVranking() {
 		return challengerVranking;
 	}
@@ -76,6 +94,10 @@ public class MatchInfo {
 	private String challengerName;
 	private String adversaryName;
 
+	private String challengerRace; 
+	private String adversaryRace;
+	private String platName;
+	
 	public String getChallengerName() {
 		return challengerName;
 	}

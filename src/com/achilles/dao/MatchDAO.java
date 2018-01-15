@@ -14,6 +14,7 @@ public interface MatchDAO {
 	public void ClearAdversaries(int roundId, int playerId) throws Exception;
 	public MatchRegistrationAdversary SaveMatchRegistrationAdversary(MatchRegistrationAdversary adversary) throws Exception;
 	public List<MatchRegistrationAdversary> GetRegistrationAdversaryByPlayer(int roundId, int playerId) throws Exception;
+	public List<MatchRegistrationAdversary> GetActiveRoundRegistrationAdversary() throws Exception;
 	
 	//MatchRegistrationDays
 	public void ClearDays(int roundId, int playerId) throws Exception;

@@ -986,6 +986,9 @@ function _initACHILLES(o) {
 							else if(data === 'Z') {
 								text = '异虫';
 							}
+							else if(data === 'X') {
+								text = '特殊对抗'
+							}
 							return text;
 						},
 						targets: 4
@@ -1060,7 +1063,7 @@ function _initACHILLES(o) {
 						$.ACHILLES.tipMessage(message, false);
 						return;
 					}
-					$('#match_registration_detail_player_name').html(rowData.name + ' -- ' + rowData.loginId);
+					$('#match_registration_detail_player_name').html(rowData.name + ' -- ' + rowData.loginId + ' -- ' + rowData.race);
 					var html = '';
 					var playerOptionStr = '';//'<option value></option>';
 					var platOptionStr = '';//'<option value></option>'
@@ -1073,7 +1076,7 @@ function _initACHILLES(o) {
 						html += '<div class="col-xs-10"><div class="row "><div class="col-xs-12"><select id="adversary' + index + '" class="form-control select2" data-placeholder="选择挑战对手" style="width: 100%;"></select></div></div><div class="row"><div class="col-xs-12"><select id="plat' + index + '" class="form-control select2" multiple="multiple" data-placeholder="选择地图可多选！！！" style="width: 100%;"></select></div></div></div>';
 						html += '<div class="col-xs-2"><a class="btn btn-app clearAdversaryItem" data-index="' + index + '"><i class="fa fa-trash-o"></i> 清空</a></div>';
 						html += '</div></li>';
-						playerOptionStr += '<option value=' + player.id + '>第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + '</option>';
+						playerOptionStr += '<option value=' + player.id + '>第' + player.ranking + '名 - ' + player.name + ' - ' + player.loginId + ' - ' + player.race + '</option>';
 					});
 					html += '</ul></div>';
 					
@@ -1277,11 +1280,29 @@ function _initACHILLES(o) {
 					        	{ title: "操作", data: null, defaultContent: "", width: "100px" },
 					            { title: "挑战者", data: "challengerName", width: "200px" },
 					            { title: "擂主", data: "adversaryName", width: "200px" },
+					            { title: "地图", data: "platName", width: "600px" },
 					            { title: "结果", data: "result" },
 					            { title: "比分", data: "score" }					            
 					        ],
 					        columnDefs: [
 					        	{
+									render: function ( data, type, row ) {
+										var html = '';
+										if( data != '' ) {
+											var plats = data.split(',');
+											plats.forEach(function(plat){
+												if(plat != null && plat != '') {
+													html += '<span class="margin badge bg-blue">' + plat + '</span>';	
+												}
+											});
+											 
+										}
+										
+										return html;
+									},
+									targets: 3
+								},
+								{
 									render: function ( data, type, row ) {
 										var html = '';
 										if(data === 1) {
@@ -1301,7 +1322,7 @@ function _initACHILLES(o) {
 										}
 										return html;
 									},
-									targets: 3
+									targets: 4
 								},
 					        	{
 									render: function ( data, type, row ) {

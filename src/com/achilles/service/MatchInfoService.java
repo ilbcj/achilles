@@ -9,11 +9,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.achilles.dao.MatchDAO;
+import com.achilles.dao.PlatDAO;
 import com.achilles.dao.impl.MatchDAOImpl;
+import com.achilles.dao.impl.PlatDAOImpl;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.MatchInfo;
+import com.achilles.model.Plat;
 import com.achilles.model.Ranking;
 import com.achilles.model.Round;
 import com.achilles.model.MatchRegistrationAdversary;
@@ -475,7 +478,16 @@ public class MatchInfoService {
 			player = players.get(x);
 			playerMap.put(player.getId(), player);
 		}
-				
+		
+		// get all match registration adversarys
+		List<MatchRegistrationAdversary> adversaries = matchDao.GetActiveRoundRegistrationAdversary();
+		PlatDAO pdao = new PlatDAOImpl();
+		List<Plat> plats = pdao.GetPlatByStatus(Plat.STATUS_ACTIVE);
+		Map<String, String> platMap = new HashMap<String, String>();
+		for( int x = 0; x < plats.size(); x++ ) {
+			Plat plat = plats.get(x);
+			platMap.put( "" + plat.getId(), plat.getName() );
+		}
 		MatchInfo info = null;
 		MatchDayInfo dayInfo = null;
 		for(int j = 0; j<infos.size(); j++) {
@@ -484,13 +496,36 @@ public class MatchInfoService {
 			Player adversary = playerMap.get(info.getAdversaryId());
 			dayInfo = dayInfosMap.get(info.getDayId());
 			
-			info.setChallengerName(challenger.getName()+ "(" + challenger.getLoginId() + "-" + info.getChallengerVranking() + ")");
-			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + "-" + info.getAdversaryVranking() + ")");
+			info.setChallengerName(challenger.getName() + "(" + challenger.getLoginId() + "-" + info.getChallengerVranking() + "-" + challenger.getRace() + ")");
+			info.setChallengerRace( challenger.getRace() );
+			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + "-" + info.getAdversaryVranking() + "-" + adversary.getRace() + ")");
+			info.setAdversaryRace( adversary.getRace() );
+			info.setPlatName( getPlatName(challenger.getId(), adversary.getId(), adversaries, platMap) );
 			
 			dayInfo.getMatchInfo().add(info);
 		}
 		
 		return dayInfos;
+	}
+	private String getPlatName(int challengerId, int adversaryId, List<MatchRegistrationAdversary> adversaries, Map<String, String> platMap) throws Exception {
+		String name = "";
+		
+		String plats = null;
+		for( int i = 0; i < adversaries.size(); i++ ) {
+			MatchRegistrationAdversary item = adversaries.get(i);
+			if(item.getPlayerId() == challengerId && item.getAdversaryId() == adversaryId) {
+				plats = item.getPlatId();
+				break;
+			}
+		}
+		if( plats == null || plats.isEmpty() ) {
+			throw new Exception("no plat found in match info [playerId:" + challengerId + "; adversaryId:" + adversaryId + "]");
+		}
+		String [] platIds = plats.split(",");
+		for( int j = 0; j < platIds.length; j++ ) {
+			name += platMap.get(platIds[j]) + ",";
+		}
+		return name;
 	}
 
 	public void TestCreateMatchResult() throws Exception {
@@ -604,6 +639,12 @@ public class MatchInfoService {
 		int isAbandon = 0;
 		String memo = "";
 		
+		//0. get last score
+		Round active = new RoundInfoService().GetActiveRound();
+		Ranking lastRanking = new RankingService().QueryRankingByPlayerid(active.getLastRoundId(), player.getId());
+		lastScore = lastRanking.getScore();
+		memo += "[上轮积分" + lastScore + "],";
+		
 		//1. caculate score as challenger
 		MatchDAO mdao = new MatchDAOImpl();
 		List<MatchInfo> challengeInfos = mdao.GetActiveMatchInfoByChallenger(player.getId());
@@ -611,7 +652,7 @@ public class MatchInfoService {
 		for( int i = 0; i < challengeInfos.size(); i++ ) {
 			info = challengeInfos.get(i);
 			
-			memo += "[挑战-" + playerMap.get(info.getAdversaryId()).getName() + "(" + info.getAdversaryVranking() + ")，挑战";
+			memo += "[挑战-" + playerMap.get(info.getAdversaryId()).getLoginId() + "(" + playerMap.get(info.getAdversaryId()).getRace() + "-" + info.getAdversaryVranking() + ")，挑战";
 			int battleResult = info.getResult();
 			if( MatchInfo.RESULT_ADVERSARY_ABSENT == battleResult || MatchInfo.RESULT_CHALLENGER_WIN == battleResult ) {
 				memo += "成功，";
@@ -653,7 +694,7 @@ public class MatchInfoService {
 		for( int j = 0; j < adversaryInfos.size(); j++ ) {
 			info = adversaryInfos.get(j);
 			
-			memo += "[被-" + playerMap.get(info.getChallengerId()).getName() + "(" + info.getChallengerVranking() + ")挑战，守擂";
+			memo += "[被-" + playerMap.get(info.getChallengerId()).getLoginId() + "(" + playerMap.get(info.getChallengerId()).getRace() + "-" + info.getChallengerVranking() + ")挑战，守擂";
 			int battleResult = info.getResult();
 			if( MatchInfo.RESULT_CHALLENGER_ABSENT == battleResult || MatchInfo.RESULT_ADVERSARY_WIN == battleResult ) {
 				memo += "成功，";
@@ -683,7 +724,6 @@ public class MatchInfoService {
 		
 		//3. caculate score of arrange day counts
 		memo += "[本周报名比赛";
-		Round active = new RoundInfoService().GetActiveRound();
 		List<MatchRegistrationDays> days = mdao.GetRegistrationDayByPlayer( active.getId(), player.getId() );
 		if(days == null || days.size() == 0) {
 			memo += "0天，" ;
@@ -719,9 +759,6 @@ public class MatchInfoService {
 			scoreObj.setRoundId(active.getId());
 			scoreObj.setPlayerId(player.getId());
 		}
-		
-		Ranking lastRanking = new RankingService().QueryRankingByPlayerid(active.getLastRoundId(), player.getId());
-		lastScore = lastRanking.getScore();
 		
 		scoreObj.setLastScore(lastScore);
 		scoreObj.setChallengerWin(challengerWin);
