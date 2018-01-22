@@ -1,5 +1,7 @@
 package com.achilles.service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,24 @@ public class ScoreInfoService {
 			score.setRanking( i + 1 );
 			score.setPlayerName( playerMap.get( score.getPlayerId() ).getLoginId() + "[" + playerMap.get( score.getPlayerId() ).getRace() + "]" );
 		}
+		
+		Collections.sort(scores, new Comparator<Score>() {
+            @Override
+            public int compare(Score o1, Score o2) {
+                return o2.getLastScore()-o1.getLastScore();
+            }
+        });
+		
+		for(int i = 0; i < scores.size(); i++) {
+			score = scores.get( i );
+			score.setLastRanking( i + 1 );
+		}
+		
+		Collections.sort(scores, new Comparator<Score>() {
+            @Override
+            public int compare(Score o1, Score o2) {
+                return o2.getScore()-o1.getScore();            }
+        });
 		return scores;
 	}
 

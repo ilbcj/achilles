@@ -128,7 +128,14 @@ public class Score {
 	//non persistence attribute
 	private String playerName;
 	private int ranking;
-
+	private int lastRanking;
+	
+	public int getLastRanking() {
+		return lastRanking;
+	}
+	public void setLastRanking(int lastRanking) {
+		this.lastRanking = lastRanking;
+	}
 	public String getPlayerName() {
 		return playerName;
 	}
