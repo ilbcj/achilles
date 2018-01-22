@@ -35,6 +35,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="<%=path %>/plugins/select2/select2.min.css">
   <!-- bootstrap-slider -->
   <link rel="stylesheet" href="<%=path %>/plugins/bootstrap-slider/slider.css">
+  <!-- lightweght-multi-select-combo-box -->
+  <link rel="stylesheet" href="<%=path %>/plugins/Lightweight-Multi-select-Combo-Box-Plugin/selectlistactions.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<%=path %>/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -243,6 +245,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="<%=path %>/plugins/select2/select2.full.min.js"></script>
 <!-- bootstrap-slider -->
 <script src="<%=path %>/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+<!-- lightweght-multi-select-combo-box -->
+<script src="<%=path %>/plugins/Lightweight-Multi-select-Combo-Box-Plugin/jquery.selectlistactions.js"></script>
 <!-- AdminLTE App -->
 <script src="<%=path %>/js/app.js"></script>
 <!-- tree -->

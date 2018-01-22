@@ -222,23 +222,23 @@
 		                <li class="list-group-item">
 		                  <span class="margin">
 		                  <input id="cw" name="battle_result" type="radio" value="1">
-		                  <label for="monday">挑战者胜利</label>
+		                  <label for="cw">挑战者胜利</label>
 		                  </span>
 		                  <span class="margin">
 											<input id="aw" name="battle_result" type="radio" value="2">
-		                  <label for="tuesday">守擂者胜利</label>
+		                  <label for="aw">守擂者胜利</label>
 											</span>
 		                  <span class="margin">
 											<input id="draw" name="battle_result" type="radio" value="3">
-											<label for="wednesday">平局</label>
+											<label for="draw">平局</label>
 											</span>
 		                  <span class="margin">
 											<input id="ca" name="battle_result" type="radio" value="4">
-											<label for="thusday">挑战者缺席</label>
+											<label for="ca">挑战者缺席</label>
 											</span>
 		                  <span class="margin">
 		                  <input id="aa" name="battle_result" type="radio" value="5">
-											<label for="friday">守擂者缺席</label>
+											<label for="aa">守擂者缺席</label>
 											</span>
 		                </li>
 		              </ul>
@@ -265,6 +265,79 @@
 		                  	<option value="1:3">1:3</option>
 		                  	<option value="2:3">2:3</option>-->
 											</select>
+											</span>
+		                </li>
+		              </ul>
+                </div>
+                <div class="form-group">
+                  <label>本场对战信息</label>
+                  <ul class="list-group list-group-unbordered">
+		                <li class="list-group-item">
+		                  <span class="margin" id="platInfo">
+		                  	<div class="row">
+		                  		<div class="col-xs-12">
+                  				<div class="box box-widget widget-user">
+						            		<!-- Add the bg color to the header using any of the bg-* classes -->
+								            <div class="widget-user-header bg-aqua-active">
+								              <h3 class="widget-user-username">第一局 - MatchPoint</h3>
+								              <h4 class="widget-user-desc">fengzi 挑战 leiche</h4>
+								            </div>
+						            
+								            <div class="box-footer no-padding">
+								              <div class="row">
+								                <div class="col-sm-3 border-right">
+								                  <div class="description-block">
+								                    <h5 class="description-header">挑战者种族</h5>
+								                    <span class="description-text">
+								                    	<input id="crt0" name="challenger_race0" type="radio" value="T">
+										                  <label for="crt0">T</label>
+										                  <input id="crp0" name="challenger_race0" type="radio" value="P">
+										                  <label for="crp0">P</label>
+																			<input id="crz0" name="challenger_race0" type="radio" value="Z">
+																			<label for="crz0">Z</label>
+								                    </span>
+								                  </div>
+								                  <!-- /.description-block -->
+								                </div>
+								                <!-- /.col -->
+								                <div class="col-sm-4 border-right">
+								                  <div class="description-block">
+								                    <h5 class="description-header">擂主种族</h5>
+								                    <span class="description-text">
+								                    	<input id="art0" name="adversary_race0" type="radio" value="T">
+										                  <label for="art0">T</label>
+										                  <input id="arp0" name="adversary_race0" type="radio" value="P">
+										                  <label for="arp0">P</label>
+																			<input id="arz0" name="adversary_race0" type="radio" value="Z">
+																			<label for="arz0">Z</label>
+								                    </span>
+								                  </div>
+								                  <!-- /.description-block -->
+								                </div>
+								                <!-- /.col -->
+								                <div class="col-sm-5">
+								                  <div class="description-block">
+								                    <h5 class="description-header">胜负关系</h5>
+								                    <span class="description-text">
+								                    	<input id="plat_cw0" name="match_result" type="radio" value="1">
+										                  <label for="plat_cw0">挑战者胜</label>
+										                  <input id="plat_aw0" name="match_result" type="radio" value="2">
+										                  <label for="plat_aw0">擂主胜</label>
+																			<input id="plat_draw0" name="match_result" type="radio" value="3">
+																			<label for="plat_draw0">平局</label>
+								                    </span>
+								                  </div>
+								                  <!-- /.description-block -->
+								                </div>
+								                <!-- /.col -->
+								              </div>
+								              <!-- /.row -->
+								            </div>
+								            <!-- /.box-footer -->
+								          </div>
+								          </div>
+		                  	</div>
+		                  	
 											</span>
 		                </li>
 		              </ul>

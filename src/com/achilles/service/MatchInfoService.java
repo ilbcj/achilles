@@ -194,7 +194,7 @@ public class MatchInfoService {
 				advIter = adversaries.get(j);
 				adversaryIds.add(advIter.getAdversaryId());
 				platIds.add(advIter.getPlatId());
-				adversariesName += playerMap.get(advIter.getAdversaryId()).getName() + "[" + playerMap.get(advIter.getAdversaryId()).getLoginId() + "]，";
+				adversariesName += playerMap.get(advIter.getAdversaryId()).getLoginId() + "[" + playerMap.get(advIter.getAdversaryId()).getRace() + "]，";
 			}
 			mri.setAdversaryIds(adversaryIds);
 			mri.setPlatIds(platIds);
@@ -496,9 +496,9 @@ public class MatchInfoService {
 			Player adversary = playerMap.get(info.getAdversaryId());
 			dayInfo = dayInfosMap.get(info.getDayId());
 			
-			info.setChallengerName(challenger.getName() + "(" + challenger.getLoginId() + "-" + info.getChallengerVranking() + "-" + challenger.getRace() + ")");
+			info.setChallengerName(challenger.getLoginId() + "[" + challenger.getRace() + "]");
 			info.setChallengerRace( challenger.getRace() );
-			info.setAdversaryName(adversary.getName() + "(" + adversary.getLoginId() + "-" + info.getAdversaryVranking() + "-" + adversary.getRace() + ")");
+			info.setAdversaryName(adversary.getLoginId() + "[" + adversary.getRace() + "]");
 			info.setAdversaryRace( adversary.getRace() );
 			info.setPlatName( getPlatName(challenger.getId(), adversary.getId(), adversaries, platMap) );
 			
