@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.achilles.dao.BattleInfoDAO;
 import com.achilles.dao.MatchDAO;
 import com.achilles.dao.PlatDAO;
 import com.achilles.dao.PlayerDAO;
+import com.achilles.dao.impl.BattleInfoDAOImpl;
 import com.achilles.dao.impl.MatchDAOImpl;
 import com.achilles.dao.impl.PlatDAOImpl;
 import com.achilles.dao.impl.PlayerDAOImpl;
@@ -458,8 +460,8 @@ public class MatchInfoService {
 	public List<Battle> QueryMatchInfoForEditByPlayerIdAndAdversaryId(int playerId, int adversaryId) throws Exception {
 		RoundInfoService roundService = new RoundInfoService();
 		Round active = roundService.GetActiveRound();
-		MatchDAO matchDao = new MatchDAOImpl();
-		List<Battle> result = matchDao.GetBattleInfoByChallengerAndAdversary(playerId, adversaryId, active.getId());
+		BattleInfoDAO battlehDao = new BattleInfoDAOImpl();
+		List<Battle> result = battlehDao.GetBattleInfoByChallengerAndAdversary(playerId, adversaryId, active.getId());
 		return result;
 	}
 	
@@ -867,7 +869,8 @@ public class MatchInfoService {
 		info.setScore( matchInfoDetail.getScore() );
 		dao.SaveMatchInfo( info );
 		
-		dao.ClearBattleInfoByChallengerAndAdversary(info.getChallengerId(), info.getAdversaryId(), info.getRoundId());
+		BattleInfoDAO bdao = new BattleInfoDAOImpl();
+		bdao.ClearBattleInfoByChallengerAndAdversary(info.getChallengerId(), info.getAdversaryId(), info.getRoundId());
 		PlayerDAO pdao = new PlayerDAOImpl();
 		PlatDAO platdao = new PlatDAOImpl();
 		for(int i = 0; i<battles.size(); i++) {
@@ -890,8 +893,7 @@ public class MatchInfoService {
 			Plat plat = platdao.GetPlatByName(battle.getMapName());
 			battle.setMapId(plat.getId());
 			battle.setTimestamp(DateTimeUtil.GetCurrentTime());
-			dao.SaveBattleInfo(battle);
-			
+			bdao.SaveBattleInfo(battle);
 		}
 		return;
 	}

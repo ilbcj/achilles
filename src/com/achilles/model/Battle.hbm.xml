@@ -24,7 +24,7 @@
 		<property name="adversaryRank" column="adversary_rank" type="java.lang.Integer"/>
 		<property name="mapId" column="map_id" type="java.lang.Integer"/>
 		<property name="mapName" column="map_name" type="java.lang.String" length="64"/>
-		<property name="vod" type="java.lang.String" length="64"/>
+		<property name="vod" type="java.lang.String" length="256"/>
 		<property name="roundId" column="round_id" type="java.lang.Integer"/>
 		<property name="timestamp" type="java.lang.String" length="64"/>
 		<property name="memo" type="java.lang.String" length="128"/>
