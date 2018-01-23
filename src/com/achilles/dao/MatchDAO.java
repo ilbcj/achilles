@@ -2,6 +2,7 @@ package com.achilles.dao;
 
 import java.util.List;
 
+import com.achilles.model.Battle;
 import com.achilles.model.MatchInfo;
 import com.achilles.model.MatchRegistrationAdversary;
 import com.achilles.model.MatchRegistrationDays;
@@ -31,4 +32,8 @@ public interface MatchDAO {
 	public List<MatchInfo> GetActiveMatchInfoByadversary(int playerId) throws Exception;
 	public int GetMaxMatchCountByPlayer(int roundId) throws Exception;
 	
+	//BattleInfo
+	public Battle SaveBattleInfo(Battle battle) throws Exception;
+	public void ClearBattleInfoByChallengerAndAdversary(int challengerId, int adversaryId, int roundId) throws Exception;
+	public List<Battle> GetBattleInfoByChallengerAndAdversary(int challengerId, int adversaryId, int roundId) throws Exception;
 }

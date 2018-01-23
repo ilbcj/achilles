@@ -10,11 +10,14 @@ import java.util.Set;
 
 import com.achilles.dao.MatchDAO;
 import com.achilles.dao.PlatDAO;
+import com.achilles.dao.PlayerDAO;
 import com.achilles.dao.impl.MatchDAOImpl;
 import com.achilles.dao.impl.PlatDAOImpl;
+import com.achilles.dao.impl.PlayerDAOImpl;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
+import com.achilles.model.Battle;
 import com.achilles.model.MatchInfo;
 import com.achilles.model.Plat;
 import com.achilles.model.Ranking;
@@ -452,7 +455,14 @@ public class MatchInfoService {
 		
 		return;
 	}
-
+	public List<Battle> QueryMatchInfoForEditByPlayerIdAndAdversaryId(int playerId, int adversaryId) throws Exception {
+		RoundInfoService roundService = new RoundInfoService();
+		Round active = roundService.GetActiveRound();
+		MatchDAO matchDao = new MatchDAOImpl();
+		List<Battle> result = matchDao.GetBattleInfoByChallengerAndAdversary(playerId, adversaryId, active.getId());
+		return result;
+	}
+	
 	public List<MatchDayInfo> QueryActiveMatchInfo() throws Exception {
 		MatchDAO matchDao = new MatchDAOImpl();
 		List<MatchInfo> infos = matchDao.GetActiveMatchInfo();
@@ -507,6 +517,7 @@ public class MatchInfoService {
 		
 		return dayInfos;
 	}
+	
 	private String getPlatName(int challengerId, int adversaryId, List<MatchRegistrationAdversary> adversaries, Map<String, String> platMap) throws Exception {
 		String name = "";
 		
@@ -839,7 +850,7 @@ public class MatchInfoService {
 		return result;
 	}
 
-	public void SaveMatchInfoDetail( MatchInfo matchInfoDetail ) throws Exception {
+	public void SaveMatchInfoDetail( MatchInfo matchInfoDetail, List<Battle> battles ) throws Exception {
 		if( matchInfoDetail == null ) {
 			throw new Exception( "要保存的数据不能是空" );
 		}
@@ -855,6 +866,33 @@ public class MatchInfoService {
 		info.setResult( matchInfoDetail.getResult() );
 		info.setScore( matchInfoDetail.getScore() );
 		dao.SaveMatchInfo( info );
+		
+		dao.ClearBattleInfoByChallengerAndAdversary(info.getChallengerId(), info.getAdversaryId(), info.getRoundId());
+		PlayerDAO pdao = new PlayerDAOImpl();
+		PlatDAO platdao = new PlatDAOImpl();
+		for(int i = 0; i<battles.size(); i++) {
+			Player  player = pdao.GetPlayerById(info.getChallengerId());
+			Battle battle = battles.get(i);
+			if( player == null || player.getId() != battle.getChallengerId() ) {
+				throw new Exception("对战信息不正确[挑战者信息与报名信息不匹配！]");
+			}
+			battle.setChallengerLoginId(player.getLoginId());
+			battle.setChallengerName(player.getName());
+			battle.setChallengerRank(info.getChallengerVranking());
+			player = pdao.GetPlayerById(info.getAdversaryId());
+			if( player == null || player.getId() != battle.getAdversaryId() ) {
+				throw new Exception("对战信息不正确[擂主信息与报名信息不匹配！]");
+			}
+			battle.setAdversaryLoginId(player.getLoginId());
+			battle.setAdversaryName(player.getName());
+			battle.setAdversaryRank(info.getAdversaryVranking());
+			battle.setRoundId(info.getRoundId());
+			Plat plat = platdao.GetPlatByName(battle.getMapName());
+			battle.setMapId(plat.getId());
+			battle.setTimestamp(DateTimeUtil.GetCurrentTime());
+			dao.SaveBattleInfo(battle);
+			
+		}
 		return;
 	}
 

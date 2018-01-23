@@ -1043,7 +1043,7 @@ function _initACHILLES(o) {
 			//console.log(rowData);
 
 			var postData = "playerId=" + playerId; 
-			o.basePath && $.post(o.basePath + "/match/queryMatchDetailForEdit.action", postData, function(retObj) {
+			o.basePath && $.post(o.basePath + "/match/queryMatchRegistrationDetailForEdit.action", postData, function(retObj) {
 				if(retObj.result == true) {
 					if( retObj.plats.length == 0 ) {
 						var message = "获取比赛地图信息失败![没有可用地图]";
@@ -1277,7 +1277,7 @@ function _initACHILLES(o) {
 			regInfo.dayIds.forEach(function(dayId){
 				postData += '&regInfoForSave.dayIds=' + dayId;
 			});
-			o.basePath && $.post(o.basePath + "/match/saveMatchDetail.action", postData, function(retObj) {
+			o.basePath && $.post(o.basePath + "/match/saveMatchRegistrationDetail.action", postData, function(retObj) {
 				if(retObj.result == true) {
 					var message = "选手报名信息更新成功!";
 					$.ACHILLES.tipMessage(message);
@@ -1417,6 +1417,7 @@ function _initACHILLES(o) {
 					    });
 					    
 					    $('#active_match_info_day_' + index).on( 'draw.dt', function () {
+					    	$('.edit_match_info').off("click");
 							$('.edit_match_info').on('click.ACHILLES.match.info.edit', $.ACHILLES.match.editMatchInfo);
 						});
 					}
@@ -1431,133 +1432,172 @@ function _initACHILLES(o) {
 			var matchInfoId = $(this).data('id');
 			var tableIndex = $(this).data('index');
 			var rowData = $('#active_match_info_day_' + tableIndex).DataTable().row( '#' + matchInfoId ).data();
-			
-			var title = rowData.challengerName + ' vs ' + rowData.adversaryName;
-			
 			if(rowData.platName === undefined || rowData.platName == null || rowData.platName == '') {
 				var message = '本场关联比赛地图信息不正确!';
 				$.ACHILLES.tipMessage(message, false);
 				return;
 			}
-			var platHtml = '';
-			var plats = rowData.platName.split(',');
-			plats.forEach(function(plat, index){
-				if(plat != null && plat != '') {
-					var platName = plat;
-					if( plat.indexOf('_') != -1 ) {
-						platName = plat.split('_')[1];
-					}
-					platHtml += '<div class="row"><div class="col-xs-12"><div class="box box-widget widget-user">';
-					platHtml += 	'<div class="widget-user-header bg-aqua-active">';
-					platHtml += 		'<h3 class="widget-user-username">' + (index+1) +' - ' + platName +'</h3>';
-					platHtml +=			'<h4 class="widget-user-desc">' + rowData.challengerName +' 挑战 ' + rowData.adversaryName + '</h4>';
-					platHtml +=		'</div>';
-					platHtml +=		'<div class="box-footer no-padding"><div class="row">';
-					platHtml +=			'<div class="col-sm-3 border-right"><div class="description-block"><h5 class="description-header">挑战者种族</h5><span class="description-text">';
-					platHtml +=				'<input id="crt' + index + '" name="challenger_race' + index + '" type="radio" value="T" />';
-					platHtml +=				'<label for="crt' + index + '">T</label>';
-					platHtml +=				'<input id="crp' + index + '" name="challenger_race' + index + '" type="radio" value="P" />';
-					platHtml +=				'<label for="crp' + index + '">P</label>';
-					platHtml +=				'<input id="crz' + index + '" name="challenger_race' + index + '" type="radio" value="Z" />';
-					platHtml +=				'<label for="crz' + index + '">Z</label>';
-					platHtml +=			'</span></div></div>';
-					platHtml +=			'<div class="col-sm-4 border-right"><div class="description-block"><h5 class="description-header">擂主种族</h5><span class="description-text">';
-					platHtml +=				'<input id="art' + index + '" name="adversary_race' + index + '" type="radio" value="T" />';
-					platHtml +=				'<label for="art' + index + '">T</label>';
-					platHtml +=				'<input id="arp' + index + '" name="adversary_race' + index + '" type="radio" value="P" />';
-					platHtml +=				'<label for="arp' + index + '">P</label>';
-					platHtml +=				'<input id="arz' + index + '" name="adversary_race' + index + '" type="radio" value="Z" />';
-					platHtml +=				'<label for="arz' + index + '">Z</label>';
-					platHtml +=			'</span></div></div>';
-					platHtml +=			'<div class="col-sm-5"><div class="description-block"><h5 class="description-header">胜负关系</h5><span class="description-text">';
-					platHtml +=				'<input id="plat_cw' + index + '" name="match_result' + index + '" type="radio" value="1" />';
-					platHtml +=				'<label for="plat_cw' + index + '">挑战者胜</label>';
-					platHtml +=				'<input id="plat_aw' + index + '" name="match_result' + index + '" type="radio" value="2" />';
-					platHtml +=				'<label for="plat_aw' + index + '">擂主胜</label>';
-					platHtml +=				'<input id="plat_draw' + index + '" name="match_result' + index + '" type="radio" value="3" />';
-					platHtml +=				'<label for="plat_draw' + index + '">平局</label>';
-					platHtml +=			'</span></div></div>';
-					platHtml +=		'</div></div>';
-					platHtml += '</div></div></div>';
-				}
-			});
 			
-			$('#platInfo').html(platHtml);
-			
-			$('#match_score').attr('disabled', 'disabled');
-			$('#match_score option').remove();
-			$('#match_score').append('<option value="0:0">' + rowData.challengerName + ' 0:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:0">' + rowData.challengerName + ' 1:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:0">' + rowData.challengerName + ' 2:0 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="0:1">' + rowData.challengerName + ' 0:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:1">' + rowData.challengerName + ' 1:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:1">' + rowData.challengerName + ' 2:1 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="0:2">' + rowData.challengerName + ' 0:2 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:2">' + rowData.challengerName + ' 1:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
-			$('#match_score').val(rowData.score);
-			
-			$('#cw, #aw, #draw, #ca, #aa').iCheck({
-			    checkboxClass: 'icheckbox_square-blue margin',
-				radioClass: 'iradio_square-blue margin',
-			    increaseArea: '20%' // optional
-			});
-			$('#cw, #aw, #draw').iCheck('disable');
-			$('#ca, #aa').on('ifChecked', function(event){
-				$('[id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').iCheck('uncheck');
-			});
-			var battleResult = rowData.result;
-			$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
-				var self = $(this);
-				self.iCheck('uncheck');
-				if(self.val() == battleResult) {
-					self.iCheck('check');
+			//$("#progress_Modal").modal('show');
+			var postData = "playerId=" + rowData.challengerId;
+			postData += "&adversaryId=" + rowData.adversaryId;
+			o.basePath && $.post(o.basePath + "/match/queryMatchInfoDetailForEdit.action", postData, function(retObj) {
+				//$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var battles = retObj.battleInMatchInfo;
+					var title = rowData.challengerName + ' vs ' + rowData.adversaryName;
+					var platHtml = '';
+					var plats = rowData.platName.split(',');
+					plats.forEach(function(plat, index){
+						if(plat != null && plat != '') {
+							var platName = plat;
+							if( plat.indexOf('_') != -1 ) {
+								platName = plat.split('_')[1];
+							}
+							platHtml += '<div class="row"><div class="col-xs-12"><div class="box box-widget widget-user">';
+							platHtml += 	'<div class="widget-user-header bg-aqua-active">';
+							platHtml += 		'<h3 class="widget-user-username">' + (index+1) + ' - ' + '<span id="plat' + index + '">' + platName + '</span></h3>';
+							platHtml +=			'<h4 class="widget-user-desc">' + rowData.challengerName +' 挑战 ' + rowData.adversaryName + '</h4>';
+							platHtml +=		'</div>';
+							platHtml +=		'<div class="box-footer no-padding"><div class="row">';
+							platHtml +=			'<div class="col-sm-3 border-right"><div class="description-block"><h5 class="description-header">挑战者种族</h5><span class="description-text">';
+							platHtml +=				'<input id="crt' + index + '" name="challenger_race' + index + '" type="radio" value="T" />';
+							platHtml +=				'<label for="crt' + index + '">T</label>';
+							platHtml +=				'<input id="crp' + index + '" name="challenger_race' + index + '" type="radio" value="P" />';
+							platHtml +=				'<label for="crp' + index + '">P</label>';
+							platHtml +=				'<input id="crz' + index + '" name="challenger_race' + index + '" type="radio" value="Z" />';
+							platHtml +=				'<label for="crz' + index + '">Z</label>';
+							platHtml +=			'</span></div></div>';
+							platHtml +=			'<div class="col-sm-4 border-right"><div class="description-block"><h5 class="description-header">擂主种族</h5><span class="description-text">';
+							platHtml +=				'<input id="art' + index + '" name="adversary_race' + index + '" type="radio" value="T" />';
+							platHtml +=				'<label for="art' + index + '">T</label>';
+							platHtml +=				'<input id="arp' + index + '" name="adversary_race' + index + '" type="radio" value="P" />';
+							platHtml +=				'<label for="arp' + index + '">P</label>';
+							platHtml +=				'<input id="arz' + index + '" name="adversary_race' + index + '" type="radio" value="Z" />';
+							platHtml +=				'<label for="arz' + index + '">Z</label>';
+							platHtml +=			'</span></div></div>';
+							platHtml +=			'<div class="col-sm-5"><div class="description-block"><h5 class="description-header">胜负关系</h5><span class="description-text">';
+							platHtml +=				'<input id="plat_cw' + index + '" name="match_result' + index + '" type="radio" value="1" />';
+							platHtml +=				'<label for="plat_cw' + index + '">挑战者胜</label>';
+							platHtml +=				'<input id="plat_aw' + index + '" name="match_result' + index + '" type="radio" value="2" />';
+							platHtml +=				'<label for="plat_aw' + index + '">擂主胜</label>';
+							platHtml +=				'<input id="plat_draw' + index + '" name="match_result' + index + '" type="radio" value="3" />';
+							platHtml +=				'<label for="plat_draw' + index + '">平局</label>';
+							platHtml +=			'</span></div></div>';
+							platHtml +=		'</div></div>';
+							platHtml += '</div></div></div>';
+						}
+					});
+					
+					$('#platInfo').html(platHtml);
+					
+					$('#match_score').attr('disabled', 'disabled');
+					$('#match_score option').remove();
+					$('#match_score').append('<option value="0:0">' + rowData.challengerName + ' 0:0 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="1:0">' + rowData.challengerName + ' 1:0 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="2:0">' + rowData.challengerName + ' 2:0 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="0:1">' + rowData.challengerName + ' 0:1 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="1:1">' + rowData.challengerName + ' 1:1 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="2:1">' + rowData.challengerName + ' 2:1 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="0:2">' + rowData.challengerName + ' 0:2 ' + rowData.adversaryName + '</option>');
+		          	$('#match_score').append('<option value="1:2">' + rowData.challengerName + ' 1:2 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
+		          	//$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
+					$('#match_score').val(rowData.score);
+					
+					$('#cw, #aw, #draw, #ca, #aa').iCheck({
+					    checkboxClass: 'icheckbox_square-blue margin',
+						radioClass: 'iradio_square-blue margin',
+					    increaseArea: '20%' // optional
+					});
+					$('#cw, #aw, #draw').iCheck('disable');
+					$('#ca, #aa').on('ifChecked', function(event){
+						$('[id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').iCheck('uncheck');
+						$('#match_score').get(0).selectedIndex = -1;
+					});
+					var battleResult = rowData.result;
+					$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
+						var self = $(this);
+						self.iCheck('uncheck');
+						if(self.val() == battleResult) {
+							self.iCheck('check');
+						}
+					});
+					
+					$('[id^=crt], [id^=crp], [id^=crz], [id^=art], [id^=arp], [id^=arz], [id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').iCheck({
+					    checkboxClass: 'icheckbox_square-blue margin',
+						radioClass: 'iradio_square-blue margin',
+					    increaseArea: '20%' // optional
+					});
+					$('[id^=crt], [id^=crp], [id^=crz]').each(function(index, radio){
+						var self = $(this);
+						if(self.val() == rowData.challengerRace[0]) {
+							self.iCheck('check');
+						}
+					});
+					$('[id^=art], [id^=arp], [id^=arz]').each(function(index, radio){
+						var self = $(this);
+						if(self.val() == rowData.adversaryRace[0]) {
+							self.iCheck('check');
+						}
+					});
+					$('[id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').on('ifChecked', function(event){
+						//var id = $(this).attr('id');
+						var score = $('[id^=plat_cw]:checked').length + ':' + $('[id^=plat_aw]:checked').length;
+						$('#match_score').val(score);
+						if( $('[id^=plat_cw]:checked').length > $('[id^=plat_aw]:checked').length ) {
+							$('#cw').iCheck('check');
+						}
+						if( $('[id^=plat_cw]:checked').length < $('[id^=plat_aw]:checked').length ) {
+							$('#aw').iCheck('check');
+						}
+						if( $('[id^=plat_cw]:checked').length == $('[id^=plat_aw]:checked').length ) {
+							$('#draw').iCheck('check');
+						}
+						
+					});
+					
+					battles.forEach(function(battle, index){
+						for( var index = 0; index < 3; index++ ) {
+							if( battle.mapName === $('#plat' + index).html().trim() ) {
+								$('#crt'+index+',#crp'+index+',#crz'+index).each(function(){
+									var challengerRace = $(this);
+									if( challengerRace.val() == battle.challengerRace ) {
+										challengerRace.iCheck('check');
+									}
+								});
+								$('#art'+index+',#arp'+index+',#arz'+index).each(function(){
+									var adversaryRace = $(this);
+									if( adversaryRace.val() == battle.adversaryRace ) {
+										adversaryRace.iCheck('check');
+									}
+								});
+								$('#plat_cw'+index+',#plat_aw'+index+',#plat_draw'+index).each(function(){
+									var platResult = $(this);
+									if( platResult.val() == battle.result ) {
+										platResult.iCheck('check');
+									}
+								});
+							}
+						}
+					});
+					
+					$('#match_info_detail_confirm').data('match_info', rowData);
+					$('#match_info_detail_confirm').data('table_index', tableIndex);
+					$('#match_info_detail_player_name').html(title);
+					$('#match_info_detail_modal').modal('show');
+					$('#match_info_detail_modal').focus();
+				} else {
+					var message = "查询对战信息失败![" + retObj.message + "]";
+					$.ACHILLES.tipMessage(message, false);
 				}
 			});
-			
-			$('[id^=crt], [id^=crp], [id^=crz], [id^=art], [id^=arp], [id^=arz], [id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').iCheck({
-			    checkboxClass: 'icheckbox_square-blue margin',
-				radioClass: 'iradio_square-blue margin',
-			    increaseArea: '20%' // optional
-			});
-			$('[id^=crt], [id^=crp], [id^=crz]').each(function(index, radio){
-				var self = $(this);
-				if(self.val() == rowData.challengerRace[0]) {
-					self.iCheck('check');
-				}
-			});
-			$('[id^=art], [id^=arp], [id^=arz]').each(function(index, radio){
-				var self = $(this);
-				if(self.val() == rowData.adversaryRace[0]) {
-					self.iCheck('check');
-				}
-			});
-			$('[id^=plat_cw], [id^=plat_aw], [id^=plat_draw]').on('ifChecked', function(event){
-				//var id = $(this).attr('id');
-				var score = $('[id^=plat_cw]:checked').length + ':' + $('[id^=plat_aw]:checked').length;
-				$('#match_score').val(score);
-				if( $('[id^=plat_cw]:checked').length > $('[id^=plat_aw]:checked').length ) {
-					$('#cw').iCheck('check');
-				}
-				if( $('[id^=plat_cw]:checked').length < $('[id^=plat_aw]:checked').length ) {
-					$('#aw').iCheck('check');
-				}
-				if( $('[id^=plat_cw]:checked').length == $('[id^=plat_aw]:checked').length ) {
-					$('#draw').iCheck('check');
-				}
-				
-			});
-			
-			$('#match_info_detail_confirm').data('match_info', rowData);
-			$('#match_info_detail_confirm').data('table_index', tableIndex);
-			$('#match_info_detail_player_name').html(title);
-			$('#match_info_detail_modal').modal('show');
+			return;
 		},
 		editMatchInfo_bak: function () {
 			var matchInfoId = $(this).data('id');
@@ -1612,6 +1652,15 @@ function _initACHILLES(o) {
 			$('#match_info_detail_player_name').html(title);
 			$('#match_info_detail_modal').modal('show');
 		},
+		createBattleObj: function (challengerId, adversaryId, challengerRace, adversaryRace, 
+				platResult, platName){
+	    	this.challengerId = challengerId;
+			this.adversaryId = adversaryId;
+			this.challengerRace = challengerRace;
+			this.adversaryRace = adversaryRace;
+			this.result = platResult;
+			this.mapName = platName;
+	    },
 		editMatchInfoConfirm: function () {
 			var matchInfo = $('#match_info_detail_confirm').data('match_info');
 			var tableIndex = $('#match_info_detail_confirm').data('table_index');
@@ -1625,9 +1674,28 @@ function _initACHILLES(o) {
 			});
 			var score = $('#match_score').val();
 			
+			
 			var postData = 'matchInfoDetail.id=' + matchInfo.id;
 			postData += '&matchInfoDetail.result=' + battleResult;
 			postData += '&matchInfoDetail.score=' + score;
+			
+			
+			var convertArray = new Array();
+			var challengerId = matchInfo.challengerId;
+	    	var adversaryId = matchInfo.adversaryId;
+	    	for(var index=0; index < 3; index++) {
+	    		var platResult = $('#plat_cw' + index + ':checked,#plat_aw' + index + ':checked,#plat_draw' + index + ':checked').val();
+	    		if( platResult != undefined ) {
+	    			var platName = $('#plat' + index).html().trim();
+	    			var challengerRace = $('#crt' + index + ':checked, #crp' + index + ':checked, #crz' + index + ':checked').val();
+					var adversaryRace = $('#art' + index + ':checked, #arp' + index + ':checked, #arz' + index + ':checked').val();
+		    		var battleInfo = new $.ACHILLES.match.createBattleObj(challengerId, adversaryId, challengerRace, adversaryRace, platResult, platName);
+	    			convertArray.push(battleInfo);
+    			}
+	    	}
+	    	var tmp = JSON.stringify(convertArray);
+	    	postData += '&battleInMatchInfo='+ tmp;
+	    	
 			o.basePath && $.post(o.basePath + '/match/saveMatchInfoDetail.action', postData, function(retObj) {
 				if(retObj.result == true) {
 					matchInfo.result = battleResult;

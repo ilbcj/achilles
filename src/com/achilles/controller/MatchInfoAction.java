@@ -6,6 +6,7 @@ import java.util.List;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
+import com.achilles.model.Battle;
 import com.achilles.model.MatchInfo;
 import com.achilles.model.Plat;
 import com.achilles.service.MatchInfoService;
@@ -32,21 +33,39 @@ public class MatchInfoAction extends ActionSupport {
 	private List<MatchRegistrationInfo> activeRegistrationInfo;
 	
 	private int playerId;
+	private int adversaryId;
 	private MatchRegistrationInfoForEdit regInfoForEdit;
 	private List<Plat> plats;
 	private MatchRegistrationInfo regInfoForSave;
 	
 	private List<MatchDayInfo> activeMatchInfo;
+	private List<Battle> battleInMatchInfo;
 	private MatchInfo matchInfoDetail;	
 	
 	private boolean allResultSaved;
 	
+	public int getAdversaryId() {
+		return adversaryId;
+	}
+
+	public void setAdversaryId(int adversaryId) {
+		this.adversaryId = adversaryId;
+	}
+
 	public List<Plat> getPlats() {
 		return plats;
 	}
 
 	public void setPlats(List<Plat> plats) {
 		this.plats = plats;
+	}
+	
+	public List<Battle> getBattleInMatchInfo() {
+		return battleInMatchInfo;
+	}
+
+	public void setBattleInMatchInfo(List<Battle> battleInMatchInfo) {
+		this.battleInMatchInfo = battleInMatchInfo;
 	}
 
 	public MatchInfo getMatchInfoDetail() {
@@ -175,12 +194,12 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String QueryMatchDetailForEdit() {
+	public String QueryMatchRegistrationDetailForEdit() {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			regInfoForEdit = service.QueryMatchRegistrationInfoForEditByPlayerId(playerId);
 			PlatService ps = new PlatService();
-			plats = ps.QueryAllMaps();			
+			plats = ps.QueryAllMaps();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
@@ -190,7 +209,7 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String SaveMatchDetail() {
+	public String saveMatchRegistrationDetail() {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			service.SavePlayerMatchRegistrationInfo(regInfoForSave);
@@ -230,10 +249,23 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String QueryMatchInfoDetailForEdit() {
+		try {
+			MatchInfoService service = new MatchInfoService();
+			battleInMatchInfo = service.QueryMatchInfoForEditByPlayerIdAndAdversaryId(playerId, adversaryId);
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
 	public String SaveMatchInfoDetail() {
 		try {
 			MatchInfoService service = new MatchInfoService();
-			service.SaveMatchInfoDetail(matchInfoDetail);
+			service.SaveMatchInfoDetail(matchInfoDetail, battleInMatchInfo);
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

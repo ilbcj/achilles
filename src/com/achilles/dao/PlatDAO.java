@@ -15,4 +15,6 @@ public interface PlatDAO {
 
 	public Plat GetPlatById(int platId) throws Exception;
 	
+	public Plat GetPlatByName(String name) throws Exception;
+	
 }

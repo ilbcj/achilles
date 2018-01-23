@@ -119,4 +119,39 @@ public class PlatDAOImpl implements PlatDAO {
 		return rs;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Plat GetPlatByName(String name) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<Plat> rs = null;
+		Plat result = null;
+		String sqlString = "SELECT * FROM Plat WHERE name like :name ";
+		                    
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Plat.class);
+			q.setString("name", "%" + name + "%");
+			rs = q.list();
+			if( rs == null || rs.size() == 0 ) {
+				result = null;
+			}
+			else if( rs.size() == 1 ) {
+				result = rs.get(0);
+			}
+			else {
+				throw new Exception("more than one plat found.[name: " + name + " ]" );
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return result;
+	}
+
 }

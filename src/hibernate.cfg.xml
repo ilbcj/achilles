@@ -50,6 +50,7 @@
 	<mapping resource="com/achilles/model/Config.hbm.xml" />
 	<mapping resource="com/achilles/model/Season.hbm.xml" />
 	<mapping resource="com/achilles/model/Plat.hbm.xml" />
+	<mapping resource="com/achilles/model/Battle.hbm.xml" />
 
 
 </session-factory>

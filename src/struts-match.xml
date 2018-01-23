@@ -25,16 +25,19 @@
 	 	<action name="queryActiveMatchRegistrationInfo" class="com.achilles.controller.MatchInfoAction" method="QueryActiveMatchRegistrationInfo" >
  			<result name="success" type="json" />
 		</action>
-		<action name="queryMatchDetailForEdit" class="com.achilles.controller.MatchInfoAction" method="QueryMatchDetailForEdit" >
+		<action name="queryMatchRegistrationDetailForEdit" class="com.achilles.controller.MatchInfoAction" method="QueryMatchRegistrationDetailForEdit" >
  			<result name="success" type="json" />
 		</action>
-		<action name="saveMatchDetail" class="com.achilles.controller.MatchInfoAction" method="SaveMatchDetail" >
+		<action name="saveMatchRegistrationDetail" class="com.achilles.controller.MatchInfoAction" method="SaveMatchRegistrationDetail" >
  			<result name="success" type="json" />
 		</action>
 		<action name="queryActiveMatchInfo" class="com.achilles.controller.MatchInfoAction" method="QueryActiveMatchInfo" >
  			<result name="success" type="json" />
 		</action>
 		<action name="updateMatchInfo" class="com.achilles.controller.MatchInfoAction" method="UpdateMatchInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryMatchInfoDetailForEdit" class="com.achilles.controller.MatchInfoAction" method="QueryMatchInfoDetailForEdit" >
  			<result name="success" type="json" />
 		</action>
 		<action name="saveMatchInfoDetail" class="com.achilles.controller.MatchInfoAction" method="SaveMatchInfoDetail" >
