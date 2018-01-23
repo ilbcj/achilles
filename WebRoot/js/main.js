@@ -1386,19 +1386,19 @@ function _initACHILLES(o) {
 									render: function ( data, type, row ) {
 										var html = '';
 										if(data === 1) {
-											html = '<span class="winner fa fa-flag">' + row.challengerName + '</span><span class="looser fa fa-bomb">' + row.adversaryName + '</span>';
+											html = '<span class="badge bg-red margin fa fa-flag">' + row.challengerName + '</span><span class="badge bg-black margin fa fa-bomb">' + row.adversaryName + '</span>';
 										}
 										else if(data === 2) {
-											html = '<span class="looser fa fa-bomb">' + row.challengerName + '</span><span class="winner fa fa-flag">' + row.adversaryName + '</span>';
+											html = '<span class="badge bg-black margin fa fa-bomb">' + row.challengerName + '</span><span class="badge bg-red margin fa fa-flag">' + row.adversaryName + '</span>';
 										}
 										else if(data === 3) {
 											html = '平局';
 										}
 										else if(data === 4) {
-											html = '<span class="looser fa fa-bomb">' + row.challengerName + ' 缺席</span>';
+											html = '<span class="badge bg-black margin fa fa-bomb">' + row.challengerName + ' 缺席</span>';
 										}
 										else if(data === 5) {
-											html = '<span class="looser fa fa-bomb">' + row.adversaryName + ' 缺席</span>';
+											html = '<span class="badge bg-black margin fa fa-bomb">' + row.adversaryName + ' 缺席</span>';
 										}
 										return html;
 									},
@@ -1598,59 +1598,6 @@ function _initACHILLES(o) {
 				}
 			});
 			return;
-		},
-		editMatchInfo_bak: function () {
-			var matchInfoId = $(this).data('id');
-			var tableIndex = $(this).data('index');
-			var rowData = $('#active_match_info_day_' + tableIndex).DataTable().row( '#' + matchInfoId ).data();
-			
-			$('#cw, #aw, #draw, #ca, #aa').iCheck({
-			    checkboxClass: 'icheckbox_square-blue margin',
-				radioClass: 'iradio_square-blue margin',
-			    increaseArea: '20%' // optional
-			});
-			$('#cw, #aw, #draw, #ca, #aa').on('ifChecked', function(event){
-				var id = $(this).attr('id');
-				if( id === 'aa' || id === 'ca' ) {
-					$('#match_score').get(0).selectedIndex = -1;
-					$('#match_score').attr('disabled', 'disabled');
-				}
-				else {
-					$('#match_score').removeAttr('disabled');
-				}
-			});
-			
-			var battleResult = rowData.result;
-			$('#cw, #aw, #draw, #ca, #aa').each(function(index, radio){
-				var self = $(this);
-				if(self.val() == battleResult) {
-					self.iCheck('check');
-				}
-			});
-			
-			$('#match_score option').remove();
-			$('#match_score').append('<option value="0:0">' + rowData.challengerName + ' 0:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:0">' + rowData.challengerName + ' 1:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:0">' + rowData.challengerName + ' 2:0 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:0">' + rowData.challengerName + ' 3:0 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="0:1">' + rowData.challengerName + ' 0:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:1">' + rowData.challengerName + ' 1:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="2:1">' + rowData.challengerName + ' 2:1 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:1">' + rowData.challengerName + ' 3:1 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="0:2">' + rowData.challengerName + ' 0:2 ' + rowData.adversaryName + '</option>');
-          	$('#match_score').append('<option value="1:2">' + rowData.challengerName + ' 1:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="2:2">' + rowData.challengerName + ' 2:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="3:2">' + rowData.challengerName + ' 3:2 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="0:3">' + rowData.challengerName + ' 0:3 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="1:3">' + rowData.challengerName + ' 1:3 ' + rowData.adversaryName + '</option>');
-          	//$('#match_score').append('<option value="2:3">' + rowData.challengerName + ' 2:3 ' + rowData.adversaryName + '</option>');
-			$('#match_score').val(rowData.score);
-			
-			var title = rowData.challengerName + ' vs ' + rowData.adversaryName;
-			$('#match_info_detail_confirm').data('match_info', rowData);
-			$('#match_info_detail_confirm').data('table_index', tableIndex);
-			$('#match_info_detail_player_name').html(title);
-			$('#match_info_detail_modal').modal('show');
 		},
 		createBattleObj: function (challengerId, adversaryId, challengerRace, adversaryRace, 
 				platResult, platName){
