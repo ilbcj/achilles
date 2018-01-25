@@ -1164,10 +1164,10 @@ function _initACHILLES(o) {
 					  
 					$('#reward_sponsor').slider({ 
 						id: 'reward_sponsor_slider', 
-						ticks: [-1000, -500, 0, 500, 1000],
-						min: -1000, 
-						max: 1000, 
-						value: -1001
+						ticks: [-200, -100, 0, 100, 200],
+						min: -200, 
+						max: 100, 
+						value: -201
 					});
 					$('#reward_sponsor').on('change', function(slideEvt) {
 						var colorUnselect = '#f9f9f9';

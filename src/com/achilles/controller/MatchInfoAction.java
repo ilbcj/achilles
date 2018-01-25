@@ -209,7 +209,7 @@ public class MatchInfoAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String saveMatchRegistrationDetail() {
+	public String SaveMatchRegistrationDetail() {
 		try {
 			MatchInfoService service = new MatchInfoService();
 			service.SavePlayerMatchRegistrationInfo(regInfoForSave);
