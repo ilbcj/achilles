@@ -33,5 +33,11 @@
 		<action name="queryActiveMatchInfo" class="com.achilles.controller.SyncAction" method="QueryActiveMatchInfo" >
  			<result name="success" type="json" />
 		</action>
+		<action name="queryRoundListInfo" class="com.achilles.controller.SyncAction" method="QueryRoundListInfo" >
+ 			<result name="success" type="json" />
+		</action>
+		<action name="queryRoundScoreInfo" class="com.achilles.controller.SyncAction" method="QueryRoundScoreInfo" >
+ 			<result name="success" type="json" />
+		</action>
 	</package>	
 </struts>

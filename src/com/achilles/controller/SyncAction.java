@@ -8,10 +8,12 @@ import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.Plat;
 import com.achilles.model.Round;
+import com.achilles.model.Score;
 import com.achilles.model.Season;
 import com.achilles.service.MatchInfoService;
 import com.achilles.service.PlatService;
 import com.achilles.service.RoundInfoService;
+import com.achilles.service.ScoreInfoService;
 import com.achilles.service.SeasonInfoService;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -33,6 +35,34 @@ public class SyncAction extends ActionSupport {
 	private Round round;
 	private List<MatchDayInfo> activeMatchInfo;
 	
+	private List<Round> rounds; 
+	private int roundId;
+	private List<Score> scores;
+	
+	public List<Round> getRounds() {
+		return rounds;
+	}
+
+	public void setRounds(List<Round> rounds) {
+		this.rounds = rounds;
+	}
+
+	public int getRoundId() {
+		return roundId;
+	}
+
+	public void setRoundId(int roundId) {
+		this.roundId = roundId;
+	}
+
+	public List<Score> getScores() {
+		return scores;
+	}
+
+	public void setScores(List<Score> scores) {
+		this.scores = scores;
+	}
+
 	public List<MatchDayInfo> getActiveMatchInfo() {
 		return activeMatchInfo;
 	}
@@ -182,6 +212,32 @@ public class SyncAction extends ActionSupport {
 			activeMatchInfo = service.QueryActiveMatchInfo();
 		} catch (Exception e) {
 			activeMatchInfo = new ArrayList<MatchDayInfo>();
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String QueryRoundListInfo() {
+		try {
+			RoundInfoService service = new RoundInfoService();
+			rounds = service.QueryRoundListForDisplayScore();
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String QueryRoundScoreInfo() {
+		try {
+			ScoreInfoService service = new ScoreInfoService();
+			scores = service.QueryRoundCurrentByRanking(roundId);
+		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
 			return SUCCESS;
