@@ -39,5 +39,8 @@
 		<action name="queryRoundScoreInfo" class="com.achilles.controller.SyncAction" method="QueryRoundScoreInfo" >
  			<result name="success" type="json" />
 		</action>
+		<action name="queryConfigInfo" class="com.achilles.controller.SyncAction" method="QueryConfigInfo" >
+ 			<result name="success" type="json" />
+		</action>
 	</package>	
 </struts>

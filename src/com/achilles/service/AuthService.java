@@ -1,7 +1,7 @@
 package com.achilles.service;
 
 import java.text.ParseException;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 import com.achilles.dao.AdminDAO;
 import com.achilles.dao.impl.AdminDAOImpl;
@@ -10,26 +10,26 @@ import com.achilles.model.Admin;
 
 public class AuthService {
 
-	private Pattern regAction = Pattern.compile("/.*action$");
-	private Pattern regLoginReqHtml = Pattern.compile("/page/.*jsp$");
-	private Pattern regOrganizationReqMenuHtml = Pattern.compile("/page/menu/organization.html");
-	private Pattern regOrganizationReqHtml = Pattern.compile("/page/organization/.*html$");
-	private Pattern regUserReqMenuHtml = Pattern.compile("/page/menu/user.html");
-	private Pattern regUserReqHtml = Pattern.compile("/page/user/.*html$");
-	private Pattern regGroupReqMenuHtml = Pattern.compile("/page/menu/group.html");
-	private Pattern regGroupReqHtml = Pattern.compile("/page/group/.*html$");
-	private Pattern regRoleReqMenuHtml = Pattern.compile("/page/menu/role.html");
-	private Pattern regRoleReqHtml = Pattern.compile("/page/role/.*html$");
-	private Pattern regResourceReqMenuHtml = Pattern.compile("/page/menu/resource.html");
-	private Pattern regResourceReqHtml = Pattern.compile("/page/resource/.*html$");
-	private Pattern regPrivilegeReqMenuHtml = Pattern.compile("/page/menu/privilege.html");
-	private Pattern regPrivilegeReqHtml = Pattern.compile("/page/privilege/.*html$");
-	private Pattern regSystemReqMenuHtml = Pattern.compile("/page/menu/system.html");
-	private Pattern regSystemReqHtml = Pattern.compile("/page/system/.*html$");
-	private Pattern regLogReqMenuHtml = Pattern.compile("/page/menu/log.html");
-	private Pattern regLogReqHtml = Pattern.compile("/page/log/.*html$");
-	private Pattern regAdminReqMenuHtml = Pattern.compile("/page/menu/admin.html");
-	private Pattern regAdminReqHtml = Pattern.compile("/page/admin/.*html$");
+//	private Pattern regAction = Pattern.compile("/.*action$");
+//	private Pattern regLoginReqHtml = Pattern.compile("/page/.*jsp$");
+//	private Pattern regOrganizationReqMenuHtml = Pattern.compile("/page/menu/organization.html");
+//	private Pattern regOrganizationReqHtml = Pattern.compile("/page/organization/.*html$");
+//	private Pattern regUserReqMenuHtml = Pattern.compile("/page/menu/user.html");
+//	private Pattern regUserReqHtml = Pattern.compile("/page/user/.*html$");
+//	private Pattern regGroupReqMenuHtml = Pattern.compile("/page/menu/group.html");
+//	private Pattern regGroupReqHtml = Pattern.compile("/page/group/.*html$");
+//	private Pattern regRoleReqMenuHtml = Pattern.compile("/page/menu/role.html");
+//	private Pattern regRoleReqHtml = Pattern.compile("/page/role/.*html$");
+//	private Pattern regResourceReqMenuHtml = Pattern.compile("/page/menu/resource.html");
+//	private Pattern regResourceReqHtml = Pattern.compile("/page/resource/.*html$");
+//	private Pattern regPrivilegeReqMenuHtml = Pattern.compile("/page/menu/privilege.html");
+//	private Pattern regPrivilegeReqHtml = Pattern.compile("/page/privilege/.*html$");
+//	private Pattern regSystemReqMenuHtml = Pattern.compile("/page/menu/system.html");
+//	private Pattern regSystemReqHtml = Pattern.compile("/page/system/.*html$");
+//	private Pattern regLogReqMenuHtml = Pattern.compile("/page/menu/log.html");
+//	private Pattern regLogReqHtml = Pattern.compile("/page/log/.*html$");
+//	private Pattern regAdminReqMenuHtml = Pattern.compile("/page/menu/admin.html");
+//	private Pattern regAdminReqHtml = Pattern.compile("/page/admin/.*html$");
 	
 	public boolean CheckStatus(String loginid) throws Exception 
 	{

@@ -1310,7 +1310,7 @@ function _initACHILLES(o) {
 					        	{ title: "操作", data: null, defaultContent: "", width: "100px" },
 					            { title: "挑战者", data: "challengerName", width: "200px" },
 					            { title: "擂主", data: "adversaryName", width: "200px" },
-					            { title: "地图", data: "platName", width: "600px" },
+					            { title: "地图", data: "platName", width: "400px" },
 					            { title: "结果", data: "result" },
 					            { title: "比分", data: "score", width: "100px" }					            
 					        ],
@@ -1856,6 +1856,25 @@ function _initACHILLES(o) {
 		        	$('#percent_of_challenger_win_diminishing_step').val(config.percentOfChallengerWinDiminishingStep);
 		        	$('#rate_of_chosen_mondy_to_thursday').val(config.rateOfChosenMondyToThursday);
 		        	$('#rate_of_chosen_saturday_to_sunday').val(config.rateOfChosenSaturdayToSunday);
+		        	
+		        	if( retObj.plats.length == 0 ) {
+						var message = "获取比赛地图信息失败![没有可用地图]";
+						$.ACHILLES.tipMessage(message, false);
+						return;
+					}
+					var platOptionStr = '';//'<option value></option>'
+					// 对战地图
+					retObj.plats.forEach(function(plat, index){
+						platOptionStr += '<option value=' + plat.id + '>' + plat.name + '</option>';
+					});
+					$('#bonus_plat').append( platOptionStr );
+		        	$('#bonus_plat').select2();
+		        	if(config.bonusPlat != null && config.bonusPlat != undefined) {
+		        		var plats = config.bonusPlat.split(',');
+		        		$('#bonus_plat').val(plats).select2();
+		        	}
+		        	$('#bonus_plat_score').val(config.bonusPlatScore);
+		        	$('#player_notice').val(config.playerNotice);
 		        } else { 
 					var message = '加载系统配置失败![' + retObj.message + ']';
 					$.ACHILLES.tipMessage(message, false);
@@ -1876,7 +1895,12 @@ function _initACHILLES(o) {
 		    postData += '&config.percentOfChallengerWinDiminishingStep=' + $('#percent_of_challenger_win_diminishing_step').val();
 		    postData += '&config.rateOfChosenMondyToThursday=' + $('#rate_of_chosen_mondy_to_thursday').val();
 		    postData += '&config.rateOfChosenSaturdayToSunday=' + $('#rate_of_chosen_saturday_to_sunday').val();
-			
+			var plats = $('#bonus_plat').val();
+			if(plats != null) {
+				postData += '&config.bonusPlat=' + plats;
+			}
+			postData += '&config.bonusPlatScore=' + $('#bonus_plat_score').val();
+			postData += '&config.playerNotice=' + $('#player_notice').val();
 			o.basePath && $.post(o.basePath + '/config/save.action', postData, function(retObj){
 	    		if(retObj.result == true)
 				{

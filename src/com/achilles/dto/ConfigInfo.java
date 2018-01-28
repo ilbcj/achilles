@@ -13,6 +13,9 @@ public class ConfigInfo implements Cloneable {
 	private int rateOfChosenSaturdayToSunday;// = 80;
 	private int firstPlayerAcceptChallengeCount;// = 2;
 	private int minAcceptChallengeCount;// = 1;
+	private String bonusPlat;
+	private int bonusPlatScore;
+	private String playerNotice;
 	
 	public ConfigInfo() {
 		
@@ -31,8 +34,35 @@ public class ConfigInfo implements Cloneable {
 		this.rateOfChosenSaturdayToSunday = ci.getRateOfChosenSaturdayToSunday();
 		this.firstPlayerAcceptChallengeCount = ci.getFirstPlayerAcceptChallengeCount();
 		this.minAcceptChallengeCount = ci.getMinAcceptChallengeCount();
+		this.bonusPlat = ci.getBonusPlat();
+		this.bonusPlatScore = ci.getBonusPlatScore();
+		this.playerNotice = ci.getPlayerNotice();
 	}
 	
+	public String getPlayerNotice() {
+		return playerNotice;
+	}
+
+	public void setPlayerNotice(String playerNotice) {
+		this.playerNotice = playerNotice;
+	}
+
+	public int getBonusPlatScore() {
+		return bonusPlatScore;
+	}
+
+	public void setBonusPlatScore(int bonusPlatScore) {
+		this.bonusPlatScore = bonusPlatScore;
+	}
+
+	public String getBonusPlat() {
+		return bonusPlat;
+	}
+
+	public void setBonusPlat(String bonusPlat) {
+		this.bonusPlat = bonusPlat;
+	}
+
 	public int getFirstPlayerAcceptChallengeCount() {
 		return firstPlayerAcceptChallengeCount;
 	}

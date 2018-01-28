@@ -155,4 +155,36 @@ public class BattleInfoDAOImpl implements BattleInfoDAO {
 		return rs;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Battle> GetBattleInfoByPlayerId(int playerId, int roundId)
+			throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<Battle> rs = null;
+		String sqlString = "SELECT * FROM battle where (challenger_id = :challenger_id or adversary_id = :adversary_id) and round_id = :round_id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Battle.class);;
+			q.setInteger("challenger_id", playerId);
+			q.setInteger("adversary_id", playerId);
+			q.setInteger("round_id", roundId);
+			rs = q.list();
+			
+			tx.commit();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 }

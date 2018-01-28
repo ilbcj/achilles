@@ -10,4 +10,5 @@ public interface BattleInfoDAO {
 	public List<Battle> GetBattleInfoByChallengerAndAdversary(int challengerId, int adversaryId, int roundId) throws Exception;
 	public List<Battle> GetCurrentRoundBattleInfo() throws Exception;
 	public Battle GetBattleInfoById(int id) throws Exception;
+	public List<Battle> GetBattleInfoByPlayerId(int playerId, int roundId) throws Exception;
 }

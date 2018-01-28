@@ -3,6 +3,7 @@ package com.achilles.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.achilles.dto.ConfigInfo;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
@@ -10,6 +11,7 @@ import com.achilles.model.Plat;
 import com.achilles.model.Round;
 import com.achilles.model.Score;
 import com.achilles.model.Season;
+import com.achilles.service.ConfigInfoService;
 import com.achilles.service.MatchInfoService;
 import com.achilles.service.PlatService;
 import com.achilles.service.RoundInfoService;
@@ -39,6 +41,25 @@ public class SyncAction extends ActionSupport {
 	private int roundId;
 	private List<Score> scores;
 	
+	private String bonusPlats;
+	private String playerNotice;
+	
+	public String getBonusPlats() {
+		return bonusPlats;
+	}
+
+	public void setBonusPlats(String bonusPlats) {
+		this.bonusPlats = bonusPlats;
+	}
+
+	public String getPlayerNotice() {
+		return playerNotice;
+	}
+
+	public void setPlayerNotice(String playerNotice) {
+		this.playerNotice = playerNotice;
+	}
+
 	public List<Round> getRounds() {
 		return rounds;
 	}
@@ -246,4 +267,18 @@ public class SyncAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String QueryConfigInfo() {
+		try {
+			ConfigInfoService service = new ConfigInfoService();
+			ConfigInfo config = service.QuerySystemConfigInfo();
+			bonusPlats = config.getBonusPlat();
+			playerNotice = config.getPlayerNotice();
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
 }

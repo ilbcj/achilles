@@ -13,6 +13,9 @@ public class Config {
 	public final static String NAME_RATEOFCHOSENSATURDAYTOSUNDAY = "RateOfChosenSaturdayToSunday";//80
 	public final static String NAME_FIRSTPLAYERACCEPTCHALLENGECOUNT = "FirstPlayerAcceptChallengeCount";//2
 	public final static String NAME_MINACCEPTCHALLENGECOUNT = "MinAcceptChallengeCount";//1
+	public final static String NAME_BONUSPLAT = "BonusPlat";
+	public final static String NAME_BONUSPLATSCORE = "BonusPlatScore";
+	public final static String NAME_PLAYERNOTICE = "PlayerNotice";
 	
 	private int id;
 	private String name;

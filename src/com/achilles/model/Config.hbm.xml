@@ -12,7 +12,7 @@
 		</id>
 		<!-- property元素定义常规属性 -->
 		<property name="name" type="java.lang.String" length="64"/>
-		<property name="sval" type="java.lang.String" length="64"/>
+		<property name="sval" type="java.lang.String" length="1024"/>
 		<property name="ival" type="java.lang.Integer"/>
 	</class>
 </hibernate-mapping>

@@ -650,6 +650,7 @@ public class MatchInfoService {
 		int rewardAbandon = 0;
 		int rewardSponsor = 0;
 		int isAbandon = 0;
+		int reward1 = 0;//for bonus plats
 		String memo = "";
 		
 		//0. get last score
@@ -735,7 +736,41 @@ public class MatchInfoService {
 			}
 		}
 		
-		//3. caculate score of arrange day counts
+		//3. caculate score of bonus plat
+		BattleInfoDAO bdao = new BattleInfoDAOImpl();
+		List<Battle> battles = bdao.GetBattleInfoByPlayerId(player.getId(), active.getId());
+		Battle battle = null;
+		String bonusPlat = ConfigUtil.getInstance().getBonusPlat();
+		if( bonusPlat == null) {
+			bonusPlat = "";
+		}
+		String []bonusPlats = bonusPlat.split(",");
+		List<Integer> platIds = new ArrayList<Integer>();
+		for( String plat : bonusPlats ) {
+			if( plat != null && plat.length() > 0 ) {
+				platIds.add( Integer.parseInt(plat) );
+			}
+		}
+		for( int k = 0; k < battles.size(); k++ ) {
+			battle = battles.get(k);
+			if( platIds.contains( battle.getMapId() ) ) {
+				if( battle.getChallengerId() == player.getId() ) {
+					if( battle.getResult() == Battle.RESULT_CHALLENGER_WIN || battle.getResult() == Battle.RESULT_ADVERSARY_ABSENT ) {
+						reward1 += ConfigUtil.getInstance().getBonusPlatScore();
+						memo += "[在加分地图(" + battle.getMapName() + ")上挑战  " + battle.getAdversaryLoginId() + "(" + battle.getAdversaryRace() + "-" + battle.getAdversaryRank() + ")" + " ，挑战成功，积分 " + ConfigUtil.getInstance().getBonusPlatScore() + "],";
+					}
+				}
+				else if( battle.getAdversaryId() == player.getId() ) {
+					if( battle.getResult() == Battle.RESULT_ADVERSARY_WIN || battle.getResult() == Battle.RESULT_CHALLENGER_ABSENT ) {
+						reward1 += ConfigUtil.getInstance().getBonusPlatScore();
+						memo += "[在加分地图(" + battle.getMapName() + ")上，被  " + battle.getChallengerLoginId() + "(" + battle.getChallengerRace() + "-" + battle.getChallengerRank() + ")" + " 挑战，守擂成功，积分 " + ConfigUtil.getInstance().getBonusPlatScore() + "],";
+					}
+				}
+			}
+		}
+		//score += reward1; // add reward at the end 
+		
+		//4. caculate score of arrange day counts
 		memo += "[本周报名比赛";
 		List<MatchRegistrationDays> days = mdao.GetRegistrationDayByPlayer( active.getId(), player.getId() );
 		if(days == null || days.size() == 0) {
@@ -764,7 +799,7 @@ public class MatchInfoService {
 		}
 		memo += "],";
 		
-		//4. get score record which contains sponsor's reward if exist.
+		//5. get score record which contains sponsor's reward if exist.
 		ScoreInfoService ss = new ScoreInfoService();
 		Score scoreObj = ss.QueryCurrentRoundScoreByPlayer(player.getId());
 		if( scoreObj == null ) {
@@ -780,15 +815,16 @@ public class MatchInfoService {
 		scoreObj.setAdversaryLose(adversaryLose);
 		scoreObj.setAbsent(isAbandon);
 		scoreObj.setRewardAbandon(rewardAbandon);
+		scoreObj.setReward1(reward1);
 		rewardSponsor = scoreObj.getRewardSponsor();
-		score += scoreObj.getLastScore() + rewardSponsor;
+		score += scoreObj.getLastScore() + rewardSponsor + scoreObj.getReward1() + scoreObj.getReward2() + scoreObj.getReward3();
 		scoreObj.setScore(score);
 		if(rewardSponsor != 0) {
 			memo += "[本轮赛事委员会奖惩积分" +  rewardSponsor + "，" + scoreObj.getRewardSponsorReason() +"],";
 		}
 		scoreObj.setMemo(memo);
 		
-		//5. save score
+		//6. save score
 		ss.CaculateAndSaveCurrentRoundPlayerScoreBy(scoreObj);
 	}
 	

@@ -85,6 +85,21 @@ public class ConfigInfoService {
 			info.setRateOfChosenSaturdayToSunday(item.getIval());
 		}
 		
+		item = itemsMap.get(Config.NAME_BONUSPLAT);
+		if(item != null) {
+			info.setBonusPlat(item.getSval());
+		}
+		
+		item = itemsMap.get(Config.NAME_BONUSPLATSCORE);
+		if(item != null) {
+			info.setBonusPlatScore(item.getIval());
+		}
+		
+		item = itemsMap.get(Config.NAME_PLAYERNOTICE);
+		if(item != null) {
+			info.setPlayerNotice(item.getSval());
+		}
+		
 		return info;
 	}
 
@@ -150,6 +165,21 @@ public class ConfigInfoService {
 		configItem = new Config();
 		configItem.setName(Config.NAME_RATEOFCHOSENSATURDAYTOSUNDAY);
 		configItem.setIval(config.getRateOfChosenSaturdayToSunday());
+		dao.SaveConfigItem(configItem);
+		
+		configItem = new Config();
+		configItem.setName(Config.NAME_BONUSPLAT);
+		configItem.setSval(config.getBonusPlat());
+		dao.SaveConfigItem(configItem);
+		
+		configItem = new Config();
+		configItem.setName(Config.NAME_BONUSPLATSCORE);
+		configItem.setIval(config.getBonusPlatScore());
+		dao.SaveConfigItem(configItem);
+		
+		configItem = new Config();
+		configItem.setName(Config.NAME_PLAYERNOTICE);
+		configItem.setSval(config.getPlayerNotice());
 		dao.SaveConfigItem(configItem);
 		
 		ConfigUtil.UpdateConfig(config);
