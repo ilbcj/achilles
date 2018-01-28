@@ -179,6 +179,9 @@ public class MatchInfoService {
 		ScoreInfoService ss = new ScoreInfoService();
 		Score s = null;
 		for( int i=0; i<players.size(); i++ ) {
+			if(i == 45) {
+				System.out.println(i);
+			}
 			player = players.get( i );
 			mri = new MatchRegistrationInfo();
 			mri.setPlayerId( player.getId() );
