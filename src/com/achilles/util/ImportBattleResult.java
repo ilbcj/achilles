@@ -5,8 +5,16 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.achilles.dao.RankingDAO;
+import com.achilles.dao.ScoreDAO;
+import com.achilles.dao.impl.RankingDAOImpl;
+import com.achilles.dao.impl.ScoreDAOImpl;
 import com.achilles.model.Battle;
+import com.achilles.model.Ranking;
+import com.achilles.model.Score;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -16,29 +24,37 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ImportBattleResult {
+	private int count = 0;
 	public void importBattleResult() throws Exception {
-		File inData = new File("E:\\work\\starcraft\\deploy\\battle1.xlsx");
+		File inData = new File("E:\\work\\starcraft\\workspace\\achilles\\doc\\battle.xlsx");
 		InputStream in=new FileInputStream(inData);
         Workbook workbook = WorkbookFactory.create(in);
         
         int sheetCount = workbook.getNumberOfSheets();  //Sheet的数量  
+        Integer[] roundIds = {2, 3};
+        int index = 0;
         for (int s = 0; s < sheetCount; s++) {
         	Sheet sheet = workbook.getSheetAt(s);
             String sheetName = sheet.getSheetName();
             if(sheetName.equals("第一周") || sheetName.equals("第二周")) {
-            	parseRecord(sheet);
+            	parseRecord(sheet, roundIds[index++]);
             }
         }
         
         in.close();
 	}
 
-	private void parseRecord(Sheet sheet) throws Exception {
-		// TODO Auto-generated method stub
+	private void parseRecord(Sheet sheet, int round_id) throws Exception {
 		int rowCount = sheet.getPhysicalNumberOfRows(); //获取总行数
 		Map<String, Integer> idx = new HashMap<String, Integer>();
 
-		Battle battle = null;
+		ScoreDAO sdao = new ScoreDAOImpl();
+		List<Score> scores = sdao.GetScoreByLastRoundRanking(round_id);
+		Map<Integer, Integer> rankingMap = new HashMap<Integer, Integer>();
+		for(int i = 0; i< scores.size(); i++) {
+			Score score = scores.get(i);
+			rankingMap.put(score.getPlayerId(), i+1);
+		}
 		
 		String challengerName = "";
 		String challengerLoginId = "";
@@ -55,6 +71,10 @@ public class ImportBattleResult {
 		String memo = "";
 		//遍历每一行  
         for (int r = 0; r < rowCount; r++) {
+        	
+        	if(r == 22) {
+        		int a = 1;
+        	}
         	challengerName = "";
     		challengerLoginId = "";
     		challengerId = "";
@@ -79,11 +99,6 @@ public class ImportBattleResult {
             	Cell cell = row.getCell(c);
             	String cellValue = getCellValue(cell);
 
-
-            	if(r == 10) {
-            		System.out.println(r);
-            	}
-            	
             	if(r == 2) {
             		if ( "挑战者名称".equals(cellValue) ) {
             			idx.put("挑战者名称", c);
@@ -178,7 +193,42 @@ public class ImportBattleResult {
             }
             
             if( r > 2 ) {
-            	System.out.println(challengerLoginId + '\t' + challengerName + '\t' + challengerId + '\t' + challengerRace + '\t' + result + '\t' + adversaryLoginId + '\t' + adversaryName + '\t' + adversaryId + '\t' + adversaryRace + '\t' + plat + '\t' + vod + '\t' + timestamp + '\t' + memo );
+            	count++;
+            	String countId = "" + count;
+            	int challenger_rank = rankingMap.get(Integer.parseInt(challengerId));
+            	int adversary_rank = rankingMap.get(Integer.parseInt(adversaryId));
+            	String sqlStr = "INSERT INTO battle (challenger_id, challenger_name, challenger_login_id, challenger_race, challenger_rank, result, adversary_id, adversary_name, adversary_login_id, adversary_race, adversary_rank, map_id, map_name, vod, round_id, timestamp, memo ) ";
+            	sqlStr += "VALUES (%s, '%s', '%s', '%s', %d, %s, %s, '%s', '%s', '%s', %d, %s, '%s', '%s', %d, '%s', '%s');";
+            	
+            	if( "挑战者胜".equals(result) ) {
+            		result = "1";
+            	}
+            	else if ( "守擂者胜".equals(result) ) {
+            		result = "2";
+            	}
+            	else if ( "平局".equals(result) ) {
+            		result = "3";
+            	}
+            	else if ( "挑战者缺席".equals(result) ) {
+            		result = "4";
+            		continue;
+            	}
+            	else if ( "守擂者缺席".equals(result) ) {
+            		result = "5";
+            		continue;
+            	}
+            	String platId = null;
+            	String platName = null;
+            	if( plat.trim().length() == 0 ) {
+            		platId = "";
+            		platName = "";
+            	}
+            	else {
+            		platId = plat.substring(0, plat.indexOf(" ")).substring(1);
+            		platName = plat.substring(plat.indexOf(" ")+1);
+            	}
+            	System.out.printf(sqlStr , challengerId, challengerName, challengerLoginId, challengerRace, challenger_rank, result, adversaryId, adversaryName, adversaryLoginId, adversaryRace, adversary_rank, platId, platName, vod, round_id, timestamp, memo );
+            	System.out.println();
             }
         }
         return;

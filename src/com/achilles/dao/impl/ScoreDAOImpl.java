@@ -112,6 +112,32 @@ public class ScoreDAOImpl implements ScoreDAO {
 		return rs;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Score> GetScoreByLastRoundRanking(int roundId) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		List<Score> rs = null;
+		String sqlString = "SELECT * FROM Score where round_id = :round_id order by last_score desc";
+
+		
+		try {
+			Query q = session.createSQLQuery(sqlString).addEntity(Score.class);
+			q.setInteger("round_id", roundId);
+			rs = q.list();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			rs = null;
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return rs;
+	}
+
 //	@SuppressWarnings("unchecked")
 //	@Override
 //	public List<Score> GetScoreOfActivePlayer() throws Exception {
