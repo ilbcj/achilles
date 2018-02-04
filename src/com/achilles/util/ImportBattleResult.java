@@ -8,12 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.achilles.dao.RankingDAO;
 import com.achilles.dao.ScoreDAO;
-import com.achilles.dao.impl.RankingDAOImpl;
 import com.achilles.dao.impl.ScoreDAOImpl;
-import com.achilles.model.Battle;
-import com.achilles.model.Ranking;
 import com.achilles.model.Score;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -24,7 +20,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ImportBattleResult {
-	private int count = 0;
+	
 	public void importBattleResult() throws Exception {
 		File inData = new File("E:\\work\\starcraft\\workspace\\achilles\\doc\\battle.xlsx");
 		InputStream in=new FileInputStream(inData);
@@ -72,9 +68,9 @@ public class ImportBattleResult {
 		//遍历每一行  
         for (int r = 0; r < rowCount; r++) {
         	
-        	if(r == 22) {
-        		int a = 1;
-        	}
+//        	if(r == 22) {
+//        		int a = 1;
+//        	}
         	challengerName = "";
     		challengerLoginId = "";
     		challengerId = "";
@@ -193,8 +189,6 @@ public class ImportBattleResult {
             }
             
             if( r > 2 ) {
-            	count++;
-            	String countId = "" + count;
             	int challenger_rank = rankingMap.get(Integer.parseInt(challengerId));
             	int adversary_rank = rankingMap.get(Integer.parseInt(adversaryId));
             	String sqlStr = "INSERT INTO battle (challenger_id, challenger_name, challenger_login_id, challenger_race, challenger_rank, result, adversary_id, adversary_name, adversary_login_id, adversary_race, adversary_rank, map_id, map_name, vod, round_id, timestamp, memo ) ";

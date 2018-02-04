@@ -86,7 +86,7 @@ public class ScoreInfoService {
 		Collections.sort(scores, new Comparator<Score>() {
             @Override
             public int compare(Score o1, Score o2) {
-                return o2.getScore()-o1.getScore();            }
+                return o1.getRanking()-o2.getRanking();            }
         });
 		return scores;
 	}
