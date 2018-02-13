@@ -85,6 +85,11 @@ public class ConfigInfoService {
 			info.setRateOfChosenSaturdayToSunday(item.getIval());
 		}
 		
+		item = itemsMap.get(Config.NAME_ACTIVEPLAT);
+		if(item != null) {
+			info.setActivePlat(item.getSval());
+		}
+		
 		item = itemsMap.get(Config.NAME_BONUSPLAT);
 		if(item != null) {
 			info.setBonusPlat(item.getSval());
@@ -165,6 +170,11 @@ public class ConfigInfoService {
 		configItem = new Config();
 		configItem.setName(Config.NAME_RATEOFCHOSENSATURDAYTOSUNDAY);
 		configItem.setIval(config.getRateOfChosenSaturdayToSunday());
+		dao.SaveConfigItem(configItem);
+		
+		configItem = new Config();
+		configItem.setName(Config.NAME_ACTIVEPLAT);
+		configItem.setSval(config.getActivePlat());
 		dao.SaveConfigItem(configItem);
 		
 		configItem = new Config();

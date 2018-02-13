@@ -199,7 +199,7 @@ public class MatchInfoAction extends ActionSupport {
 			MatchInfoService service = new MatchInfoService();
 			regInfoForEdit = service.QueryMatchRegistrationInfoForEditByPlayerId(playerId);
 			PlatService ps = new PlatService();
-			plats = ps.QueryAllMaps();
+			plats = ps.QueryActiveMaps();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

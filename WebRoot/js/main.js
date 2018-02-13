@@ -1867,12 +1867,33 @@ function _initACHILLES(o) {
 					retObj.plats.forEach(function(plat, index){
 						platOptionStr += '<option value=' + plat.id + '>' + plat.name + '</option>';
 					});
-					$('#bonus_plat').append( platOptionStr );
-		        	$('#bonus_plat').select2();
-		        	if(config.bonusPlat != null && config.bonusPlat != undefined) {
-		        		var plats = config.bonusPlat.split(',');
-		        		$('#bonus_plat').val(plats).select2();
+					$('#active_plat').empty();
+					$('#active_plat').append( platOptionStr );
+		        	$('#active_plat').select2();
+		        	var plats = [];
+		        	if(config.activePlat != null && config.activePlat != undefined) {
+		        		plats = config.activePlat.split(',');
 		        	}
+		        	$('#active_plat').val(plats).select2();
+		        						
+		        	$('#active_plat').on("change.select2", function(){
+		        		var activePlats = $("#active_plat").find("option:selected");
+		        		var activePlatOptionStr = '';
+		        		activePlats.each(function(index, activePlat){
+							activePlatOptionStr += activePlat.outerHTML;
+						});
+						$('#bonus_plat').empty();
+						$('#bonus_plat').append( activePlatOptionStr );
+		        		$('#bonus_plat').select2();
+		        	});
+		        	$('#active_plat').trigger('change.select2');
+		        	
+		        	plats = [];
+		        	if(config.bonusPlat != null && config.bonusPlat != undefined) {
+		        		plats = config.bonusPlat.split(',');
+		        	}
+		        	$('#bonus_plat').val(plats).select2();
+		        	
 		        	$('#bonus_plat_score').val(config.bonusPlatScore);
 		        	$('#player_notice').val(config.playerNotice);
 		        } else { 
@@ -1895,7 +1916,11 @@ function _initACHILLES(o) {
 		    postData += '&config.percentOfChallengerWinDiminishingStep=' + $('#percent_of_challenger_win_diminishing_step').val();
 		    postData += '&config.rateOfChosenMondyToThursday=' + $('#rate_of_chosen_mondy_to_thursday').val();
 		    postData += '&config.rateOfChosenSaturdayToSunday=' + $('#rate_of_chosen_saturday_to_sunday').val();
-			var plats = $('#bonus_plat').val();
+			var plats = $('#active_plat').val();
+			if(plats != null) {
+				postData += '&config.activePlat=' + plats;
+			}
+			plats = $('#bonus_plat').val();
 			if(plats != null) {
 				postData += '&config.bonusPlat=' + plats;
 			}

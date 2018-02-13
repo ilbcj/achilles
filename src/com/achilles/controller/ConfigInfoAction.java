@@ -20,7 +20,16 @@ public class ConfigInfoAction extends ActionSupport {
 	
 	private ConfigInfo config;
 	private List<Plat> plats;
+	private List<Plat> activePlats;
 	
+	public List<Plat> getActivePlats() {
+		return activePlats;
+	}
+
+	public void setActivePlats(List<Plat> activePlats) {
+		this.activePlats = activePlats;
+	}
+
 	public List<Plat> getPlats() {
 		return plats;
 	}

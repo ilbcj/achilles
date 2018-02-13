@@ -202,7 +202,7 @@ public class SyncAction extends ActionSupport {
 	public String QueryPlatList() {
 		try {
 			PlatService service = new PlatService();
-			items = service.QueryAllMaps();
+			items = service.QueryActiveMaps();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);
