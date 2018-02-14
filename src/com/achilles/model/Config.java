@@ -16,6 +16,7 @@ public class Config {
 	public final static String NAME_ACTIVEPLAT = "ActivePlat";
 	public final static String NAME_BONUSPLAT = "BonusPlat";
 	public final static String NAME_BONUSPLATSCORE = "BonusPlatScore";
+	public final static String NAME_RESTDAY = "RestDay";
 	public final static String NAME_PLAYERNOTICE = "PlayerNotice";
 	
 	private int id;

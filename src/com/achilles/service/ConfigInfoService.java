@@ -100,6 +100,11 @@ public class ConfigInfoService {
 			info.setBonusPlatScore(item.getIval());
 		}
 		
+		item = itemsMap.get(Config.NAME_RESTDAY);
+		if(item != null) {
+			info.setRestDay(item.getSval());
+		}
+		
 		item = itemsMap.get(Config.NAME_PLAYERNOTICE);
 		if(item != null) {
 			info.setPlayerNotice(item.getSval());
@@ -185,6 +190,11 @@ public class ConfigInfoService {
 		configItem = new Config();
 		configItem.setName(Config.NAME_BONUSPLATSCORE);
 		configItem.setIval(config.getBonusPlatScore());
+		dao.SaveConfigItem(configItem);
+		
+		configItem = new Config();
+		configItem.setName(Config.NAME_RESTDAY);
+		configItem.setSval(config.getRestDay());
 		dao.SaveConfigItem(configItem);
 		
 		configItem = new Config();

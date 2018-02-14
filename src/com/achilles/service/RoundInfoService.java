@@ -161,5 +161,9 @@ public class RoundInfoService {
 		
 		return result;
 	}
+	
+	public void GenerateInitRound() {
+		
+	}
 
 }

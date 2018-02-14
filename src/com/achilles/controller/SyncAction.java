@@ -42,8 +42,17 @@ public class SyncAction extends ActionSupport {
 	private List<Score> scores;
 	
 	private String bonusPlats;
+	private String restDay;
 	private String playerNotice;
 	
+	public String getRestDay() {
+		return restDay;
+	}
+
+	public void setRestDay(String restDay) {
+		this.restDay = restDay;
+	}
+
 	public String getBonusPlats() {
 		return bonusPlats;
 	}
@@ -273,6 +282,7 @@ public class SyncAction extends ActionSupport {
 			ConfigInfo config = service.QuerySystemConfigInfo();
 			bonusPlats = config.getBonusPlat();
 			playerNotice = config.getPlayerNotice();
+			restDay = config.getRestDay();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

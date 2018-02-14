@@ -9,6 +9,7 @@ import com.achilles.dto.MatchRegistrationInfoForEdit;
 import com.achilles.model.Battle;
 import com.achilles.model.MatchInfo;
 import com.achilles.model.Plat;
+import com.achilles.service.ConfigInfoService;
 import com.achilles.service.MatchInfoService;
 import com.achilles.service.PlatService;
 import com.opensymphony.xwork2.ActionSupport;
@@ -36,6 +37,7 @@ public class MatchInfoAction extends ActionSupport {
 	private int adversaryId;
 	private MatchRegistrationInfoForEdit regInfoForEdit;
 	private List<Plat> plats;
+	private String restDay;
 	private MatchRegistrationInfo regInfoForSave;
 	
 	private List<MatchDayInfo> activeMatchInfo;
@@ -44,6 +46,14 @@ public class MatchInfoAction extends ActionSupport {
 	
 	private boolean allResultSaved;
 	
+	public String getRestDay() {
+		return restDay;
+	}
+
+	public void setRestDay(String restDay) {
+		this.restDay = restDay;
+	}
+
 	public int getAdversaryId() {
 		return adversaryId;
 	}
@@ -200,6 +210,8 @@ public class MatchInfoAction extends ActionSupport {
 			regInfoForEdit = service.QueryMatchRegistrationInfoForEditByPlayerId(playerId);
 			PlatService ps = new PlatService();
 			plats = ps.QueryActiveMaps();
+			ConfigInfoService cs = new ConfigInfoService();
+			restDay = cs.QuerySystemConfigInfo().getRestDay();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

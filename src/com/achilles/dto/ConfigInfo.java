@@ -16,7 +16,9 @@ public class ConfigInfo implements Cloneable {
 	private String activePlat;
 	private String bonusPlat;
 	private int bonusPlatScore;
+	private String restDay;
 	private String playerNotice;
+	
 	
 	public ConfigInfo() {
 		
@@ -38,9 +40,18 @@ public class ConfigInfo implements Cloneable {
 		this.activePlat = ci.getActivePlat();
 		this.bonusPlat = ci.getBonusPlat();
 		this.bonusPlatScore = ci.getBonusPlatScore();
+		this.restDay = ci.getRestDay();
 		this.playerNotice = ci.getPlayerNotice();
 	}
 	
+	public String getRestDay() {
+		return restDay;
+	}
+
+	public void setRestDay(String restDay) {
+		this.restDay = restDay;
+	}
+
 	public String getActivePlat() {
 		return activePlat;
 	}

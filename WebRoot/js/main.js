@@ -1156,8 +1156,13 @@ function _initACHILLES(o) {
 					    increaseArea: '20%' // optional
 					});
 					// for rest day
-					$('#week0').iCheck('disable');
-					$('#week0').parent().next().addClass('text-gray');
+					retObj.restDay && retObj.restDay.split(',').forEach(function(dayId, index){
+						if(dayId.trim().length > 0) {
+							$('#week'+ dayId).iCheck('uncheck');
+							$('#week'+ dayId).iCheck('disable');
+							$('#week'+ dayId).parent().next().addClass('text-gray');
+						}
+					});
 					rowData.dayIds.forEach(function(dayId){
 						$('#week'+ dayId).iCheck('check');
 					});
@@ -1667,7 +1672,7 @@ function _initACHILLES(o) {
 			}
 		},		
 		updateMatchInfo: function () {
-			var message = '执行对战匹配操作后，会丢失现有对战相关结果，是否继续归档？';
+			var message = '执行对战匹配操作后，会丢失现有对战相关结果，是否继续匹配？';
 			$('#match_confirm_modal_message').empty().append(message);
 			$('#match_confirm_modal_confirm').data('type', 1);
 			$("#match_confirm_modal").modal('show');
@@ -1895,6 +1900,19 @@ function _initACHILLES(o) {
 		        	$('#bonus_plat').val(plats).select2();
 		        	
 		        	$('#bonus_plat_score').val(config.bonusPlatScore);
+		        	
+		        	$('[id^=week]').iCheck({
+					    checkboxClass: 'icheckbox_square-blue margin',
+						radioClass: 'iradio_square-blue margin',
+					    increaseArea: '20%' // optional
+					});
+					
+					config.restDay && config.restDay.split(',').forEach(function(dayId, index){
+						if(dayId.trim().length > 0) {
+							$('#week'+ dayId).iCheck('check');
+						}
+					});
+					
 		        	$('#player_notice').val(config.playerNotice);
 		        } else { 
 					var message = '加载系统配置失败![' + retObj.message + ']';
@@ -1925,6 +1943,16 @@ function _initACHILLES(o) {
 				postData += '&config.bonusPlat=' + plats;
 			}
 			postData += '&config.bonusPlatScore=' + $('#bonus_plat_score').val();
+			
+			var restDay = [];
+			$('[id^=week]').each(function(index, day){
+				var self = $(this);
+				if(self.prop('checked')) {
+					var dayId = self.val();
+					restDay.push(dayId);
+				}
+			});
+			postData += '&config.restDay=' + restDay.toString();
 			postData += '&config.playerNotice=' + $('#player_notice').val();
 			o.basePath && $.post(o.basePath + '/config/save.action', postData, function(retObj){
 	    		if(retObj.result == true)

@@ -16,6 +16,7 @@ import com.achilles.dao.impl.BattleInfoDAOImpl;
 import com.achilles.dao.impl.MatchDAOImpl;
 import com.achilles.dao.impl.PlatDAOImpl;
 import com.achilles.dao.impl.PlayerDAOImpl;
+import com.achilles.dto.ConfigInfo;
 import com.achilles.dto.MatchDayInfo;
 import com.achilles.dto.MatchRegistrationInfo;
 import com.achilles.dto.MatchRegistrationInfoForEdit;
@@ -474,8 +475,26 @@ public class MatchInfoService {
 		
 		List<MatchDayInfo> dayInfos = new ArrayList<MatchDayInfo>();
 		Map<Integer, MatchDayInfo> dayInfosMap = new HashMap<Integer, MatchDayInfo>();
-		for(int i = 0; i < ConfigUtil.getInstance().getMaxDateRange(); i++) {
-			int dayId = i + 1;//monday is rest day
+		ConfigInfoService cs = new ConfigInfoService();
+		ConfigInfo config = cs.QuerySystemConfigInfo();
+		String strRestDays = config.getRestDay();
+		List<Integer> restDayIds = new ArrayList<Integer>();
+		if(strRestDays != null) {
+			String[] restDays = strRestDays.split(",");
+			for(String strRestDay : restDays) {
+				if(strRestDay.trim().length() > 0) {
+					restDayIds.add(Integer.parseInt(strRestDay));
+				}
+			}
+		}
+		List<Integer> dayIds = new ArrayList<Integer>();//add week days except rest day
+		for(int x = 0; x<7; x++) {
+			if(!restDayIds.contains(x)) {
+				dayIds.add(x);
+			}
+		}
+		for(int i = 0; i < dayIds.size(); i++) {
+			int dayId = dayIds.get(i);
 			MatchDayInfo dayInfo = new MatchDayInfo();
 			dayInfo.setDayId(dayId);
 			dayInfo.setDayName(DateTimeUtil.GetDayDesc(dayId));
