@@ -58,4 +58,10 @@ public class RankingService {
 		dao.DelRankingByPlayerid(target.getRoundId(), target.getPlayerId());
 		return;
 	}
+
+	public void ClearInitRanking(int roundId) throws Exception {
+		RankingDAO dao = new RankingDAOImpl();
+		dao.DelRankingByRoundId(roundId);
+		return;
+	}
 }

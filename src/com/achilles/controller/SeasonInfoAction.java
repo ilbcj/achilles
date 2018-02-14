@@ -26,8 +26,18 @@ public class SeasonInfoAction extends ActionSupport {
 	
 	private List<Season> items;
 	private Season season;
+	private List<String>  rankInfo;
 	private List<Integer> delIds;
 	
+	
+	public List<String> getRankInfo() {
+		return rankInfo;
+	}
+
+	public void setRankInfo(List<String> rankInfo) {
+		this.rankInfo = rankInfo;
+	}
+
 	public List<Integer> getDelIds() {
 		return delIds;
 	}
@@ -145,6 +155,19 @@ public class SeasonInfoAction extends ActionSupport {
 				throw new Exception("没有指定要删除的赛季。");
 			SeasonInfoService service = new SeasonInfoService();
 			service.DeleteSeasons(delIds);
+		} catch (Exception e) {
+			message = e.getMessage();
+			setResult(false);
+			return SUCCESS;
+		}
+		setResult(true);
+		return SUCCESS;
+	}
+	
+	public String InitSeason() {
+		try {
+			SeasonInfoService service = new SeasonInfoService();
+			rankInfo = service.InitSeasons();
 		} catch (Exception e) {
 			message = e.getMessage();
 			setResult(false);

@@ -26,6 +26,9 @@
 		<action name="saveSeason" class="com.achilles.controller.SeasonInfoAction" method="SaveSeason" >
  			<result name="success" type="json" />
 		</action>
+		<action name="initSeason" class="com.achilles.controller.SeasonInfoAction" method="InitSeason" >
+ 			<result name="success" type="json" />
+		</action>
 		<action name="deleteSeasons" class="com.achilles.controller.SeasonInfoAction" method="DeleteSeasons" >
  			<result name="success" type="json" />
 		</action>

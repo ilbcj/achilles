@@ -141,4 +141,26 @@ public class RankingDAOImpl implements RankingDAO {
 		
 	}
 
+	@Override
+	public void DelRankingByRoundId(int roundId) throws Exception {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		String sqlString = "delete FROM Ranking WHERE round_id=:round_id ";
+		
+		try {
+			Query q = session.createSQLQuery(sqlString);
+			q.setInteger("round_id", roundId);
+			q.executeUpdate();
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			System.out.println(e.getMessage());
+			throw e;
+		} finally {
+			HibernateUtil.closeSession();
+		}
+		return ;
+	}
+
 }

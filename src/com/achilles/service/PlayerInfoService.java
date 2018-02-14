@@ -3,12 +3,9 @@ package com.achilles.service;
 import java.util.List;
 
 import com.achilles.dao.PlayerDAO;
-import com.achilles.dao.RankingDAO;
 import com.achilles.dao.impl.PlayerDAOImpl;
-import com.achilles.dao.impl.RankingDAOImpl;
 import com.achilles.dto.PlayerDetail;
 import com.achilles.model.Player;
-import com.achilles.model.Ranking;
 import com.achilles.util.ConfigUtil;
 import com.achilles.util.DateTimeUtil;
 
@@ -41,15 +38,16 @@ public class PlayerInfoService {
 		player.setTimestamp(DateTimeUtil.GetCurrentTime());
 		player = dao.AddPlayer(player);
 		
-		// add init match period ranking
-		Ranking ranking = new Ranking();
-		ranking.setRoundId(ConfigUtil.getInstance().getInitRoundId());
-		ranking.setPlayerId(player.getId());
-		ranking.setRanking(player.getId());
-		int score = (int)(ConfigUtil.getInstance().getMaxInitTopOneScore() - count * ConfigUtil.getInstance().getInitScoreDiminishingStep());
-		ranking.setScore(score);
-		RankingDAO rDao = new RankingDAOImpl();
-		rDao.SaveRanking(ranking);		
+		// no more need to add default ranking of season's init round
+//		// add init match period ranking
+//		Ranking ranking = new Ranking();
+//		ranking.setRoundId(ConfigUtil.getInstance().getInitRoundId());
+//		ranking.setPlayerId(player.getId());
+//		ranking.setRanking(player.getId());
+//		int score = (int)(ConfigUtil.getInstance().getMaxInitTopOneScore() - count * ConfigUtil.getInstance().getInitScoreDiminishingStep());
+//		ranking.setScore(score);
+//		RankingDAO rDao = new RankingDAOImpl();
+//		rDao.SaveRanking(ranking);		
 		return;
 	}
 

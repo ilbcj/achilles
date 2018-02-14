@@ -6,6 +6,7 @@ public class Round {
 	public final static int STATUS_LAST_ACTIVE = 2;
 	public final static int STATUS_HISTORY = 3;
 	public final static int STATUS_INIT = 9;
+	public final static int STATUS_OLD_INIT = 10;
 	public final static int PHASE_REGISTRATION = 0;
 	public final static int PHASE_ARRANGED = 1;
 	public final static int PHASE_CALCULATE = 2;

@@ -333,6 +333,7 @@ function _initACHILLES(o) {
 							var html = '<div class="btn-group">';
 							html += '<button class="season_info btn btn-xs btn-success" data-id="' + row.id + '"><i class="fa fa-edit"></i>详情</button>';
 							html += '<button class="season_del btn btn-xs btn-danger" data-id="' + row.id + '"><i class="fa fa-trash-o"></i>删除</button>';
+							html += '<button class="season_init btn btn-xs btn-warning" data-id="' + row.id + '"><i class="fa fa-users"></i>初始化赛季排名</button>';
 							html += '</div>';
 							return html;
 						},
@@ -351,8 +352,8 @@ function _initACHILLES(o) {
 			$('#season_main_table').on( 'draw.dt', function () {
 				$('.season_info').on('click.ACHILLES.season.detail', $.ACHILLES.season.addSeasonWindow);
 				$('.season_del').on('click.ACHILLES.season.delete.single', $.ACHILLES.season.delSeason);
+				$('.season_init').on('click.ACHILLES.season.init', $.ACHILLES.season.initSeason);
 			});
-			$('#season_confirm_modal_confirm').on('click.ACHILLES.season.delconfirm', $.ACHILLES.season.delSeasonsConfirm);
 		},
 		addSeasonWindow: function () {
 			var id = $(this).data('id');
@@ -412,18 +413,53 @@ function _initACHILLES(o) {
 				$("#season_confirm_modal").modal('show');
 			}
 		},
+		initSeason: function() {
+			var message = '初始化本赛季选手排名信息会变更之前生成的随机排名。<br/>是否要初始化本赛季选手排名信息？';
+			$('#season_confirm_modal_message').empty().append(message);
+			//var rowId = $(this).data('id');
+			//$('#season_confirm_modal_confirm').data('seasonId', rowId);
+			$('#season_confirm_modal_confirm').off('click');
+			$('#season_confirm_modal_confirm').on('click.ACHILLES.season.initConfirm', $.ACHILLES.season.initSeasonConfirm);
+			$("#season_confirm_modal").modal('show');
+		},
+		initSeasonConfirm: function() {
+			$("#progress_Modal").modal('show');
+			//var seasonId = $('#season_confirm_modal_confirm').data('seasonId');
+			var postData = {};
+			//postData = "seasonId=" + seasonId;
+			o.basePath && $.post(o.basePath + '/period/initSeason.action', postData, function(retObj) {
+				$("#progress_Modal").modal('hide');
+				if(retObj.result == true) {
+					var message = '本赛季选手初随机始排名已生成';
+					var rankInfo = '';
+					retObj.rankInfo && retObj.rankInfo.forEach(function(ranking, index) {
+						rankInfo += '<br />' + ranking
+					});
+					$('#init_ranking').html(rankInfo);
+					$.ACHILLES.tipMessage(message);
+					
+				} else {
+					var message = '生成本赛季选手初随机始排名操作失败![' + retObj.message + ']';
+					$.ACHILLES.tipMessage(message, false);
+				}
+			}, 'json');
+		},
 		delSeason: function () {
 			var rowId = $(this).data('id');
 			var delIds = 'delIds=' + rowId;
 			var message = '是否要删除此赛季？';
 			$('#season_confirm_modal_message').empty().append(message);
 			$('#season_confirm_modal_confirm').data('delIds', delIds);
+			$('#season_confirm_modal_confirm').off('click');
+			$('#season_confirm_modal_confirm').on('click.ACHILLES.season.delconfirm', $.ACHILLES.season.delSeasonsConfirm);
 			$("#season_confirm_modal").modal('show');
 		},
 		delSeasonsConfirm: function () {
+			$("#progress_Modal").modal('show');
 			var postData = '';
 			postData = $('#season_confirm_modal_confirm').data('delIds');
 			o.basePath && $.post(o.basePath + '/period/deleteSeasons.action', postData, function(retObj) {
+				$("#progress_Modal").modal('hide');
 				if(retObj.result == true) {
 					var message = '赛季信息已删除';
 					$.ACHILLES.tipMessage(message);
@@ -1461,7 +1497,7 @@ function _initACHILLES(o) {
 							}
 							platHtml += '<div class="row"><div class="col-xs-12"><div class="box box-widget widget-user">';
 							platHtml += 	'<div class="widget-user-header bg-aqua-active">';
-							platHtml += 		'<h3 class="widget-user-username">' + (index+1) + ' - ' + '<span id="plat' + index + '">' + platName + '</span></h3>';
+							platHtml += 		'<h3 class="widget-user-username">' + (index+1) + ' - ' + '<span id="plat_name_' + index + '">' + platName + '</span></h3>';
 							platHtml +=			'<h4 class="widget-user-desc">' + rowData.challengerName +' 挑战 ' + rowData.adversaryName + '</h4>';
 							platHtml +=		'</div>';
 							platHtml +=		'<div class="box-footer no-padding"><div class="row">';
@@ -1638,7 +1674,7 @@ function _initACHILLES(o) {
 	    	for(var index=0; index < 3; index++) {
 	    		var platResult = $('#plat_cw' + index + ':checked,#plat_aw' + index + ':checked,#plat_draw' + index + ':checked').val();
 	    		if( platResult != undefined ) {
-	    			var platName = $('#plat' + index).html().trim();
+	    			var platName = $('#plat_name_' + index).html().trim();
 	    			var challengerRace = $('#crt' + index + ':checked, #crp' + index + ':checked, #crz' + index + ':checked').val();
 					var adversaryRace = $('#art' + index + ':checked, #arp' + index + ':checked, #arz' + index + ':checked').val();
 		    		var battleInfo = new $.ACHILLES.match.createBattleObj(challengerId, adversaryId, challengerRace, adversaryRace, platResult, platName);
@@ -1709,7 +1745,7 @@ function _initACHILLES(o) {
 			o.basePath && $.post(o.basePath + '/score/queryRoundList.action', {}, function(retObj){
 				if(retObj.result == true) {
 					var rounds = retObj.rounds;
-					var htmlData = '<li class="time-label"><span class="bg-red">第一赛季</span></li>';
+					var htmlData = '<li class="time-label"><span class="bg-red">第二赛季</span></li>';
 					rounds.forEach(function(round, index){
 						htmlData += '<li><i class="fa fa-table bg-blue"></i>';
 						htmlData +='<div class="timeline-item">';

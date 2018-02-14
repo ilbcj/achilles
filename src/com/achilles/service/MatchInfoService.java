@@ -650,12 +650,13 @@ public class MatchInfoService {
 			rs.SaveRanking(ranking);
 		}
 		
+		
 		// 3. remove ranking of init round
 		Ranking target = new Ranking();
 		for( int i = 0; i < players.size(); i++ ) {
 			player = players.get( i );
 			target.setPlayerId( player.getId() );
-			target.setRoundId( ConfigUtil.getInstance().getInitRoundId() );
+			target.setRoundId( new RoundInfoService().getInitRound().getId() );
 			rs.RemoveInitRoundRanking( target );
 		}
 		

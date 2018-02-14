@@ -60,6 +60,9 @@ public class RoundInfoService {
 			round.setTimestamp(DateTimeUtil.GetCurrentTime());
 			round.setStatus(Round.STATUS_ACTIVE);
 			Round last = getLastRound();
+			if(last == null) {
+				last = getInitRound();
+			}
 			round.setLastRoundId(last == null ? ConfigUtil.getInstance().getInitRoundId() : last.getId());
 		}
 		dao.AddRound(round);
@@ -101,7 +104,7 @@ public class RoundInfoService {
 		return result;
 	}
 	
-	private Round getLastRound() throws Exception {
+	public Round getLastRound() throws Exception {
 		RoundDAO dao = new RoundDAOImpl();
 		List<Round> rounds = dao.GetRoundByStatus( Round.STATUS_LAST_ACTIVE );
 		Round result = null;
@@ -162,8 +165,36 @@ public class RoundInfoService {
 		return result;
 	}
 	
-	public void GenerateInitRound() {
+	public void GenerateInitRound(int seasonId) throws Exception {
+		if( seasonId == 0 ) {
+			throw new Exception("赛季信息不正确，创建赛季初始信息失败！");
+		}
+		Round init = new Round();
+		init.setName("初始化");
+		init.setTimestamp(DateTimeUtil.GetCurrentTime());
+		init.setSeasonId(seasonId);
+		init.setStatus(Round.STATUS_INIT);
 		
+		RoundDAO dao = new RoundDAOImpl();
+		dao.AddRound(init);
+		return;
+	}
+
+	public Round getInitRound() throws Exception {
+		RoundDAO dao = new RoundDAOImpl();
+		List<Round> rounds = dao.GetRoundByStatus( Round.STATUS_INIT );
+		Round result = null;
+		
+		if( rounds.size() == 0 ) {
+			result = null;
+		}
+		else if( rounds.size() == 1 ) {
+			result = rounds.get(0);
+		}
+		else if( rounds.size() > 1 ) {
+			throw new Exception( "存在多个赛季初始场次，请联系系统维护人员。" );
+		}
+		return result;
 	}
 
 }
