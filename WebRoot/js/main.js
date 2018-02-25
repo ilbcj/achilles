@@ -1411,7 +1411,7 @@ function _initACHILLES(o) {
 												if(plat != null && plat != '') {
 													var platName = plat;
 													if( plat.indexOf('_') != -1 ) {
-														platName = plat.split('_')[1];
+														platName = plat.substr(plat.indexOf('_') + 1);
 													}
 													html += '<span class="margin badge bg-blue"> ' + platName + '</span>';	
 												}
