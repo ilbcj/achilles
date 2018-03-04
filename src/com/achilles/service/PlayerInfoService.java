@@ -1,5 +1,6 @@
 package com.achilles.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.achilles.dao.PlayerDAO;
@@ -78,6 +79,18 @@ public class PlayerInfoService {
 		
 		//TODO: query and fill other info
 		return detail;
+	}
+	
+	public List<Player> QueryAllPlayer() throws Exception {
+		List<Player> players = new ArrayList<Player>();
+		PlayerDAO playerDAO = new PlayerDAOImpl();
+		Player criteria = new Player();
+		List<Player> tmp = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		players.addAll(tmp);
+		criteria.setStatus(Player.STATUS_USING);
+		tmp = playerDAO.GetPlayers(criteria, 0, ConfigUtil.getInstance().getMaxPlayersCount());
+		players.addAll(tmp);
+		return players;
 	}
 	
 	public List<Player> QueryAllActivePlayer() throws Exception {

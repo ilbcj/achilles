@@ -56,11 +56,16 @@ public class ScoreInfoService {
 		ScoreDAO scoreDao = new ScoreDAOImpl();
 		List<Score> scores = scoreDao.GetRoundScoreByRanking(roundId);
 		
-		List<Player> players = new PlayerInfoService().QueryAllActivePlayer();
+		List<Player> players = new PlayerInfoService().QueryAllPlayer();
 		Map<Integer, Player> playerMap = new HashMap<Integer,Player>();
 		Player player = null;
 		for(int x = 0; x<players.size(); x++) {
 			player = players.get(x);
+			if(player.getLoginId().indexOf(".archive") != -1) {
+				String loginId = player.getLoginId();
+				loginId = loginId.substring(0, loginId.indexOf(".archive"));
+				player.setLoginId(loginId);
+			}
 			playerMap.put(player.getId(), player);
 		}
 		

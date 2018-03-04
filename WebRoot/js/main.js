@@ -1493,7 +1493,7 @@ function _initACHILLES(o) {
 						if(plat != null && plat != '') {
 							var platName = plat;
 							if( plat.indexOf('_') != -1 ) {
-								platName = plat.split('_')[1];
+								platName = plat.substr(plat.indexOf('_') + 1);
 							}
 							platHtml += '<div class="row"><div class="col-xs-12"><div class="box box-widget widget-user">';
 							platHtml += 	'<div class="widget-user-header bg-aqua-active">';
@@ -1605,7 +1605,7 @@ function _initACHILLES(o) {
 					
 					battles.forEach(function(battle, index){
 						for( var index = 0; index < 3; index++ ) {
-							if( battle.mapName === $('#plat' + index).html().trim() ) {
+							if( battle.mapName === $('#plat_name_' + index).html().trim() ) {
 								$('#crt'+index+',#crp'+index+',#crz'+index).each(function(){
 									var challengerRace = $(this);
 									if( challengerRace.val() == battle.challengerRace ) {
