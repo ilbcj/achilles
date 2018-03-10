@@ -679,6 +679,8 @@ public class MatchInfoService {
 		//0. get last score
 		Round active = new RoundInfoService().GetActiveRound();
 		Ranking lastRanking = new RankingService().QueryRankingByPlayerid(active.getLastRoundId(), player.getId());
+		if(lastRanking == null) 
+			lastRanking = new RankingService().QueryRankingByPlayerid(new RoundInfoService().getInitRound().getId(), player.getId());
 		lastScore = lastRanking.getScore();
 		memo += "[上轮积分" + lastScore + "],";
 		
